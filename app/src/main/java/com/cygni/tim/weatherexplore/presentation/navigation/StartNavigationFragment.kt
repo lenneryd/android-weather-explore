@@ -39,6 +39,12 @@ class StartNavigationFragment : Fragment() {
             )
         }
 
+        binding.navigateToWeather.setOnClickListener {
+            findNavController().navigate(
+                directions = StartNavigationFragmentDirections.actionStartNavigationFragmentToWeatherComposeFragment()
+            )
+        }
+
         binding.navigateToCompose.setOnClickListener {
             startActivity(Intent(requireContext(), ComposeActivity::class.java))
         }

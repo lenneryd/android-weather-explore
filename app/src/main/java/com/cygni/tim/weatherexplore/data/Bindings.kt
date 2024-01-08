@@ -1,6 +1,9 @@
 package com.cygni.tim.weatherexplore.data
 
 import android.content.Context
+import com.cygni.tim.weatherexplore.R
+import com.cygni.tim.weatherexplore.data.api.retrofit.WeatherApi
+import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -8,8 +11,10 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.serialization.json.Json
 import okhttp3.Cache
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Retrofit
 import javax.inject.Singleton
 
 @Module
@@ -39,11 +44,23 @@ object RetrofitModule {
         ignoreUnknownKeys = true
         isLenient = true
     }
-}
 
+    @Provides
+    @Singleton
+    fun provideRetrofit(@ApplicationContext context: Context, okHttpClient: OkHttpClient): Retrofit = Retrofit.Builder()
+        .baseUrl(context.getString(R.string.weather_api_baseurl))
+        .addConverterFactory(
+            json.asConverterFactory("application/json".toMediaType())
+        )
+        .client(okHttpClient)
+        .build()
+}
 
 @Module
 @InstallIn(SingletonComponent::class)
-object APiKeyModule {
+object WeatherApiModule {
 
+    @Provides
+    @Singleton
+    fun provideWeatherApi(retrofit: Retrofit): WeatherApi = retrofit.create(WeatherApi::class.java)
 }
