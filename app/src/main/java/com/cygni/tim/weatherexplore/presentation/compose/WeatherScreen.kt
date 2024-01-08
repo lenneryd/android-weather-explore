@@ -2,15 +2,19 @@ package com.cygni.tim.weatherexplore.presentation.compose
 
 import android.content.res.Configuration
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -49,11 +53,13 @@ fun WeatherUIComposable(state: WeatherViewModel.WeatherUIState.WeatherUI) {
 
         val (lat, lon, updatedAt) = createRefs()
 
-        Row(modifier = Modifier.constrainAs(lat) {
-            top.linkTo(parent.top)
-            start.linkTo(parent.start)
-            end.linkTo(parent.end)
-        }.padding(top = 16.dp, bottom = 8.dp)) {
+        Row(modifier = Modifier
+            .constrainAs(lat) {
+                top.linkTo(parent.top)
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+            }
+            .padding(top = 16.dp, bottom = 8.dp)) {
             Text(
                 text = "Latitude: ${state.location.truncLatitude()}",
                 fontSize = 18.sp,
@@ -71,13 +77,15 @@ fun WeatherUIComposable(state: WeatherViewModel.WeatherUIState.WeatherUI) {
                 color = MaterialTheme.colorScheme.primary
             )
         }
-        Row(modifier = Modifier.constrainAs(updatedAt) {
-            start.linkTo(parent.start)
-            end.linkTo(parent.end)
-            bottom.linkTo(parent.bottom)
-            height = Dimension.wrapContent
-            width = Dimension.wrapContent
-        }.padding(vertical = 8.dp)) {
+        Row(modifier = Modifier
+            .constrainAs(updatedAt) {
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+                bottom.linkTo(parent.bottom)
+                height = Dimension.wrapContent
+                width = Dimension.wrapContent
+            }
+            .padding(vertical = 8.dp)) {
             Text(
                 text = "Updated at: ${state.updatedAt} (${state.forecastAge} ago)",
                 fontSize = 16.sp,
@@ -89,7 +97,21 @@ fun WeatherUIComposable(state: WeatherViewModel.WeatherUIState.WeatherUI) {
 
 @Composable
 fun PendingComposable() {
-    CircularProgressIndicator()
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = MaterialTheme.colorScheme.background)
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxHeight()) {
+            CircularProgressIndicator(
+                progress = 0.75f,
+                color = MaterialTheme.colorScheme.tertiary,
+                modifier = Modifier
+                    .size(64.dp)
+            )
+        }
+    }
 }
 
 @Composable
@@ -103,6 +125,26 @@ fun WeatherScreenPreview() {
     AppYuTheme {
         WeatherScreenComposable(
             state = weatherPreviewState()
+        )
+    }
+}
+
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun WeatherScreenNightPreview() {
+    AppYuTheme {
+        WeatherScreenComposable(
+            state = weatherPreviewState()
+        )
+    }
+}
+
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Composable
+fun WeatherScreenProgressPreview() {
+    AppYuTheme {
+        WeatherScreenComposable(
+            state = WeatherViewModel.WeatherUIState.PendingUIState
         )
     }
 }
