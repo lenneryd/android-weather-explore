@@ -2,95 +2,162 @@ package com.cygni.tim.weatherexplore.presentation.compose
 
 import android.content.res.Configuration
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import com.cygni.tim.weatherexplore.R
 import com.cygni.tim.weatherexplore.data.models.Point
 import com.cygni.tim.weatherexplore.data.repo.truncLatitude
 import com.cygni.tim.weatherexplore.data.repo.truncLongitude
 import com.cygni.tim.weatherexplore.presentation.colors.AppYuTheme
+import com.cygni.tim.weatherexplore.presentation.compose.icon.ShimmerIcon
 import com.cygni.tim.weatherexplore.presentation.viewmodel.WeatherViewModel
 
 @Composable
-fun WeatherScreen(viewModel: WeatherViewModel) {
+fun WeatherScreen(
+    viewModel: WeatherViewModel,
+    onNavigateToMap: (Point) -> Unit,
+    onDismissMessage: (WeatherViewModel.Message) -> Unit
+) {
     val uiState by viewModel.uiState.collectAsState(WeatherViewModel.WeatherUIState.PendingUIState)
-    WeatherScreenComposable(state = uiState)
+    WeatherScreenComposable(state = uiState, onNavigateToMap, onDismissMessage)
 }
 
 @Composable
-fun WeatherScreenComposable(state: WeatherViewModel.WeatherUIState) {
+fun WeatherScreenComposable(
+    state: WeatherViewModel.WeatherUIState,
+    onNavigateToMap: (Point) -> Unit = {},
+    onDismissMessage: (WeatherViewModel.Message) -> Unit = {}
+) {
     when (state) {
-        is WeatherViewModel.WeatherUIState.WeatherUI -> WeatherUIComposable(state)
+        is WeatherViewModel.WeatherUIState.WeatherUI -> WeatherUIComposable(state, onNavigateToMap, onDismissMessage)
         is WeatherViewModel.WeatherUIState.FailureUIState -> FailureComposable(state.message)
         WeatherViewModel.WeatherUIState.PendingUIState -> PendingComposable()
     }
 }
 
 @Composable
-fun WeatherUIComposable(state: WeatherViewModel.WeatherUIState.WeatherUI) {
+fun WeatherUIComposable(
+    state: WeatherViewModel.WeatherUIState.WeatherUI,
+    onNavigateToMap: (Point) -> Unit,
+    dismissMessage: (WeatherViewModel.Message) -> Unit
+) {
+    val snackbarHostState = remember { SnackbarHostState() }
 
-    ConstraintLayout(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(color = MaterialTheme.colorScheme.background)
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) }
+    ) { padding ->
+        if (state.snackbarMessages.isNotEmpty()) {
+            LaunchedEffect(snackbarHostState) {
+                val message = state.snackbarMessages.first()
+                snackbarHostState.showSnackbar(message = message.text)
+                dismissMessage(message)
+            }
+        }
+
+        ConstraintLayout(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .background(color = MaterialTheme.colorScheme.background)
+        ) {
+
+            val (block, updatedAt) = createRefs()
+
+            CurrentWeatherBlock(state = state, modifier = Modifier
+                .constrainAs(block) {
+                    top.linkTo(parent.top)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                    height = Dimension.wrapContent
+                    width = Dimension.matchParent
+                }
+                .padding(top = 24.dp, start = 8.dp, end = 8.dp, bottom = 24.dp)
+            ) {
+                onNavigateToMap(it)
+            }
+
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .constrainAs(updatedAt) {
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                        bottom.linkTo(parent.bottom)
+                        height = Dimension.wrapContent
+                        width = Dimension.fillToConstraints
+                    }
+                    .background(color = MaterialTheme.colorScheme.primaryContainer)
+                    .padding(vertical = 8.dp)) {
+                Text(
+                    text = "Updated at: ${state.updatedAt} (${state.forecastAge} ago)",
+                    fontSize = 16.sp,
+                    color = MaterialTheme.colorScheme.primary,
+                    textAlign = TextAlign.Center
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun CurrentWeatherBlock(state: WeatherViewModel.WeatherUIState.WeatherUI, modifier: Modifier, onLocationClick: (Point) -> Unit) {
+    Box(
+        modifier = modifier
+            .background(color = MaterialTheme.colorScheme.primaryContainer, shape = RoundedCornerShape(16.dp))
     ) {
+        Column(
+            modifier = Modifier
+                .padding(top = 8.dp, bottom = 8.dp)
+                .align(Alignment.TopCenter)
+        ) {
 
-        val (lat, lon, updatedAt) = createRefs()
+            Row(modifier = Modifier.clickable {
+                onLocationClick(state.location)
+            }) {
+                Text(
+                    text = "Location: (lon: ${state.location.truncLatitude()}, lat: ${state.location.truncLongitude()})",
+                    fontSize = 18.sp,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(start = 12.dp, end = 8.dp)
+                )
 
-        Row(modifier = Modifier
-            .constrainAs(lat) {
-                top.linkTo(parent.top)
-                start.linkTo(parent.start)
-                end.linkTo(parent.end)
+                Icon(
+                    painter = painterResource(id = R.drawable.arrow_top_right),
+                    contentDescription = "Map Link to location",
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(start = 8.dp, end = 8.dp)
+                )
             }
-            .padding(top = 16.dp, bottom = 8.dp)) {
-            Text(
-                text = "Latitude: ${state.location.truncLatitude()}",
-                fontSize = 18.sp,
-                color = MaterialTheme.colorScheme.primary
-            )
-        }
-        Row(modifier = Modifier.constrainAs(lon) {
-            top.linkTo(lat.bottom)
-            start.linkTo(parent.start)
-            end.linkTo(parent.end)
-        }) {
-            Text(
-                text = "Longitude: ${state.location.truncLongitude()}",
-                fontSize = 18.sp,
-                color = MaterialTheme.colorScheme.primary
-            )
-        }
-        Row(modifier = Modifier
-            .constrainAs(updatedAt) {
-                start.linkTo(parent.start)
-                end.linkTo(parent.end)
-                bottom.linkTo(parent.bottom)
-                height = Dimension.wrapContent
-                width = Dimension.wrapContent
-            }
-            .padding(vertical = 8.dp)) {
-            Text(
-                text = "Updated at: ${state.updatedAt} (${state.forecastAge} ago)",
-                fontSize = 16.sp,
-                color = MaterialTheme.colorScheme.primary
-            )
         }
     }
 }
@@ -116,7 +183,31 @@ fun PendingComposable() {
 
 @Composable
 fun FailureComposable(message: String) {
-    Text(message)
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) }
+    ) { padding ->
+        LaunchedEffect(snackbarHostState) {
+            snackbarHostState.showSnackbar(message = message, actionLabel = "Ok")
+        }
+
+        Box(
+            modifier = Modifier
+                .padding(padding)
+                .fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            ShimmerIcon(
+                painterResource(id = R.drawable.alert_circle_outline),
+                listOf(
+                    MaterialTheme.colorScheme.surfaceVariant,
+                    MaterialTheme.colorScheme.background,
+                    MaterialTheme.colorScheme.surfaceVariant,
+                ), modifier = Modifier.size(128.dp)
+            )
+        }
+    }
 }
 
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
@@ -135,6 +226,16 @@ fun WeatherScreenNightPreview() {
     AppYuTheme {
         WeatherScreenComposable(
             state = weatherPreviewState()
+        )
+    }
+}
+
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Composable
+fun WeatherScreenFailurePreview() {
+    AppYuTheme {
+        WeatherScreenComposable(
+            state = WeatherViewModel.WeatherUIState.FailureUIState("Failed to load weather")
         )
     }
 }
