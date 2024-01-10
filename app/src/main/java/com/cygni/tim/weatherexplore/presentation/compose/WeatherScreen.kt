@@ -1,6 +1,7 @@
 package com.cygni.tim.weatherexplore.presentation.compose
 
 import android.content.res.Configuration
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -32,6 +33,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -66,10 +68,12 @@ fun WeatherScreenComposable(
     onNavigateToMap: (Point) -> Unit = {},
     onDismissMessage: (WeatherViewModel.Message) -> Unit = {}
 ) {
-    when (state) {
-        is WeatherViewModel.WeatherUIState.WeatherUI -> WeatherUIComposable(state, onNavigateToMap, onDismissMessage)
-        is WeatherViewModel.WeatherUIState.FailureUIState -> FailureComposable(state.message)
-        WeatherViewModel.WeatherUIState.PendingUIState -> PendingComposable()
+    AnimatedContent(targetState = state, label = "State Animation") { s ->
+        when (s) {
+            is WeatherViewModel.WeatherUIState.WeatherUI -> WeatherUIComposable(s, onNavigateToMap, onDismissMessage)
+            is WeatherViewModel.WeatherUIState.FailureUIState -> FailureComposable(s.message)
+            WeatherViewModel.WeatherUIState.PendingUIState -> PendingComposable()
+        }
     }
 }
 
@@ -188,7 +192,6 @@ fun PendingComposable() {
     ) {
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxHeight()) {
             CircularProgressIndicator(
-                progress = 0.75f,
                 color = MaterialTheme.colorScheme.tertiary,
                 modifier = Modifier
                     .size(64.dp)
