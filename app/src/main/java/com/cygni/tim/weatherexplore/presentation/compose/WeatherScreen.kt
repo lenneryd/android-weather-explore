@@ -3,19 +3,29 @@ package com.cygni.tim.weatherexplore.presentation.compose
 import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
+import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.LargeFloatingActionButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
@@ -72,7 +82,42 @@ fun WeatherUIComposable(
     val snackbarHostState = remember { SnackbarHostState() }
 
     Scaffold(
-        snackbarHost = { SnackbarHost(snackbarHostState) }
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+        bottomBar = {
+            BottomAppBar(
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                contentColor = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.height(42.dp)
+            ) {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .background(color = MaterialTheme.colorScheme.primaryContainer)
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp)) {
+                    Text(
+                        text = "Updated at: ${state.updatedAt} (${state.forecastAge} ago)",
+                        fontSize = 16.sp,
+                        color = MaterialTheme.colorScheme.primary,
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { onNavigateToMap(state.location) },
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                contentColor = MaterialTheme.colorScheme.primary
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.arrow_top_right),
+                    contentDescription = "Map Link to location",
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(start = 8.dp, end = 8.dp)
+                )
+            }
+        }
     ) { padding ->
         if (state.snackbarMessages.isNotEmpty()) {
             LaunchedEffect(snackbarHostState) {
@@ -82,46 +127,17 @@ fun WeatherUIComposable(
             }
         }
 
-        ConstraintLayout(
+        Column(
+            verticalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .background(color = MaterialTheme.colorScheme.background)
         ) {
-
-            val (block, updatedAt) = createRefs()
-
             CurrentWeatherBlock(state = state, modifier = Modifier
-                .constrainAs(block) {
-                    top.linkTo(parent.top)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                    height = Dimension.wrapContent
-                    width = Dimension.matchParent
-                }
+                .fillMaxWidth()
                 .padding(top = 24.dp, start = 8.dp, end = 8.dp, bottom = 24.dp)
             ) {
                 onNavigateToMap(it)
-            }
-
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier
-                    .constrainAs(updatedAt) {
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                        bottom.linkTo(parent.bottom)
-                        height = Dimension.wrapContent
-                        width = Dimension.fillToConstraints
-                    }
-                    .background(color = MaterialTheme.colorScheme.primaryContainer)
-                    .padding(vertical = 8.dp)) {
-                Text(
-                    text = "Updated at: ${state.updatedAt} (${state.forecastAge} ago)",
-                    fontSize = 16.sp,
-                    color = MaterialTheme.colorScheme.primary,
-                    textAlign = TextAlign.Center
-                )
             }
         }
     }
@@ -256,5 +272,5 @@ private fun weatherPreviewState() = WeatherViewModel.WeatherUIState.WeatherUI(
         lon = 59.326038
     ),
     updatedAt = "09:41",
-    forecastAge = "14 minutes ago"
+    forecastAge = "14 minutes"
 )
