@@ -5,6 +5,7 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -40,7 +41,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -49,6 +52,7 @@ import com.cygni.tim.weatherexplore.R
 import com.cygni.tim.weatherexplore.data.models.Point
 import com.cygni.tim.weatherexplore.presentation.colors.AppYuTheme
 import com.cygni.tim.weatherexplore.presentation.compose.icon.ShimmerIcon
+import com.cygni.tim.weatherexplore.presentation.icons.WeatherIcons
 import com.cygni.tim.weatherexplore.presentation.viewmodel.WeatherViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -60,18 +64,26 @@ fun WeatherScreen(
     onDismissMessage: (WeatherViewModel.Message) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState(WeatherViewModel.WeatherUIState.PendingUIState)
-    WeatherScreenComposable(state = uiState, onNavigateToMap, onDismissMessage)
+    WeatherScreenComposable(state = uiState, null, onNavigateToMap, onDismissMessage)
 }
 
 @Composable
 fun WeatherScreenComposable(
     state: WeatherViewModel.WeatherUIState,
+    previewState: WeatherPreviewState?,
     onNavigateToMap: (Point) -> Unit = {},
     onDismissMessage: (WeatherViewModel.Message) -> Unit = {}
 ) {
+
     AnimatedContent(targetState = state, label = "State Animation") { s ->
         when (s) {
-            is WeatherViewModel.WeatherUIState.WeatherUI -> WeatherUIComposable(s, onNavigateToMap, onDismissMessage)
+            is WeatherViewModel.WeatherUIState.WeatherUI -> WeatherUIComposable(
+                s,
+                previewState,
+                onNavigateToMap,
+                onDismissMessage
+            )
+
             is WeatherViewModel.WeatherUIState.FailureUIState -> FailureComposable(s.message)
             WeatherViewModel.WeatherUIState.PendingUIState -> PendingComposable()
         }
@@ -81,6 +93,7 @@ fun WeatherScreenComposable(
 @Composable
 fun WeatherUIComposable(
     state: WeatherViewModel.WeatherUIState.WeatherUI,
+    previewState: WeatherPreviewState?,
     onNavigateToMap: (Point) -> Unit,
     dismissMessage: (WeatherViewModel.Message) -> Unit
 ) {
@@ -140,7 +153,7 @@ fun WeatherUIComposable(
                 .padding(padding)
         ) {
             CurrentWeatherBlock(
-                state = state, modifier = Modifier
+                state = state, previewState = previewState, modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 24.dp, start = 8.dp, end = 8.dp, bottom = 24.dp)
             ) {
@@ -152,11 +165,16 @@ fun WeatherUIComposable(
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun CurrentWeatherBlock(state: WeatherViewModel.WeatherUIState.WeatherUI, modifier: Modifier, onLocationClick: (Point) -> Unit) {
-    var numItems by remember { mutableIntStateOf(0) }
+fun CurrentWeatherBlock(
+    state: WeatherViewModel.WeatherUIState.WeatherUI,
+    previewState: WeatherPreviewState?,
+    modifier: Modifier,
+    onLocationClick: (Point) -> Unit
+) {
+    var numItems by remember { mutableIntStateOf(if (previewState?.skipAnimations == true) state.blocks.size else 0) }
     LaunchedEffect(Unit) {
         this.launch {
-            for (i in (0..8)) {
+            for (i in (0..state.blocks.size)) {
                 delay(200)
                 numItems = i
             }
@@ -170,31 +188,52 @@ fun CurrentWeatherBlock(state: WeatherViewModel.WeatherUIState.WeatherUI, modifi
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        for (i in 0 until 8) {
+        for (i in 0 until state.blocks.size) {
             AnimatedVisibility(visible = i < numItems, enter = fadeIn(), exit = fadeOut()) {
-                WeatherItem(state)
+                WeatherItem(state.blocks[i])
             }
         }
     }
 }
 
 @Composable
-fun WeatherItem(state: WeatherViewModel.WeatherUIState.WeatherUI) {
-    Box(
-        modifier = Modifier
-            .size(128.dp)
-            .background(color = MaterialTheme.colorScheme.secondaryContainer, shape = RoundedCornerShape(8.dp))
-            .padding(32.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Icon(
-            painter = painterResource(id = R.drawable.arrow_top_right),
-            contentDescription = "Map Link to location",
-            tint = MaterialTheme.colorScheme.primary,
-            modifier = Modifier
-                .wrapContentSize()
-        )
+fun WeatherItem(state: WeatherViewModel.WeatherBlock) {
+    when (state) {
+        is WeatherViewModel.WeatherBlock.CurrentWeather -> {
+            Box(
+                modifier = Modifier
+                    .size(128.dp)
+                    .background(color = MaterialTheme.colorScheme.primaryContainer, shape = RoundedCornerShape(8.dp))
+                    .padding(4.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    WeatherIcons.resolve(LocalContext.current, state.weatherIcon)?.resId?.let { res ->
+                        Image(
+                            painter = painterResource(id = res),
+                            contentDescription = "Map Link to location",
+                            modifier = Modifier
+                                .wrapContentSize()
+                        )
+                    }
+
+                    Text(
+                        text = state.currentTemp,
+                        color = MaterialTheme.colorScheme.primary,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.wrapContentSize()
+                    )
+                }
+            }
+
+        }
     }
+
 }
 
 @Composable
@@ -249,7 +288,8 @@ fun FailureComposable(message: String) {
 fun WeatherScreenPreview() {
     AppYuTheme {
         WeatherScreenComposable(
-            state = weatherPreviewState()
+            state = weatherPreviewState(),
+            previewState = WeatherPreviewState()
         )
     }
 }
@@ -259,7 +299,8 @@ fun WeatherScreenPreview() {
 fun WeatherScreenNightPreview() {
     AppYuTheme {
         WeatherScreenComposable(
-            state = weatherPreviewState()
+            state = weatherPreviewState(),
+            previewState = WeatherPreviewState()
         )
     }
 }
@@ -269,7 +310,8 @@ fun WeatherScreenNightPreview() {
 fun WeatherScreenFailurePreview() {
     AppYuTheme {
         WeatherScreenComposable(
-            state = WeatherViewModel.WeatherUIState.FailureUIState("Failed to load weather")
+            state = WeatherViewModel.WeatherUIState.FailureUIState("Failed to load weather"),
+            previewState = WeatherPreviewState()
         )
     }
 }
@@ -279,7 +321,8 @@ fun WeatherScreenFailurePreview() {
 fun WeatherScreenProgressPreview() {
     AppYuTheme {
         WeatherScreenComposable(
-            state = WeatherViewModel.WeatherUIState.PendingUIState
+            state = WeatherViewModel.WeatherUIState.PendingUIState,
+            previewState = WeatherPreviewState()
         )
     }
 }
@@ -290,5 +333,10 @@ private fun weatherPreviewState() = WeatherViewModel.WeatherUIState.WeatherUI(
         lon = 59.326038
     ),
     updatedAt = "09:41",
-    forecastAge = "14 minutes"
+    forecastAge = "14 minutes",
+    listOf(WeatherViewModel.WeatherBlock.CurrentWeather("partlycloudy_day", "-14.3"))
+)
+
+data class WeatherPreviewState(
+    val skipAnimations: Boolean = true
 )
