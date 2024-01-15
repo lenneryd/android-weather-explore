@@ -364,14 +364,22 @@ class WeatherIcons {
         private val weatherIcons = json.decodeFromString<List<WeatherIconEntity>>(jsonString)
 
         fun resolve(context: Context, id: String): WeatherIconData? {
-            val (prefix, variant) = id.split("_", limit = 2)
-            return weatherIcons.find {
-                prefix == it.symbolId
-            }?.let {
-                WeatherIconData(
-                    context.resources.getIdentifier("${it.symbolId}_$variant", "drawable", context.packageName),
-                    it.english
-                )
+            try {
+                val split = id.split("_", limit = 2)
+                val prefix = split.first()
+                val variant = split.getOrNull(1)
+                return weatherIcons.find {
+                    prefix == it.symbolId
+                }?.let { icon ->
+                    val resId = variant?.let { "${icon.symbolId}_$variant" } ?: icon.symbolId
+                    WeatherIconData(
+                        context.resources.getIdentifier(resId, "drawable", context.packageName),
+                        icon.english
+                    )
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                return null
             }
         }
     }

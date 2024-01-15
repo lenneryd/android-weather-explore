@@ -1,0 +1,435 @@
+package com.cygni.tim.weatherexplore.presentation.compose
+
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Button
+import androidx.compose.material.Text
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout
+import com.cygni.tim.weatherexplore.R
+import com.cygni.tim.weatherexplore.presentation.icons.WeatherIcons
+import com.cygni.tim.weatherexplore.presentation.viewmodel.WeatherViewModel
+
+@Composable
+fun tempWithWeatherIcon(
+    state: WeatherViewModel.WeatherBlock.TempWithSymbolIcon,
+    gridHeight: Dp = 128.dp,
+    gridWidth: Dp = 128.dp,
+    onClick: () -> Unit = {}
+) {
+    Button(onClick = onClick, shape = RoundedCornerShape(8.dp), contentPadding = PaddingValues(0.dp)) {
+        Box(
+            modifier = Modifier
+                .height(gridHeight)
+                .width(gridWidth)
+                .background(color = MaterialTheme.colorScheme.primaryContainer, shape = RoundedCornerShape(8.dp))
+                .padding(4.dp)
+                .clickable { },
+            contentAlignment = Alignment.Center
+        ) {
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.fillMaxSize()
+            ) {
+                WeatherIcons.resolve(LocalContext.current, state.weatherIcon)?.resId?.let { res ->
+                    Image(
+                        painter = painterResource(id = res),
+                        contentDescription = "Map Link to location",
+                        modifier = Modifier
+                            .wrapContentSize()
+                    )
+                }
+
+                Text(
+                    text = state.currentTemp,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.wrapContentSize()
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun windDirectionWithStrength(
+    state: WeatherViewModel.WeatherBlock.WindWithStrength,
+    gridHeight: Dp = 128.dp,
+    gridWidth: Dp = 128.dp,
+    onClick: () -> Unit = {}
+) {
+    Button(onClick = onClick, shape = RoundedCornerShape(8.dp), contentPadding = PaddingValues(0.dp)) {
+        Box(
+            modifier = Modifier
+                .height(gridHeight)
+                .width(gridWidth)
+
+                .background(color = MaterialTheme.colorScheme.primaryContainer, shape = RoundedCornerShape(8.dp))
+                .padding(4.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.fillMaxSize()
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.arrow_projectile),
+                    contentDescription = "Wind direction",
+                    modifier = Modifier
+                        .size(64.dp)
+                        .rotate(-45f + 180f + state.degrees)
+                        .padding(12.dp),
+                    tint = MaterialTheme.colorScheme.primary
+
+                )
+
+                Text(
+                    text = "${state.strength} (${state.direction})",
+                    color = MaterialTheme.colorScheme.primary,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.wrapContentSize()
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun cloudCoverItem(
+    state: WeatherViewModel.WeatherBlock.CloudCoverage,
+    gridHeight: Dp = 128.dp,
+    gridWidth: Dp = 128.dp,
+    onClick: () -> Unit = {}
+) {
+    Button(onClick = onClick, shape = RoundedCornerShape(8.dp), contentPadding = PaddingValues(0.dp)) {
+        Box(
+            modifier = Modifier
+                .height(gridHeight)
+                .width(gridWidth)
+
+                .background(color = MaterialTheme.colorScheme.primaryContainer, shape = RoundedCornerShape(8.dp))
+                .padding(4.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.fillMaxSize()
+            ) {
+                Box(
+                    modifier = Modifier
+                        .wrapContentSize()
+                        .padding(8.dp), contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(
+                        progress = (state.percent / 100.0).toFloat(),
+                        color = MaterialTheme.colorScheme.tertiary,
+                        strokeWidth = 3.dp,
+                        strokeCap = StrokeCap.Round,
+                        trackColor = MaterialTheme.colorScheme.onTertiary,
+                        modifier = Modifier
+                            .size(60.dp)
+                    )
+
+                    Icon(
+                        painter = painterResource(id = R.drawable.cloud_percent),
+                        contentDescription = "Cloud direction",
+                        modifier = Modifier
+                            .size(60.dp)
+                            .padding(8.dp),
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
+
+                Text(
+                    text = state.percentText,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.wrapContentSize()
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun precipitationPotential(
+    state: WeatherViewModel.WeatherBlock.PrecipitationPotential,
+    gridHeight: Dp = 128.dp,
+    gridWidth: Dp = 128.dp,
+    onClick: () -> Unit = {}
+) {
+    Button(onClick = onClick, shape = RoundedCornerShape(8.dp), contentPadding = PaddingValues(0.dp)) {
+        Box(
+            modifier = Modifier
+                .height(gridHeight)
+                .width(gridWidth)
+
+                .background(color = MaterialTheme.colorScheme.primaryContainer, shape = RoundedCornerShape(8.dp))
+                .padding(4.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.fillMaxSize()
+            ) {
+                Box(
+                    modifier = Modifier
+                        .wrapContentSize()
+                        .padding(8.dp), contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(
+                        progress = (state.percent / 100.0f).toFloat(),
+                        color = MaterialTheme.colorScheme.tertiary,
+                        strokeWidth = 3.dp,
+                        strokeCap = StrokeCap.Round,
+                        trackColor = MaterialTheme.colorScheme.onTertiary,
+                        modifier = Modifier
+                            .size(60.dp)
+                    )
+
+                    Icon(
+                        painter = painterResource(id = R.drawable.water_percent),
+                        contentDescription = "Cloud direction",
+                        modifier = Modifier
+                            .size(60.dp)
+                            .padding(8.dp),
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
+
+                Text(
+                    text = state.percentText,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.wrapContentSize()
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun precipitationAmountSingle(
+    state: WeatherViewModel.PrecipitationData,
+    gridHeight: Dp = 128.dp,
+    gridWidth: Dp = 110.dp
+) {
+
+    ConstraintLayout(
+        modifier = Modifier
+            .width(gridWidth)
+            .height(gridHeight)
+    ) {
+
+        val (clock, hour, content) = createRefs()
+
+        Icon(
+            painter = painterResource(id = R.drawable.progress_clock),
+            contentDescription = "Hours Icon",
+            modifier = Modifier.constrainAs(clock) {
+                top.linkTo(parent.top, margin = 4.dp)
+                start.linkTo(parent.start)
+            }.size(30.dp),
+            tint = MaterialTheme.colorScheme.tertiary
+        )
+
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .constrainAs(hour) {
+                    top.linkTo(clock.top, margin = (-4).dp)
+                    start.linkTo(clock.end, margin = (-10).dp)
+                }
+                .size(21.dp)
+                .background(MaterialTheme.colorScheme.tertiary, shape = CircleShape)
+
+        ) {
+            Text(
+                text = state.hours,
+                fontSize = 12.sp,
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.onTertiary
+            )
+        }
+
+        Column(
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .constrainAs(content) {
+                    top.linkTo(parent.top)
+                    start.linkTo(parent.start)
+                    bottom.linkTo(parent.bottom)
+                    end.linkTo(parent.end)
+                }
+                .height(gridHeight)
+                .width(gridWidth)
+
+        ) {
+            Box(
+                modifier = Modifier
+                    .wrapContentSize()
+                    .padding(8.dp), contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    painter = painterResource(id = state.type.symbol),
+                    contentDescription = "Precipitation Amount",
+                    modifier = Modifier
+                        .size(60.dp)
+                        .padding(12.dp),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+
+                if (state.probability != null) {
+                    CircularProgressIndicator(
+                        progress = (state.probability / 100.0f).toFloat(),
+                        color = MaterialTheme.colorScheme.tertiary,
+                        strokeWidth = 2.dp,
+                        strokeCap = StrokeCap.Round,
+                        trackColor = MaterialTheme.colorScheme.onTertiary,
+                        modifier = Modifier
+                            .size(50.dp)
+                    )
+                }
+            }
+
+            if (state.amount != null) {
+                Text(
+                    text = state.amount,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.wrapContentSize()
+                )
+            } else {
+                state.probabilityText?.let {
+                    Text(
+                        text = state.probabilityText,
+                        color = MaterialTheme.colorScheme.primary,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.wrapContentSize()
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun precipitationAmount(
+    state: WeatherViewModel.WeatherBlock.PrecipitationAmount,
+    gridHeight: Dp = 128.dp,
+    gridWidth: Dp = 128.dp,
+    onClick: () -> Unit = {}
+) {
+    Button(onClick = onClick, shape = RoundedCornerShape(8.dp), contentPadding = PaddingValues(0.dp)) {
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier
+                .height(gridHeight)
+                .width(gridWidth * 3)
+                .background(color = MaterialTheme.colorScheme.primaryContainer, shape = RoundedCornerShape(8.dp))
+                .padding(4.dp)
+        ) {
+            state.hours1?.let {
+                precipitationAmountSingle(state = it)
+            }
+
+            state.hours6?.let {
+                precipitationAmountSingle(state = it)
+            }
+
+            state.hours12?.let {
+                precipitationAmountSingle(state = it)
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+fun tempWithWeatherIconPreview() {
+    tempWithWeatherIcon(state = (WeatherViewModel.WeatherBlock.TempWithSymbolIcon("partlycloudy_day", "-14.3")))
+}
+
+@Preview
+@Composable
+fun windDirectionWithStrengthPreview() {
+    windDirectionWithStrength(state = (WeatherViewModel.WeatherBlock.WindWithStrength(291.0f, "SW", "3.6 m/s")))
+}
+
+@Preview
+@Composable
+fun cloudCoverageItemPreview() {
+    cloudCoverItem(state = (WeatherViewModel.WeatherBlock.CloudCoverage(69.0, "69%")))
+}
+
+@Preview
+@Composable
+fun precipitationPotentialPreview() {
+    precipitationPotential(state = (WeatherViewModel.WeatherBlock.PrecipitationPotential(45.0, "45%")))
+}
+
+@Preview
+@Composable
+fun precipitationAmountSinglePreview() {
+    precipitationAmountSingle(
+        state = WeatherViewModel.PrecipitationData(
+            WeatherViewModel.PrecipitationType.Rain,
+            "1",
+            "2mm",
+            85.0,
+            "85%"
+        )
+    )
+}
+
+@Preview
+@Composable
+fun precipitationAmountPreview() {
+    precipitationAmount(
+        state = WeatherViewModel.WeatherBlock.PrecipitationAmount(
+            WeatherViewModel.PrecipitationData(WeatherViewModel.PrecipitationType.Rain, "1", "0.5mm", 100.0, "100%"),
+            WeatherViewModel.PrecipitationData(WeatherViewModel.PrecipitationType.Snow, "6", "2.5mm", 60.0, "60%"),
+            WeatherViewModel.PrecipitationData(WeatherViewModel.PrecipitationType.Sleet, "12", null, 42.0, "42%"),
+        )
+    )
+}

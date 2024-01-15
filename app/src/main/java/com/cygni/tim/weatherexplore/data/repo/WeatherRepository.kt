@@ -62,8 +62,13 @@ private fun TimeSeriesInstantDetails.toModel() = TimeInstant(
 )
 
 private fun TimeNextHours.toModel() = com.cygni.tim.weatherexplore.data.models.TimeNextHours(
-    TimeSeriesSummary(symbolCode = this.summary.symbolCode),
-    TimeSeriesDetails(this.details.precipitationAmount)
+    TimeSeriesSummary(
+        symbolCode = this.summary.symbolCode,
+    ),
+    TimeSeriesDetails(
+        this.details.precipitationAmount,
+        this.details.precipitationProbability
+    )
 )
 
 fun Point.truncLatitude(): String = format.format(this.lat)

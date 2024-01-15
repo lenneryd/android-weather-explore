@@ -27,7 +27,7 @@ data class TimeNextHours(
     val details: TimeSeriesDetails
 )
 data class TimeSeriesSummary(
-    val symbolCode: String
+    val symbolCode: String,
 )
 data class TimeSeriesInstantDetails(
     val airPressureAtSeaLevel : Double,
@@ -38,7 +38,8 @@ data class TimeSeriesInstantDetails(
     val windSpeed: Double,
 )
 data class TimeSeriesDetails(
-    val precipitationAmount: Double?
+    val precipitationAmount: Double?,
+    val precipitationProbability: Double?,
 )
 data class Units(
     val airPressureAtSeaLevel: String,

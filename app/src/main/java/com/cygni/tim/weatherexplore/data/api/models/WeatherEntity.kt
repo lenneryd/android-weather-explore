@@ -51,7 +51,7 @@ data class TimeNextHours(
 @Serializable
 data class TimeSeriesSummary(
     @SerialName("symbol_code")
-    val symbolCode: String
+    val symbolCode: String,
 )
 
 @Serializable
@@ -67,7 +67,9 @@ data class TimeSeriesInstantDetails(
 @Serializable
 data class TimeSeriesDetails(
     @SerialName("precipitation_amount")
-    val precipitationAmount: Double?
+    val precipitationAmount: Double?,
+    @SerialName("probability_of_precipitation")
+    val precipitationProbability: Double?
 )
 
 @Serializable

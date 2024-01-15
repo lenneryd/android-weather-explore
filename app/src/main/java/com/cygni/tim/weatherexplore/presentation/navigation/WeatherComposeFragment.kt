@@ -58,7 +58,7 @@ class WeatherComposeFragment : Fragment() {
     }
 
     private fun navigateToMap(point: Point): Boolean {
-        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("geo:${point.lon},${point.lat}"))
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("geo:${point.lat},${point.lon}"))
         //mapIntent.setPackage("com.google.android.apps.maps")
         return try {
             startActivity(intent)

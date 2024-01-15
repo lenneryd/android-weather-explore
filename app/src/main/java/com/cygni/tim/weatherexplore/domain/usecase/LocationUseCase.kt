@@ -12,8 +12,8 @@ class LocationUseCase @Inject constructor() {
         delay(500)
         emit(
             Result.success(Location("").apply {
-                latitude = 17.8172507
-                longitude = 59.326038
+                latitude = 59.326038
+                longitude = 17.8172507
             })
         )
     }
