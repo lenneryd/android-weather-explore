@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -22,16 +21,27 @@ import androidx.compose.material.Text
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.TransformOrigin
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -264,10 +274,12 @@ fun precipitationAmountSingle(
         Icon(
             painter = painterResource(id = R.drawable.progress_clock),
             contentDescription = "Hours Icon",
-            modifier = Modifier.constrainAs(clock) {
-                top.linkTo(parent.top, margin = 4.dp)
-                start.linkTo(parent.start)
-            }.size(30.dp),
+            modifier = Modifier
+                .constrainAs(clock) {
+                    top.linkTo(parent.top, margin = 4.dp)
+                    start.linkTo(parent.start)
+                }
+                .size(30.dp),
             tint = MaterialTheme.colorScheme.tertiary
         )
 
@@ -382,6 +394,69 @@ fun precipitationAmount(
             }
         }
     }
+}
+
+@Composable
+fun floatingVerticalSlider(
+    slider: WeatherViewModel.SliderData,
+    onUpdateSelectedTime: (Float) -> Unit = {},
+    modifier: Modifier = Modifier
+) {
+    var sliderPosition by remember { mutableFloatStateOf(slider.currentStep.toFloat()) }
+
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier.background(MaterialTheme.colorScheme.tertiaryContainer, RoundedCornerShape(24.dp))
+    ) {
+        Slider(
+            value = sliderPosition,
+            valueRange = slider.getRange(),
+            onValueChange = {
+                sliderPosition = it
+                onUpdateSelectedTime(sliderPosition)
+            },
+            onValueChangeFinished = {
+                onUpdateSelectedTime(sliderPosition)
+            },
+            colors = SliderDefaults.colors(
+                activeTrackColor = MaterialTheme.colorScheme.tertiary,
+                inactiveTrackColor = MaterialTheme.colorScheme.outlineVariant,
+                thumbColor = MaterialTheme.colorScheme.tertiary
+            ),
+            modifier = Modifier
+                .graphicsLayer {
+                    rotationZ = 270f
+                    transformOrigin = TransformOrigin(0.0f, 0.0f)
+                }
+                .layout { measurable, constraints ->
+                    val placeable = measurable.measure(
+                        Constraints(
+                            minWidth = constraints.minHeight,
+                            maxWidth = constraints.maxHeight,
+                            minHeight = constraints.minWidth,
+                            maxHeight = constraints.maxWidth,
+                        )
+                    )
+                    layout(placeable.height, placeable.width) {
+                        placeable.place(-placeable.width, 0)
+                    }
+                }
+                .padding(horizontal = 16.dp)
+                .width(180.dp)
+                .height(50.dp)
+        )
+    }
+}
+
+@Preview
+@Composable
+fun floatingVerticalSliderPreview() {
+    floatingVerticalSlider(
+        WeatherViewModel.SliderData(
+            25,
+            15
+        )
+    )
 }
 
 @Preview

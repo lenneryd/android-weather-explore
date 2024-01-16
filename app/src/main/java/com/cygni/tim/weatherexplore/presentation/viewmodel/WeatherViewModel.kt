@@ -2,11 +2,11 @@ package com.cygni.tim.weatherexplore.presentation.viewmodel
 
 import androidx.annotation.DrawableRes
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.cygni.tim.weatherexplore.R
 import com.cygni.tim.weatherexplore.data.models.Point
 import com.cygni.tim.weatherexplore.data.models.TimeInstant
 import com.cygni.tim.weatherexplore.data.models.TimeNextHours
-import com.cygni.tim.weatherexplore.data.models.TimeSeriesDetails
 import com.cygni.tim.weatherexplore.data.models.TimeSeriesModel
 import com.cygni.tim.weatherexplore.data.models.Units
 import com.cygni.tim.weatherexplore.data.models.WeatherModel
@@ -17,8 +17,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
+import java.lang.Exception
 import java.text.DecimalFormat
 import java.time.Duration
 import java.time.LocalDateTime
@@ -38,31 +39,43 @@ class WeatherViewModel @Inject constructor(
     private val precipitationFormat = DecimalFormat("##.#")
 
     private val messages = MutableStateFlow(listOf<Message>())
-    val uiState: Flow<WeatherUIState> = locationUseCase.getLocation().flatMapLatest { result ->
-        when {
-            result.isSuccess -> useCase.getWeather(result.getOrThrow().toPoint()).combine(messages) { weatherResult, messages ->
-                when {
-                    weatherResult.isSuccess -> weatherResult.getOrThrow().mapToUI(messages)
-                    else -> WeatherUIState.FailureUIState("No weather response")
-                }
-            }
+    private val selectedTime = MutableStateFlow(SliderData(0, 0))
+    private val weatherResponse = MutableStateFlow<Result<WeatherModel>?>(null)
 
-            else -> flowOf(WeatherUIState.FailureUIState("No location provided"))
+    init {
+        viewModelScope.launch {
+            val result = locationUseCase.getLocation().first()
+            when {
+                result.isSuccess -> {
+                    weatherResponse.value = useCase.getWeather(result.getOrThrow().toPoint()).first()
+                }
+
+                else -> weatherResponse.value = Result.failure(FailedToGetLocationException())
+            }
         }
     }
 
-    private fun WeatherModel.mapToUI(messages: List<Message> = listOf()) = WeatherUIState.WeatherUI(
-        location = point,
-        updatedAt = ZonedDateTime.parse(updatedAt).toLocalDateTime().format(DateTimeFormatter.ofPattern("HH:mm")),
-        forecastAge = Duration.between(ZonedDateTime.parse(updatedAt).toLocalDateTime(), LocalDateTime.now()).let { duration ->
-            val hours = duration.toHours()
-            when {
-                hours > 0 -> "$hours hours, ${duration.toMinutes() % 60} minutes"
-                else -> "${duration.toMinutes()} minutes"
-            }
-        },
-        snackbarMessages = messages,
-        blocks = this.timeseries.future(LocalDateTime.now()).let { it.current ?: it.future.first() }.let { nextTimeModel ->
+    val uiState: Flow<WeatherUIState> = weatherResponse.combine(messages) { response, messages ->
+        response to messages
+    }.combine(selectedTime) { (response, messages), time ->
+        when {
+            response == null -> WeatherUIState.PendingUIState
+            response.isSuccess -> response.getOrThrow().mapToUI(time, messages)
+            else -> WeatherUIState.FailureUIState("No weather response")
+        }
+    }
+
+    private fun WeatherModel.mapToUI(slider: SliderData, messages: List<Message> = listOf()): WeatherUIState {
+        val now = LocalDateTime.now()
+        val filtered = this.timeseries.filterOutdated(now)
+        val selected = filtered.filterSelected(slider)
+
+        if (selected.isEmpty()) {
+            return WeatherUIState.FailureUIState("No up to date weather available.")
+        }
+
+        val selectedTime = ZonedDateTime.parse(selected.first().time).toLocalDateTime()
+        val blocks = selected.first().let { nextTimeModel ->
             listOfNotNull(
                 nextTimeModel.toTempWithSymbolOrNull(this.units),
                 nextTimeModel.toWindWithStrengthOrNull(this.units),
@@ -71,7 +84,24 @@ class WeatherViewModel @Inject constructor(
                 nextTimeModel.toPrecipitationAmountOrNull(units)
             )
         }
-    )
+
+        return WeatherUIState.WeatherUI(
+            location = point,
+            updatedAt = ZonedDateTime.parse(updatedAt).toLocalDateTime().format(DateTimeFormatter.ofPattern("HH:mm")),
+            selectedTime = selectedTime.format(DateTimeFormatter.ofPattern("cccc HH:mm")),
+            slider = SliderData(filtered.size, slider.currentStep),
+            forecastAge = Duration.between(ZonedDateTime.parse(updatedAt).toLocalDateTime(), LocalDateTime.now()).let
+            { duration ->
+                val hours = duration.toHours()
+                when {
+                    hours > 0 -> "$hours hours, ${duration.toMinutes() % 60} minutes"
+                    else -> "${duration.toMinutes()} minutes"
+                }
+            },
+            snackbarMessages = messages,
+            blocks = blocks
+        )
+    }
 
     fun addMessage(message: Message) {
         messages.value = messages.value.toMutableList().apply { this.add(message) }
@@ -174,22 +204,28 @@ class WeatherViewModel @Inject constructor(
         else -> "℉"
     }
 
-    private fun List<TimeSeriesModel>.future(now: LocalDateTime): FutureWithCurrent {
+    private fun List<TimeSeriesModel>.filterOutdated(now: LocalDateTime): List<TimeSeriesModel> {
         val (history, future) = this.partition { item ->
             ZonedDateTime.parse(item.time).toLocalDateTime().isBefore(now)
         }
-        return FutureWithCurrent(history.last(), future)
+        return listOfNotNull(history.lastOrNull()) + future
     }
 
-    data class FutureWithCurrent(
-        val current: TimeSeriesModel?,
-        val future: List<TimeSeriesModel>
-    )
+    private fun List<TimeSeriesModel>.filterSelected(slider: SliderData): List<TimeSeriesModel> {
+        return this.subList(slider.currentStep, this.size)
+    }
+
+    fun onUpdateSelectedTime(value: Float) {
+        val slider = selectedTime.value
+        selectedTime.value = slider.copy(currentStep = value.toInt())
+    }
 
     sealed class WeatherUIState {
         data class WeatherUI(
             val location: Point,
             val updatedAt: String,
+            val selectedTime: String,
+            val slider: SliderData,
             val forecastAge: String,
             val blocks: List<WeatherBlock>,
             val snackbarMessages: List<Message> = listOf()
@@ -205,7 +241,20 @@ class WeatherViewModel @Inject constructor(
         data object Snow : PrecipitationType(R.drawable.snow)
     }
 
-    data class PrecipitationData(val type: PrecipitationType, val hours: String, val amount: String?, val probability: Double?, val probabilityText: String?)
+    data class PrecipitationData(
+        val type: PrecipitationType,
+        val hours: String,
+        val amount: String?,
+        val probability: Double?,
+        val probabilityText: String?
+    )
+
+    data class SliderData(
+        val steps: Int,
+        val currentStep: Int,
+    ) {
+        fun getRange() = 0f..steps.toFloat()
+    }
 
     sealed class WeatherBlock {
         data class TempWithSymbolIcon(val weatherIcon: String, val currentTemp: String) : WeatherBlock()
@@ -226,5 +275,7 @@ class WeatherViewModel @Inject constructor(
     sealed class Message(val text: String) {
         data object FailedToNavigateToMapMessage : Message(text = "Failed to show Map location")
     }
+
+    class FailedToGetLocationException : Exception("Failed to get location")
 }
 

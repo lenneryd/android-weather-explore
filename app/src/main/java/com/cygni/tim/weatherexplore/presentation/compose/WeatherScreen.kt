@@ -3,6 +3,7 @@ package com.cygni.tim.weatherexplore.presentation.compose
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
@@ -18,12 +19,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
+import androidx.compose.material.Slider
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.MaterialTheme
@@ -34,7 +38,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -56,10 +62,11 @@ import kotlinx.coroutines.launch
 fun WeatherScreen(
     viewModel: WeatherViewModel,
     onNavigateToMap: (Point) -> Unit,
-    onDismissMessage: (WeatherViewModel.Message) -> Unit
+    onDismissMessage: (WeatherViewModel.Message) -> Unit,
+    onUpdateSelectedTime: (Float) -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsState(WeatherViewModel.WeatherUIState.PendingUIState)
-    WeatherScreenComposable(state = uiState, null, onNavigateToMap, onDismissMessage)
+    WeatherScreenComposable(state = uiState, null, onNavigateToMap, onUpdateSelectedTime, onDismissMessage)
 }
 
 @Composable
@@ -67,19 +74,23 @@ fun WeatherScreenComposable(
     state: WeatherViewModel.WeatherUIState,
     previewState: WeatherPreviewState?,
     onNavigateToMap: (Point) -> Unit = {},
+    onUpdateSelectedTime: (Float) -> Unit = {},
     onDismissMessage: (WeatherViewModel.Message) -> Unit = {}
 ) {
-
-    AnimatedContent(targetState = state, label = "State Animation") { s ->
-        when (s) {
+    val visibilityState = remember {
+        MutableTransitionState(previewState?.skipAnimations ?: false).apply { targetState = true }
+    }
+    AnimatedVisibility(visibleState = visibilityState) {
+        when (state) {
             is WeatherViewModel.WeatherUIState.WeatherUI -> WeatherUIComposable(
-                s,
+                state,
                 previewState,
                 onNavigateToMap,
-                onDismissMessage
+                onUpdateSelectedTime,
+                onDismissMessage,
             )
 
-            is WeatherViewModel.WeatherUIState.FailureUIState -> FailureComposable(s.message)
+            is WeatherViewModel.WeatherUIState.FailureUIState -> FailureComposable(state.message)
             WeatherViewModel.WeatherUIState.PendingUIState -> PendingComposable()
         }
     }
@@ -90,9 +101,12 @@ fun WeatherUIComposable(
     state: WeatherViewModel.WeatherUIState.WeatherUI,
     previewState: WeatherPreviewState?,
     onNavigateToMap: (Point) -> Unit,
+    onUpdateSelectedTime: (Float) -> Unit,
     dismissMessage: (WeatherViewModel.Message) -> Unit
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
+    var sliderShown by remember { mutableStateOf(true) }
+    var sliderPosition by remember { mutableFloatStateOf(0f) }
 
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -109,27 +123,60 @@ fun WeatherUIComposable(
                         .fillMaxWidth()
                         .padding(vertical = 8.dp)
                 ) {
-                    Text(
-                        text = "Updated at: ${state.updatedAt} (${state.forecastAge} ago)",
-                        fontSize = 16.sp,
-                        color = MaterialTheme.colorScheme.primary,
-                        textAlign = TextAlign.Center
-                    )
+                    if (sliderShown) {
+                        Slider(
+                            value = sliderPosition,
+                            valueRange = state.slider.getRange(),
+                            onValueChange = {
+                                sliderPosition = it
+                                onUpdateSelectedTime(sliderPosition)
+                            },
+                            onValueChangeFinished = {
+                                onUpdateSelectedTime(sliderPosition)
+                            },
+                            modifier = Modifier.padding(horizontal = 16.dp)
+                        )
+                    } else {
+                        Text(
+                            text = "Updated at: ${state.updatedAt} (${state.forecastAge} ago)",
+                            fontSize = 16.sp,
+                            color = MaterialTheme.colorScheme.primary,
+                            textAlign = TextAlign.Center
+                        )
+                    }
                 }
             }
         },
         floatingActionButton = {
-            FloatingActionButton(
-                onClick = { onNavigateToMap(state.location) },
-                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                contentColor = MaterialTheme.colorScheme.primary
-            ) {
-                Icon(
-                    imageVector = Icons.Default.ExitToApp,
-                    contentDescription = "Map Link to location",
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.padding(start = 8.dp, end = 8.dp)
-                )
+            Column {
+                if (sliderShown) {
+                    floatingVerticalSlider(
+                        slider = state.slider,
+                        modifier = Modifier.padding(bottom = 8.dp),
+                        onUpdateSelectedTime = onUpdateSelectedTime
+                    )
+                }
+
+                FloatingActionButton(
+                    onClick = { sliderShown = !sliderShown },
+                    containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                    contentColor = MaterialTheme.colorScheme.tertiary,
+                    shape = CircleShape
+                ) {
+                    if (sliderShown) {
+                        Icon(
+                            imageVector = Icons.Default.Check,
+                            contentDescription = "Choose Time icon",
+                            tint = MaterialTheme.colorScheme.tertiary,
+                        )
+                    } else {
+                        Icon(
+                            painter = painterResource(id = R.drawable.progress_clock),
+                            contentDescription = "Choose Time icon",
+                            tint = MaterialTheme.colorScheme.tertiary,
+                        )
+                    }
+                }
             }
         }
     ) { padding ->
@@ -142,11 +189,13 @@ fun WeatherUIComposable(
         }
 
         Column(
-            verticalArrangement = Arrangement.SpaceBetween,
+            verticalArrangement = Arrangement.Top,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
         ) {
+            CurrentTimeRow(state = state)
+
             CurrentWeatherBlock(
                 state = state, previewState = previewState, modifier = Modifier
                     .fillMaxWidth()
@@ -155,6 +204,25 @@ fun WeatherUIComposable(
                 onNavigateToMap(it)
             }
         }
+    }
+}
+
+@Composable
+fun CurrentTimeRow(state: WeatherViewModel.WeatherUIState.WeatherUI) {
+    Row(
+        horizontalArrangement = Arrangement.Center,
+        modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentHeight()
+            .background(MaterialTheme.colorScheme.primaryContainer)
+            .padding(top = 8.dp, bottom = 8.dp)
+    ) {
+        Text(
+            text = state.selectedTime,
+            fontSize = 16.sp,
+            color = MaterialTheme.colorScheme.primary,
+            textAlign = TextAlign.Center
+        )
     }
 }
 
@@ -310,9 +378,11 @@ fun WeatherScreenProgressPreview() {
 private fun weatherPreviewState() = WeatherViewModel.WeatherUIState.WeatherUI(
     Point(
         lat = 59.326038,
-        lon =17.8172507
+        lon = 17.8172507
     ),
     updatedAt = "09:41",
+    selectedTime = "Tuesday 09:00",
+    slider = WeatherViewModel.SliderData(15, 3),
     forecastAge = "14 minutes",
     listOf(
         WeatherViewModel.WeatherBlock.TempWithSymbolIcon("partlycloudy_day", "-14.3"),
