@@ -1,5 +1,6 @@
 package com.cygni.tim.weatherexplore.presentation.compose
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -72,13 +73,15 @@ fun tempWithWeatherIcon(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.fillMaxSize()
             ) {
-                WeatherIcons.resolve(LocalContext.current, state.weatherIcon)?.resId?.let { res ->
-                    Image(
-                        painter = painterResource(id = res),
-                        contentDescription = "Map Link to location",
-                        modifier = Modifier
-                            .wrapContentSize()
-                    )
+                AnimatedContent(targetState = state.weatherIcon, label = "Weather Icon") { icon ->
+                    WeatherIcons.resolve(LocalContext.current, icon)?.resId?.let { res ->
+                        Image(
+                            painter = painterResource(id = res),
+                            contentDescription = "Map Link to location",
+                            modifier = Modifier
+                                .wrapContentSize()
+                        )
+                    }
                 }
 
                 Text(
@@ -420,7 +423,7 @@ fun floatingVerticalSlider(
             },
             colors = SliderDefaults.colors(
                 activeTrackColor = MaterialTheme.colorScheme.tertiary,
-                inactiveTrackColor = MaterialTheme.colorScheme.outlineVariant,
+                inactiveTrackColor = MaterialTheme.colorScheme.onTertiary,
                 thumbColor = MaterialTheme.colorScheme.tertiary
             ),
             modifier = Modifier

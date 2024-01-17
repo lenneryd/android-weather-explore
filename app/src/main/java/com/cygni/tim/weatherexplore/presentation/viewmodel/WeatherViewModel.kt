@@ -253,7 +253,7 @@ class WeatherViewModel @Inject constructor(
         val steps: Int,
         val currentStep: Int,
     ) {
-        fun getRange() = 0f..steps.toFloat()
+        fun getRange() = 0f.. (steps-1).toFloat()
     }
 
     sealed class WeatherBlock {

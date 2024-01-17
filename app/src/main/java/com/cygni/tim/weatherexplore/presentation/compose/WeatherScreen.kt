@@ -105,8 +105,7 @@ fun WeatherUIComposable(
     dismissMessage: (WeatherViewModel.Message) -> Unit
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
-    var sliderShown by remember { mutableStateOf(true) }
-    var sliderPosition by remember { mutableFloatStateOf(0f) }
+    var sliderShown by remember { mutableStateOf(previewState?.showSlider ?: false) }
 
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -123,33 +122,18 @@ fun WeatherUIComposable(
                         .fillMaxWidth()
                         .padding(vertical = 8.dp)
                 ) {
-                    if (sliderShown) {
-                        Slider(
-                            value = sliderPosition,
-                            valueRange = state.slider.getRange(),
-                            onValueChange = {
-                                sliderPosition = it
-                                onUpdateSelectedTime(sliderPosition)
-                            },
-                            onValueChangeFinished = {
-                                onUpdateSelectedTime(sliderPosition)
-                            },
-                            modifier = Modifier.padding(horizontal = 16.dp)
-                        )
-                    } else {
-                        Text(
-                            text = "Updated at: ${state.updatedAt} (${state.forecastAge} ago)",
-                            fontSize = 16.sp,
-                            color = MaterialTheme.colorScheme.primary,
-                            textAlign = TextAlign.Center
-                        )
-                    }
+                    Text(
+                        text = "Updated at: ${state.updatedAt} (${state.forecastAge} ago)",
+                        fontSize = 16.sp,
+                        color = MaterialTheme.colorScheme.primary,
+                        textAlign = TextAlign.Center
+                    )
                 }
             }
         },
         floatingActionButton = {
             Column {
-                if (sliderShown) {
+                AnimatedVisibility(visible = sliderShown) {
                     floatingVerticalSlider(
                         slider = state.slider,
                         modifier = Modifier.padding(bottom = 8.dp),
@@ -163,18 +147,20 @@ fun WeatherUIComposable(
                     contentColor = MaterialTheme.colorScheme.tertiary,
                     shape = CircleShape
                 ) {
-                    if (sliderShown) {
-                        Icon(
-                            imageVector = Icons.Default.Check,
-                            contentDescription = "Choose Time icon",
-                            tint = MaterialTheme.colorScheme.tertiary,
-                        )
-                    } else {
-                        Icon(
-                            painter = painterResource(id = R.drawable.progress_clock),
-                            contentDescription = "Choose Time icon",
-                            tint = MaterialTheme.colorScheme.tertiary,
-                        )
+                    AnimatedContent(targetState = sliderShown, label = "Animated time icon") { showSlider ->
+                        if (showSlider) {
+                            Icon(
+                                imageVector = Icons.Default.Check,
+                                contentDescription = "Choose Time icon",
+                                tint = MaterialTheme.colorScheme.tertiary,
+                            )
+                        } else {
+                            Icon(
+                                painter = painterResource(id = R.drawable.progress_clock),
+                                contentDescription = "Choose Time icon",
+                                tint = MaterialTheme.colorScheme.tertiary,
+                            )
+                        }
                     }
                 }
             }
@@ -398,5 +384,6 @@ private fun weatherPreviewState() = WeatherViewModel.WeatherUIState.WeatherUI(
 )
 
 data class WeatherPreviewState(
-    val skipAnimations: Boolean = true
+    val skipAnimations: Boolean = true,
+    val showSlider: Boolean = true
 )

@@ -15,6 +15,7 @@ import androidx.fragment.app.viewModels
 import androidx.transition.TransitionInflater
 import com.cygni.tim.weatherexplore.data.models.Point
 import com.cygni.tim.weatherexplore.databinding.WeatherFragmentBinding
+import com.cygni.tim.weatherexplore.presentation.colors.AppYuTheme
 import com.cygni.tim.weatherexplore.presentation.compose.WeatherScreen
 import com.cygni.tim.weatherexplore.presentation.viewmodel.WeatherViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -49,16 +50,18 @@ class WeatherComposeFragment : Fragment() {
         _binding = WeatherFragmentBinding.inflate(inflater, container, false)
 
         binding.weatherCompose.setContent {
-            WeatherScreen(viewModel = viewModel, onNavigateToMap = { point ->
-                if (!navigateToMap(point)) {
-                    viewModel.addMessage(WeatherViewModel.Message.FailedToNavigateToMapMessage)
-                }
-            }, onDismissMessage = { message ->
-                viewModel.clearMessage(message)
-            },
-                onUpdateSelectedTime = { value ->
-                    viewModel.onUpdateSelectedTime(value)
-                })
+            AppYuTheme {
+                WeatherScreen(viewModel = viewModel, onNavigateToMap = { point ->
+                    if (!navigateToMap(point)) {
+                        viewModel.addMessage(WeatherViewModel.Message.FailedToNavigateToMapMessage)
+                    }
+                }, onDismissMessage = { message ->
+                    viewModel.clearMessage(message)
+                },
+                    onUpdateSelectedTime = { value ->
+                        viewModel.onUpdateSelectedTime(value)
+                    })
+            }
         }
 
         binding.root.doOnLayout {
