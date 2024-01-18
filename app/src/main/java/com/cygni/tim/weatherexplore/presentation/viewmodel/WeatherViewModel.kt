@@ -18,6 +18,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.lang.Exception
 import java.text.DecimalFormat
@@ -34,12 +36,19 @@ class WeatherViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val tempFormat = DecimalFormat("##.#")
+    private val tempNoDecimals = DecimalFormat("##")
     private val windFormat = DecimalFormat("##.#")
     private val percentFormat = DecimalFormat("##")
     private val precipitationFormat = DecimalFormat("##.#")
+    private val dayFormatter = DateTimeFormatter.ofPattern("cccc")
+    private val hourFormat = DateTimeFormatter.ofPattern("H")
 
     private val messages = MutableStateFlow(listOf<Message>())
     private val selectedTime = MutableStateFlow(SliderData(0, 0))
+
+    enum class DisplayType { Blocks, Timeline }
+
+    private val displayType = MutableStateFlow(DisplayType.Timeline)
     private val weatherResponse = MutableStateFlow<Result<WeatherModel>?>(null)
 
     init {
@@ -55,13 +64,26 @@ class WeatherViewModel @Inject constructor(
         }
     }
 
-    val uiState: Flow<WeatherUIState> = weatherResponse.combine(messages) { response, messages ->
-        response to messages
-    }.combine(selectedTime) { (response, messages), time ->
-        when {
-            response == null -> WeatherUIState.PendingUIState
-            response.isSuccess -> response.getOrThrow().mapToUI(time, messages)
-            else -> WeatherUIState.FailureUIState("No weather response")
+    val uiState: Flow<WeatherUIState> = displayType.flatMapLatest { type ->
+
+        when (type) {
+            DisplayType.Blocks -> weatherResponse.combine(messages) { response, messages ->
+                response to messages
+            }.combine(selectedTime) { (response, messages), time ->
+                when {
+                    response == null -> WeatherUIState.PendingUIState
+                    response.isSuccess -> response.getOrThrow().mapToUI(time, messages)
+                    else -> WeatherUIState.FailureUIState("No weather response")
+                }
+            }
+
+            DisplayType.Timeline -> weatherResponse.map { response ->
+                when {
+                    response == null -> WeatherUIState.PendingUIState
+                    response.isSuccess -> response.getOrThrow().mapToTimeline()
+                    else -> WeatherUIState.FailureUIState("No weather response")
+                }
+            }
         }
     }
 
@@ -87,21 +109,57 @@ class WeatherViewModel @Inject constructor(
 
         return WeatherUIState.WeatherUI(
             location = point,
-            updatedAt = ZonedDateTime.parse(updatedAt).toLocalDateTime().format(DateTimeFormatter.ofPattern("HH:mm")),
+            updatedAtString = getUpdatedAtString(updatedAt),
             selectedTime = selectedTime.format(DateTimeFormatter.ofPattern("cccc HH:mm")),
             slider = SliderData(filtered.size, slider.currentStep),
-            forecastAge = Duration.between(ZonedDateTime.parse(updatedAt).toLocalDateTime(), LocalDateTime.now()).let
-            { duration ->
-                val hours = duration.toHours()
-                when {
-                    hours > 0 -> "$hours hours, ${duration.toMinutes() % 60} minutes"
-                    else -> "${duration.toMinutes()} minutes"
-                }
-            },
             snackbarMessages = messages,
             blocks = blocks
         )
     }
+
+    private fun WeatherModel.mapToTimeline() = WeatherUIState.WeatherTimelineUI(
+        updatedAtString = getUpdatedAtString(updatedAt),
+        list = timeseries.filterOutdated(LocalDateTime.now()).let { list ->
+            list.fold(mutableListOf()) { acc: MutableList<WeatherTimelineItem>, current ->
+                val lastDay =
+                    acc.lastOrNull { it is WeatherTimelineItem.WeatherHourlyTimelineItem }
+                        .let { it as? WeatherTimelineItem.WeatherHourlyTimelineItem }
+                        ?.let {
+                            ZonedDateTime.parse(it.time).toLocalDateTime().format(dayFormatter)
+                        }
+                val currentDay = ZonedDateTime.parse(current.time).toLocalDateTime().format(dayFormatter)
+                if (lastDay != currentDay) {
+                    acc.add(WeatherTimelineItem.WeatherDayDivider(currentDay))
+                }
+                acc.add(current.mapToTimelineHour())
+                acc.add(WeatherTimelineItem.HourDivider)
+                acc
+            }
+        }.toList()
+    )
+
+    private fun TimeSeriesModel.mapToTimelineHour() = WeatherTimelineItem.WeatherHourlyTimelineItem(
+        time = time,
+        hourString = hourFormat.format(ZonedDateTime.parse(time).toLocalDateTime()),
+        weatherIcon = this.data.next1Hours?.summary?.symbolCode,
+        airTemp = tempNoDecimals.format(this.data.instant.details.airTemperature),
+        windDirection = this.data.instant.details.windFromDirection,
+        windDirectionStr = this.data.instant.details.windFromDirection.toDirection(),
+        windStrength = windFormat.format(this.data.instant.details.windSpeed),
+        precipitation = this.data.next1Hours?.details?.precipitationAmount?.let { precipitationFormat.format(it) }.orEmpty()
+    )
+
+    private fun getUpdatedAtString(updatedAt: String) = "Updated at: ${
+        ZonedDateTime.parse(updatedAt).toLocalDateTime().format(DateTimeFormatter.ofPattern("HH:mm"))
+    } (${
+        Duration.between(ZonedDateTime.parse(updatedAt).toLocalDateTime(), LocalDateTime.now()).let { duration ->
+            val hours = duration.toHours()
+            when {
+                hours > 0 -> "$hours hours, ${duration.toMinutes() % 60} minutes"
+                else -> "${duration.toMinutes()} minutes"
+            }
+        }
+    } ago)"
 
     fun addMessage(message: Message) {
         messages.value = messages.value.toMutableList().apply { this.add(message) }
@@ -223,17 +281,38 @@ class WeatherViewModel @Inject constructor(
     sealed class WeatherUIState {
         data class WeatherUI(
             val location: Point,
-            val updatedAt: String,
+            val updatedAtString: String,
             val selectedTime: String,
             val slider: SliderData,
-            val forecastAge: String,
             val blocks: List<WeatherBlock>,
             val snackbarMessages: List<Message> = listOf()
+        ) : WeatherUIState()
+
+        data class WeatherTimelineUI(
+            val updatedAtString: String,
+            val list: List<WeatherTimelineItem>
         ) : WeatherUIState()
 
         data class FailureUIState(val message: String) : WeatherUIState()
         data object PendingUIState : WeatherUIState()
     }
+
+    sealed class WeatherTimelineItem {
+
+        data class WeatherDayDivider(val text: String) : WeatherTimelineItem()
+        data object HourDivider : WeatherTimelineItem()
+        data class WeatherHourlyTimelineItem(
+            val time: String,
+            val hourString: String,
+            val weatherIcon: String?,
+            val airTemp: String,
+            val windDirectionStr: String,
+            val windDirection: Double,
+            val windStrength: String,
+            val precipitation: String,
+        ) : WeatherTimelineItem()
+    }
+
 
     sealed class PrecipitationType(@DrawableRes val symbol: Int) {
         data object Rain : PrecipitationType(R.drawable.rain)
@@ -253,7 +332,7 @@ class WeatherViewModel @Inject constructor(
         val steps: Int,
         val currentStep: Int,
     ) {
-        fun getRange() = 0f.. (steps-1).toFloat()
+        fun getRange() = 0f..(steps - 1).toFloat()
     }
 
     sealed class WeatherBlock {

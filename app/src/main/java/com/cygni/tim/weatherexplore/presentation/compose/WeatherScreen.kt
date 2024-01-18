@@ -90,6 +90,10 @@ fun WeatherScreenComposable(
                 onDismissMessage,
             )
 
+            is WeatherViewModel.WeatherUIState.WeatherTimelineUI -> WeatherTimelineScreen(
+                state
+            )
+
             is WeatherViewModel.WeatherUIState.FailureUIState -> FailureComposable(state.message)
             WeatherViewModel.WeatherUIState.PendingUIState -> PendingComposable()
         }
@@ -110,26 +114,7 @@ fun WeatherUIComposable(
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         bottomBar = {
-            BottomAppBar(
-                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                contentColor = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.height(42.dp)
-            ) {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier
-                        .background(color = MaterialTheme.colorScheme.primaryContainer)
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp)
-                ) {
-                    Text(
-                        text = "Updated at: ${state.updatedAt} (${state.forecastAge} ago)",
-                        fontSize = 16.sp,
-                        color = MaterialTheme.colorScheme.primary,
-                        textAlign = TextAlign.Center
-                    )
-                }
-            }
+            WeatherBottomAppBar(state.updatedAtString)
         },
         floatingActionButton = {
             Column {
@@ -322,6 +307,32 @@ fun FailureComposable(message: String) {
     }
 }
 
+@Composable
+fun WeatherBottomAppBar(updatedAtString: String) {
+    BottomAppBar(
+        containerColor = MaterialTheme.colorScheme.primaryContainer,
+        contentColor = MaterialTheme.colorScheme.primary,
+        modifier = Modifier.height(42.dp)
+    ) {
+
+    }
+
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier
+            .background(color = MaterialTheme.colorScheme.primaryContainer)
+            .fillMaxWidth()
+            .padding(vertical = 8.dp)
+    ) {
+        Text(
+            text = updatedAtString,
+            fontSize = 16.sp,
+            color = MaterialTheme.colorScheme.primary,
+            textAlign = TextAlign.Center
+        )
+    }
+}
+
 @Preview(showSystemUi = true, showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Composable
 fun WeatherScreenPreview() {
@@ -371,10 +382,9 @@ private fun weatherPreviewState() = WeatherViewModel.WeatherUIState.WeatherUI(
         lat = 59.326038,
         lon = 17.8172507
     ),
-    updatedAt = "09:41",
+    updatedAtString = "Updated at 09:41 (14 minutes ago)",
     selectedTime = "Tuesday 09:00",
     slider = WeatherViewModel.SliderData(15, 3),
-    forecastAge = "14 minutes",
     listOf(
         WeatherViewModel.WeatherBlock.TempWithSymbolIcon("partlycloudy_day", "-14.3"),
         WeatherViewModel.WeatherBlock.WindWithStrength(291.0f, "SW", "3.6 m/s"),
