@@ -8,10 +8,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.addCallback
 import androidx.core.view.ViewCompat
 import androidx.core.view.doOnLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.transition.TransitionInflater
 import com.cygni.tim.weatherexplore.data.models.Point
 import com.cygni.tim.weatherexplore.databinding.WeatherFragmentBinding
@@ -19,6 +21,7 @@ import com.cygni.tim.weatherexplore.presentation.colors.AppYuTheme
 import com.cygni.tim.weatherexplore.presentation.compose.WeatherScreen
 import com.cygni.tim.weatherexplore.presentation.viewmodel.WeatherViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 
 @AndroidEntryPoint
@@ -60,7 +63,20 @@ class WeatherComposeFragment : Fragment() {
                 },
                     onUpdateSelectedTime = { value ->
                         viewModel.onUpdateSelectedTime(value)
-                    })
+                    },
+                    onTimelineClicked = {
+                        viewModel.onSwitchView(WeatherViewModel.DisplayType.Timeline)
+                    }
+                )
+            }
+        }
+
+        val callback = requireActivity().onBackPressedDispatcher.addCallback(this) {
+            viewModel.onSwitchView(WeatherViewModel.DisplayType.Blocks)
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.displayType.collect {
+                callback.isEnabled = it == WeatherViewModel.DisplayType.Timeline
             }
         }
 

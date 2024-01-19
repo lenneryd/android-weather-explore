@@ -1,5 +1,6 @@
 package com.cygni.tim.weatherexplore.presentation.compose
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -17,7 +18,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -36,8 +36,6 @@ import androidx.compose.ui.unit.sp
 import com.cygni.tim.weatherexplore.R
 import com.cygni.tim.weatherexplore.presentation.icons.WeatherIcons
 import com.cygni.tim.weatherexplore.presentation.viewmodel.WeatherViewModel
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 
 @Composable
 fun WeatherTimelineScreen(state: WeatherViewModel.WeatherUIState.WeatherTimelineUI) {
@@ -52,21 +50,28 @@ fun WeatherTimelineScreen(state: WeatherViewModel.WeatherUIState.WeatherTimeline
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun WeatherTimelineComposable(state: WeatherViewModel.WeatherUIState.WeatherTimelineUI, modifier: Modifier) {
     LazyColumn(modifier) {
-        items(items = state.list) {item ->
+        items(items = state.list, key = {item -> item.key}) { item ->
             when (item) {
                 is WeatherViewModel.WeatherTimelineItem.WeatherDayDivider -> {
-                    WeatherTimelineDividerItem(state = item)
+                    Row(modifier = Modifier.animateItemPlacement()) {
+                        WeatherTimelineDividerItem(state = item)
+                    }
                 }
 
                 is WeatherViewModel.WeatherTimelineItem.HourDivider -> {
-                    Divider(color = MaterialTheme.colorScheme.primary)
+                    Row(modifier = Modifier.animateItemPlacement()) {
+                        Divider(color = MaterialTheme.colorScheme.primary)
+                    }
                 }
 
                 is WeatherViewModel.WeatherTimelineItem.WeatherHourlyTimelineItem -> {
-                    WeatherTimelineHourItem(state = item)
+                    Row(modifier = Modifier.animateItemPlacement()) {
+                        WeatherTimelineHourItem(state = item)
+                    }
                 }
             }
         }
@@ -91,7 +96,7 @@ fun WeatherTimelineDividerItem(state: WeatherViewModel.WeatherTimelineItem.Weath
 fun WeatherTimelineHourItem(state: WeatherViewModel.WeatherTimelineItem.WeatherHourlyTimelineItem) {
     val icon = state.weatherIcon?.let { WeatherIcons.resolve(LocalContext.current, it) }
 
-    Column {
+    Column() {
         Row(
             modifier = Modifier
                 .fillMaxWidth()

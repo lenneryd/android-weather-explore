@@ -16,6 +16,7 @@ import com.cygni.tim.weatherexplore.domain.usecase.WeatherUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
@@ -27,6 +28,7 @@ import java.time.Duration
 import java.time.LocalDateTime
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
+import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
@@ -48,7 +50,9 @@ class WeatherViewModel @Inject constructor(
 
     enum class DisplayType { Blocks, Timeline }
 
-    private val displayType = MutableStateFlow(DisplayType.Timeline)
+    private val _displayType = MutableStateFlow(DisplayType.Blocks)
+    val displayType get(): StateFlow<DisplayType> = _displayType
+
     private val weatherResponse = MutableStateFlow<Result<WeatherModel>?>(null)
 
     init {
@@ -64,7 +68,7 @@ class WeatherViewModel @Inject constructor(
         }
     }
 
-    val uiState: Flow<WeatherUIState> = displayType.flatMapLatest { type ->
+    val uiState: Flow<WeatherUIState> = _displayType.flatMapLatest { type ->
 
         when (type) {
             DisplayType.Blocks -> weatherResponse.combine(messages) { response, messages ->
@@ -132,7 +136,7 @@ class WeatherViewModel @Inject constructor(
                     acc.add(WeatherTimelineItem.WeatherDayDivider(currentDay))
                 }
                 acc.add(current.mapToTimelineHour())
-                acc.add(WeatherTimelineItem.HourDivider)
+                acc.add(WeatherTimelineItem.HourDivider())
                 acc
             }
         }.toList()
@@ -278,6 +282,10 @@ class WeatherViewModel @Inject constructor(
         selectedTime.value = slider.copy(currentStep = value.toInt())
     }
 
+    fun onSwitchView(display: DisplayType) {
+        _displayType.value = display
+    }
+
     sealed class WeatherUIState {
         data class WeatherUI(
             val location: Point,
@@ -297,10 +305,10 @@ class WeatherViewModel @Inject constructor(
         data object PendingUIState : WeatherUIState()
     }
 
-    sealed class WeatherTimelineItem {
+    sealed class WeatherTimelineItem(val key: String) {
 
-        data class WeatherDayDivider(val text: String) : WeatherTimelineItem()
-        data object HourDivider : WeatherTimelineItem()
+        data class WeatherDayDivider(val text: String) : WeatherTimelineItem(key = UUID.randomUUID().toString())
+        data class HourDivider(val listKey: String = UUID.randomUUID().toString()) : WeatherTimelineItem(key = listKey)
         data class WeatherHourlyTimelineItem(
             val time: String,
             val hourString: String,
@@ -310,7 +318,7 @@ class WeatherViewModel @Inject constructor(
             val windDirection: Double,
             val windStrength: String,
             val precipitation: String,
-        ) : WeatherTimelineItem()
+        ) : WeatherTimelineItem(key = UUID.randomUUID().toString())
     }
 
 

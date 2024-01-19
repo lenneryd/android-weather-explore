@@ -3,7 +3,6 @@ package com.cygni.tim.weatherexplore.presentation.compose
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
@@ -63,10 +62,11 @@ fun WeatherScreen(
     viewModel: WeatherViewModel,
     onNavigateToMap: (Point) -> Unit,
     onDismissMessage: (WeatherViewModel.Message) -> Unit,
+    onTimelineClicked: () -> Unit,
     onUpdateSelectedTime: (Float) -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsState(WeatherViewModel.WeatherUIState.PendingUIState)
-    WeatherScreenComposable(state = uiState, null, onNavigateToMap, onUpdateSelectedTime, onDismissMessage)
+    WeatherScreenComposable(state = uiState, null, onNavigateToMap, onUpdateSelectedTime, onTimelineClicked, onDismissMessage)
 }
 
 @Composable
@@ -75,28 +75,25 @@ fun WeatherScreenComposable(
     previewState: WeatherPreviewState?,
     onNavigateToMap: (Point) -> Unit = {},
     onUpdateSelectedTime: (Float) -> Unit = {},
+    onTimelineClicked: () -> Unit = {},
     onDismissMessage: (WeatherViewModel.Message) -> Unit = {}
 ) {
-    val visibilityState = remember {
-        MutableTransitionState(previewState?.skipAnimations ?: false).apply { targetState = true }
-    }
-    AnimatedVisibility(visibleState = visibilityState) {
-        when (state) {
-            is WeatherViewModel.WeatherUIState.WeatherUI -> WeatherUIComposable(
-                state,
-                previewState,
-                onNavigateToMap,
-                onUpdateSelectedTime,
-                onDismissMessage,
-            )
+    when (state) {
+        is WeatherViewModel.WeatherUIState.WeatherUI -> WeatherUIComposable(
+            state,
+            previewState,
+            onNavigateToMap,
+            onUpdateSelectedTime,
+            onTimelineClicked,
+            onDismissMessage,
+        )
 
-            is WeatherViewModel.WeatherUIState.WeatherTimelineUI -> WeatherTimelineScreen(
-                state
-            )
+        is WeatherViewModel.WeatherUIState.WeatherTimelineUI -> WeatherTimelineScreen(
+            state
+        )
 
-            is WeatherViewModel.WeatherUIState.FailureUIState -> FailureComposable(state.message)
-            WeatherViewModel.WeatherUIState.PendingUIState -> PendingComposable()
-        }
+        is WeatherViewModel.WeatherUIState.FailureUIState -> FailureComposable(state.message)
+        WeatherViewModel.WeatherUIState.PendingUIState -> PendingComposable()
     }
 }
 
@@ -106,6 +103,7 @@ fun WeatherUIComposable(
     previewState: WeatherPreviewState?,
     onNavigateToMap: (Point) -> Unit,
     onUpdateSelectedTime: (Float) -> Unit,
+    onTimelineClicked: () -> Unit,
     dismissMessage: (WeatherViewModel.Message) -> Unit
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
@@ -175,10 +173,10 @@ fun WeatherUIComposable(
             CurrentWeatherBlock(
                 state = state, previewState = previewState, modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 24.dp, start = 8.dp, end = 8.dp, bottom = 24.dp)
-            ) {
-                onNavigateToMap(it)
-            }
+                    .padding(top = 24.dp, start = 8.dp, end = 8.dp, bottom = 24.dp),
+                onLocationClick = { onNavigateToMap(it) },
+                onTimelineClick = { onTimelineClicked() }
+            )
         }
     }
 }
@@ -208,7 +206,8 @@ fun CurrentWeatherBlock(
     state: WeatherViewModel.WeatherUIState.WeatherUI,
     previewState: WeatherPreviewState?,
     modifier: Modifier,
-    onLocationClick: (Point) -> Unit
+    onLocationClick: (Point) -> Unit,
+    onTimelineClick: () -> Unit,
 ) {
     var numItems by remember { mutableIntStateOf(if (previewState?.skipAnimations == true) state.blocks.size else 0) }
     LaunchedEffect(Unit) {
@@ -229,33 +228,28 @@ fun CurrentWeatherBlock(
     ) {
         for (i in 0 until state.blocks.size) {
             AnimatedVisibility(visible = i < numItems, enter = fadeIn(), exit = fadeOut()) {
-                WeatherItem(state.blocks[i])
+                when (val item = state.blocks[i]) {
+                    is WeatherViewModel.WeatherBlock.TempWithSymbolIcon -> {
+                        tempWithWeatherIcon(state = item)
+                    }
+
+                    is WeatherViewModel.WeatherBlock.WindWithStrength -> {
+                        windDirectionWithStrength(state = item)
+                    }
+
+                    is WeatherViewModel.WeatherBlock.CloudCoverage -> {
+                        cloudCoverItem(state = item)
+                    }
+
+                    is WeatherViewModel.WeatherBlock.PrecipitationPotential -> {
+                        precipitationPotential(state = item)
+                    }
+
+                    is WeatherViewModel.WeatherBlock.PrecipitationAmount -> {
+                        precipitationAmount(state = item, onClick = { onTimelineClick() })
+                    }
+                }
             }
-        }
-    }
-}
-
-@Composable
-fun WeatherItem(state: WeatherViewModel.WeatherBlock) {
-    when (state) {
-        is WeatherViewModel.WeatherBlock.TempWithSymbolIcon -> {
-            tempWithWeatherIcon(state = state)
-        }
-
-        is WeatherViewModel.WeatherBlock.WindWithStrength -> {
-            windDirectionWithStrength(state = state)
-        }
-
-        is WeatherViewModel.WeatherBlock.CloudCoverage -> {
-            cloudCoverItem(state = state)
-        }
-
-        is WeatherViewModel.WeatherBlock.PrecipitationPotential -> {
-            precipitationPotential(state = state)
-        }
-
-        is WeatherViewModel.WeatherBlock.PrecipitationAmount -> {
-            precipitationAmount(state = state)
         }
     }
 }
