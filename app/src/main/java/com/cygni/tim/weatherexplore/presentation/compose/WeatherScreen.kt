@@ -59,14 +59,22 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun WeatherScreen(
+    displayType: WeatherViewModel.DisplayType?,
     viewModel: WeatherViewModel,
     onNavigateToMap: (Point) -> Unit,
-    onDismissMessage: (WeatherViewModel.Message) -> Unit,
-    onTimelineClicked: () -> Unit,
-    onUpdateSelectedTime: (Float) -> Unit,
+    onToggleScreenType: (WeatherViewModel.DisplayType) -> Unit,
 ) {
+    displayType?.let { viewModel.onSwitchView(it) }
     val uiState by viewModel.uiState.collectAsState(WeatherViewModel.WeatherUIState.PendingUIState)
-    WeatherScreenComposable(state = uiState, null, onNavigateToMap, onUpdateSelectedTime, onTimelineClicked, onDismissMessage)
+    WeatherScreenComposable(state = uiState, null, onNavigateToMap,
+        onUpdateSelectedTime = {
+            viewModel.onUpdateSelectedTime(it)
+        }, onToggleScreenType = {
+            onToggleScreenType(viewModel.displayType.value)
+        }, onDismissMessage = {
+            viewModel.clearMessage(it)
+        }
+    )
 }
 
 @Composable
@@ -75,7 +83,7 @@ fun WeatherScreenComposable(
     previewState: WeatherPreviewState?,
     onNavigateToMap: (Point) -> Unit = {},
     onUpdateSelectedTime: (Float) -> Unit = {},
-    onTimelineClicked: () -> Unit = {},
+    onToggleScreenType: () -> Unit = {},
     onDismissMessage: (WeatherViewModel.Message) -> Unit = {}
 ) {
     when (state) {
@@ -84,7 +92,7 @@ fun WeatherScreenComposable(
             previewState,
             onNavigateToMap,
             onUpdateSelectedTime,
-            onTimelineClicked,
+            onToggleScreenType,
             onDismissMessage,
         )
 

@@ -48,7 +48,14 @@ class WeatherViewModel @Inject constructor(
     private val messages = MutableStateFlow(listOf<Message>())
     private val selectedTime = MutableStateFlow(SliderData(0, 0))
 
-    enum class DisplayType { Blocks, Timeline }
+    enum class DisplayType(val value: String) {
+        Blocks("blocks"), Timeline("timeline");
+
+        companion object {
+            fun fromString(value: String): WeatherViewModel.DisplayType =
+                WeatherViewModel.DisplayType.entries.first { it.value == value }
+        }
+    }
 
     private val _displayType = MutableStateFlow(DisplayType.Blocks)
     val displayType get(): StateFlow<DisplayType> = _displayType
@@ -365,4 +372,3 @@ class WeatherViewModel @Inject constructor(
 
     class FailedToGetLocationException : Exception("Failed to get location")
 }
-

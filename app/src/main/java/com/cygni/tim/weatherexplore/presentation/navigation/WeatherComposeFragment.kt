@@ -54,17 +54,15 @@ class WeatherComposeFragment : Fragment() {
 
         binding.weatherCompose.setContent {
             AppYuTheme {
-                WeatherScreen(viewModel = viewModel, onNavigateToMap = { point ->
-                    if (!navigateToMap(point)) {
-                        viewModel.addMessage(WeatherViewModel.Message.FailedToNavigateToMapMessage)
-                    }
-                }, onDismissMessage = { message ->
-                    viewModel.clearMessage(message)
-                },
-                    onUpdateSelectedTime = { value ->
-                        viewModel.onUpdateSelectedTime(value)
+                WeatherScreen(
+                    displayType = WeatherViewModel.DisplayType.Blocks,
+                    viewModel = viewModel,
+                    onNavigateToMap = { point ->
+                        if (!navigateToMap(point)) {
+                            viewModel.addMessage(WeatherViewModel.Message.FailedToNavigateToMapMessage)
+                        }
                     },
-                    onTimelineClicked = {
+                    onToggleScreenType = {
                         viewModel.onSwitchView(WeatherViewModel.DisplayType.Timeline)
                     }
                 )
