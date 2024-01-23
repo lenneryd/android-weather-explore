@@ -51,9 +51,9 @@ class WeatherViewModel @Inject constructor(
     enum class DisplayType(val value: String) {
         Blocks("blocks"), Timeline("timeline");
 
-        companion object {
-            fun fromString(value: String): WeatherViewModel.DisplayType =
-                WeatherViewModel.DisplayType.entries.first { it.value == value }
+        fun toggle(): DisplayType = when(this) {
+            Blocks -> Timeline
+            Timeline -> Blocks
         }
     }
 
@@ -114,7 +114,8 @@ class WeatherViewModel @Inject constructor(
                 nextTimeModel.toWindWithStrengthOrNull(this.units),
                 nextTimeModel.toCloudCoverOrNull(),
                 nextTimeModel.toPrecipitationPotentialOrNull(),
-                nextTimeModel.toPrecipitationAmountOrNull(units)
+                nextTimeModel.toPrecipitationAmountOrNull(units),
+                WeatherBlock.GoToMap(point),
             )
         }
 
@@ -364,6 +365,8 @@ class WeatherViewModel @Inject constructor(
             val hours12: PrecipitationData?,
         ) :
             WeatherBlock()
+
+        data class GoToMap(val point: Point): WeatherBlock()
     }
 
     sealed class Message(val text: String) {

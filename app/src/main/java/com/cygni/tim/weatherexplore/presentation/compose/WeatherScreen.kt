@@ -20,8 +20,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
@@ -181,7 +183,7 @@ fun WeatherUIComposable(
             CurrentWeatherBlock(
                 state = state, previewState = previewState, modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 24.dp, start = 8.dp, end = 8.dp, bottom = 24.dp),
+                    .padding(top = 24.dp, start = 8.dp, end = 8.dp),
                 onLocationClick = { onNavigateToMap(it) },
                 onTimelineClick = { onTimelineClicked() }
             )
@@ -230,9 +232,10 @@ fun CurrentWeatherBlock(
     FlowRow(
         modifier
             .background(color = MaterialTheme.colorScheme.background, shape = RoundedCornerShape(8.dp))
-            .padding(8.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+            .padding(horizontal = 8.dp)
+            .verticalScroll(rememberScrollState()),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
         for (i in 0 until state.blocks.size) {
             AnimatedVisibility(visible = i < numItems, enter = fadeIn(), exit = fadeOut()) {
@@ -255,6 +258,12 @@ fun CurrentWeatherBlock(
 
                     is WeatherViewModel.WeatherBlock.PrecipitationAmount -> {
                         precipitationAmount(state = item, onClick = { onTimelineClick() })
+                    }
+
+                    is WeatherViewModel.WeatherBlock.GoToMap -> {
+                        GoToMapItem(onClick = {
+                            onLocationClick(item.point)
+                        })
                     }
                 }
             }
@@ -396,7 +405,7 @@ private fun weatherPreviewState() = WeatherViewModel.WeatherUIState.WeatherUI(
             WeatherViewModel.PrecipitationData(WeatherViewModel.PrecipitationType.Rain, "1", "2mm", 85.0, "85%"),
             WeatherViewModel.PrecipitationData(WeatherViewModel.PrecipitationType.Rain, "6", "2mm", 85.0, "85%"),
             WeatherViewModel.PrecipitationData(WeatherViewModel.PrecipitationType.Rain, "12", "2mm", 85.0, "85%"),
-        )
+        ),
     )
 )
 

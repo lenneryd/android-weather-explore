@@ -2,10 +2,10 @@ plugins {
     id("org.jetbrains.kotlin.android") version "1.9.20" apply false
     id("com.android.application")
     id("kotlin-android")
-    kotlin("kapt")
     id("com.google.dagger.hilt.android")
     kotlin("plugin.serialization")
     id("androidx.navigation.safeargs.kotlin")
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -65,10 +65,12 @@ dependencies {
     implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
     implementation("com.google.dagger:hilt-android:2.50")
-    kapt("com.google.dagger:hilt-android-compiler:2.50")
+    ksp("com.google.dagger:hilt-android-compiler:2.50")
     implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
     implementation("io.coil-kt:coil-compose:1.4.0")
     implementation("com.google.accompanist:accompanist-flowlayout:0.32.0")
+    implementation("io.github.raamcosta.compose-destinations:core:1.9.62")
+    ksp("io.github.raamcosta.compose-destinations:ksp:1.9.62")
 
     // Java language implementation
     implementation("androidx.navigation:navigation-fragment-ktx:2.7.6")

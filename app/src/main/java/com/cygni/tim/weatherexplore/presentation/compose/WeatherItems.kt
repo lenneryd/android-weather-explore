@@ -19,7 +19,12 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.Text
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CardElevation
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
@@ -27,12 +32,12 @@ import androidx.compose.material3.SliderDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
@@ -48,9 +53,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.cygni.tim.weatherexplore.R
+import com.cygni.tim.weatherexplore.data.models.Point
 import com.cygni.tim.weatherexplore.presentation.icons.WeatherIcons
 import com.cygni.tim.weatherexplore.presentation.viewmodel.WeatherViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun tempWithWeatherIcon(
     state: WeatherViewModel.WeatherBlock.TempWithSymbolIcon,
@@ -58,14 +65,15 @@ fun tempWithWeatherIcon(
     gridWidth: Dp = 128.dp,
     onClick: () -> Unit = {}
 ) {
-    Button(onClick = onClick, shape = RoundedCornerShape(8.dp), contentPadding = PaddingValues(0.dp)) {
+    ElevatedCard(
+        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+        onClick = onClick,
+    ) {
         Box(
             modifier = Modifier
                 .height(gridHeight)
                 .width(gridWidth)
-                .background(color = MaterialTheme.colorScheme.primaryContainer, shape = RoundedCornerShape(8.dp))
-                .padding(4.dp)
-                .clickable { },
+                .background(color = MaterialTheme.colorScheme.primaryContainer),
             contentAlignment = Alignment.Center
         ) {
             Column(
@@ -96,6 +104,52 @@ fun tempWithWeatherIcon(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun GoToMapItem(
+    gridHeight: Dp = 128.dp,
+    gridWidth: Dp = 128.dp,
+    onClick: () -> Unit = {}
+) {
+    ElevatedCard(
+        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+        onClick = onClick,
+    ) {
+        Box(
+            modifier = Modifier
+                .height(gridHeight)
+                .width(gridWidth)
+                .background(color = MaterialTheme.colorScheme.primaryContainer, shape = RoundedCornerShape(8.dp))
+                .padding(4.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.fillMaxSize()
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.map),
+                    contentDescription = "Map Link to location",
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .size(48.dp)
+                )
+
+                Text(
+                    text = "Go to Map",
+                    color = MaterialTheme.colorScheme.primary,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.wrapContentSize()
+                )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun windDirectionWithStrength(
     state: WeatherViewModel.WeatherBlock.WindWithStrength,
@@ -103,7 +157,10 @@ fun windDirectionWithStrength(
     gridWidth: Dp = 128.dp,
     onClick: () -> Unit = {}
 ) {
-    Button(onClick = onClick, shape = RoundedCornerShape(8.dp), contentPadding = PaddingValues(0.dp)) {
+    ElevatedCard(
+        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+        onClick = onClick,
+    ) {
         Box(
             modifier = Modifier
                 .height(gridHeight)
@@ -141,6 +198,7 @@ fun windDirectionWithStrength(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun cloudCoverItem(
     state: WeatherViewModel.WeatherBlock.CloudCoverage,
@@ -148,7 +206,10 @@ fun cloudCoverItem(
     gridWidth: Dp = 128.dp,
     onClick: () -> Unit = {}
 ) {
-    Button(onClick = onClick, shape = RoundedCornerShape(8.dp), contentPadding = PaddingValues(0.dp)) {
+    ElevatedCard(
+        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+        onClick = onClick,
+    ) {
         Box(
             modifier = Modifier
                 .height(gridHeight)
@@ -200,6 +261,7 @@ fun cloudCoverItem(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun precipitationPotential(
     state: WeatherViewModel.WeatherBlock.PrecipitationPotential,
@@ -207,7 +269,10 @@ fun precipitationPotential(
     gridWidth: Dp = 128.dp,
     onClick: () -> Unit = {}
 ) {
-    Button(onClick = onClick, shape = RoundedCornerShape(8.dp), contentPadding = PaddingValues(0.dp)) {
+    ElevatedCard(
+        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+        onClick = onClick,
+    ) {
         Box(
             modifier = Modifier
                 .height(gridHeight)
@@ -369,6 +434,7 @@ fun precipitationAmountSingle(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun precipitationAmount(
     state: WeatherViewModel.WeatherBlock.PrecipitationAmount,
@@ -376,7 +442,10 @@ fun precipitationAmount(
     gridWidth: Dp = 128.dp,
     onClick: () -> Unit = {}
 ) {
-    Button(onClick = onClick, shape = RoundedCornerShape(8.dp), contentPadding = PaddingValues(0.dp)) {
+    ElevatedCard(
+        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+        onClick = onClick,
+    ) {
         Row(
             horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier
                 .height(gridHeight)
@@ -510,4 +579,10 @@ fun precipitationAmountPreview() {
             WeatherViewModel.PrecipitationData(WeatherViewModel.PrecipitationType.Sleet, "12", null, 42.0, "42%"),
         )
     )
+}
+
+@Preview
+@Composable
+fun goToMapPreview() {
+    GoToMapItem()
 }

@@ -21,8 +21,7 @@ import com.cygni.tim.weatherexplore.presentation.viewmodel.WeatherViewModel
 @Composable
 fun NavigationScreen(
     onClock: () -> Unit = {},
-    onWeather: (WeatherViewModel.DisplayType) -> Unit = {},
-    onComposeYu: () -> Unit = {}
+    onWeather: (WeatherViewModel.DisplayType) -> Unit = {}
 ) {
     Column(
         modifier = Modifier.fillMaxSize(),
