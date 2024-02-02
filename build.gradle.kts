@@ -1,10 +1,10 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 plugins {
-    id("com.android.application") version "8.2.1" apply false
-    id("org.jetbrains.kotlin.android") version "1.9.20" apply false
-    id("com.google.dagger.hilt.android") version "2.50" apply false
-    kotlin("jvm") version "1.9.20"
-    kotlin("plugin.serialization") version "1.9.20" apply false
-    id("androidx.navigation.safeargs.kotlin") version "2.7.6" apply false
-    id("com.google.devtools.ksp") version "1.9.20-1.0.14" apply false
+    alias(libs.plugins.android.application) apply false
+    alias(libs.plugins.kotlin.android) apply false
+    alias(libs.plugins.hilt.android) apply false
+    kotlin("jvm").version(libs.versions.kotlinAndroid).apply(false)
+    kotlin("plugin.serialization").version(libs.versions.kotlinAndroid).apply(false)
+    alias(libs.plugins.navigation.safe.args) apply false
+    alias(libs.plugins.ksp) apply false
 }

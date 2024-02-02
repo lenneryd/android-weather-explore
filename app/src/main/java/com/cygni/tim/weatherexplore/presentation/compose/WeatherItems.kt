@@ -3,11 +3,9 @@ package com.cygni.tim.weatherexplore.presentation.compose
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -17,11 +15,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
 import androidx.compose.material.Text
-import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CardElevation
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -37,7 +32,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
@@ -53,11 +47,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.cygni.tim.weatherexplore.R
-import com.cygni.tim.weatherexplore.data.models.Point
 import com.cygni.tim.weatherexplore.presentation.icons.WeatherIcons
 import com.cygni.tim.weatherexplore.presentation.viewmodel.WeatherViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun tempWithWeatherIcon(
     state: WeatherViewModel.WeatherBlock.TempWithSymbolIcon,
@@ -65,91 +57,59 @@ fun tempWithWeatherIcon(
     gridWidth: Dp = 128.dp,
     onClick: () -> Unit = {}
 ) {
-    ElevatedCard(
-        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
-        onClick = onClick,
-    ) {
-        Box(
-            modifier = Modifier
-                .height(gridHeight)
-                .width(gridWidth)
-                .background(color = MaterialTheme.colorScheme.primaryContainer),
-            contentAlignment = Alignment.Center
-        ) {
-            Column(
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxSize()
-            ) {
-                AnimatedContent(targetState = state.weatherIcon, label = "Weather Icon") { icon ->
-                    WeatherIcons.resolve(LocalContext.current, icon)?.resId?.let { res ->
-                        Image(
-                            painter = painterResource(id = res),
-                            contentDescription = "Map Link to location",
-                            modifier = Modifier
-                                .wrapContentSize()
-                        )
-                    }
-                }
-
-                Text(
-                    text = state.currentTemp,
-                    color = MaterialTheme.colorScheme.primary,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.wrapContentSize()
+    ElevatedBlock(onClick = onClick, gridHeight, gridWidth, iconContent = {
+        AnimatedContent(targetState = state.weatherIcon, label = "Weather Icon") { icon ->
+            WeatherIcons.resolve(LocalContext.current, icon)?.resId?.let { res ->
+                Image(
+                    painter = painterResource(id = res),
+                    contentDescription = "Map Link to location",
+                    modifier = Modifier
+                        .wrapContentSize()
                 )
             }
         }
+    }) {
+        Text(
+            text = state.currentTemp,
+            color = MaterialTheme.colorScheme.primary,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.wrapContentSize()
+        )
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GoToMapItem(
     gridHeight: Dp = 128.dp,
     gridWidth: Dp = 128.dp,
     onClick: () -> Unit = {}
 ) {
-    ElevatedCard(
-        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+    ElevatedBlock(
         onClick = onClick,
-    ) {
-        Box(
-            modifier = Modifier
-                .height(gridHeight)
-                .width(gridWidth)
-                .background(color = MaterialTheme.colorScheme.primaryContainer, shape = RoundedCornerShape(8.dp))
-                .padding(4.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Column(
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxSize()
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.map),
-                    contentDescription = "Map Link to location",
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier
-                        .padding(8.dp)
-                        .size(48.dp)
-                )
-
-                Text(
-                    text = "Go to Map",
-                    color = MaterialTheme.colorScheme.primary,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.wrapContentSize()
-                )
-            }
+        gridHeight = gridHeight,
+        gridWidth = gridWidth,
+        iconContent = {
+            Icon(
+                painter = painterResource(id = R.drawable.map),
+                contentDescription = "Map Link to location",
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier
+                    .padding(8.dp)
+                    .size(48.dp)
+            )
         }
+    ) {
+        Text(
+            text = "Go to Map",
+            color = MaterialTheme.colorScheme.primary,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.wrapContentSize()
+        )
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun windDirectionWithStrength(
     state: WeatherViewModel.WeatherBlock.WindWithStrength,
@@ -157,44 +117,25 @@ fun windDirectionWithStrength(
     gridWidth: Dp = 128.dp,
     onClick: () -> Unit = {}
 ) {
-    ElevatedCard(
-        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
-        onClick = onClick,
-    ) {
-        Box(
+    ElevatedBlock(onClick = onClick, gridHeight = gridHeight, gridWidth = gridWidth, iconContent = {
+        Icon(
+            painter = painterResource(id = R.drawable.arrow_projectile),
+            contentDescription = "Wind direction",
             modifier = Modifier
-                .height(gridHeight)
-                .width(gridWidth)
+                .size(64.dp)
+                .rotate(-45f + 180f + state.degrees)
+                .padding(12.dp),
+            tint = MaterialTheme.colorScheme.primary
 
-                .background(color = MaterialTheme.colorScheme.primaryContainer, shape = RoundedCornerShape(8.dp))
-                .padding(4.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Column(
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxSize()
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.arrow_projectile),
-                    contentDescription = "Wind direction",
-                    modifier = Modifier
-                        .size(64.dp)
-                        .rotate(-45f + 180f + state.degrees)
-                        .padding(12.dp),
-                    tint = MaterialTheme.colorScheme.primary
-
-                )
-
-                Text(
-                    text = "${state.strength} (${state.direction})",
-                    color = MaterialTheme.colorScheme.primary,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.wrapContentSize()
-                )
-            }
-        }
+        )
+    }) {
+        Text(
+            text = "${state.strength} (${state.direction})",
+            color = MaterialTheme.colorScheme.primary,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.wrapContentSize()
+        )
     }
 }
 
@@ -206,62 +147,43 @@ fun cloudCoverItem(
     gridWidth: Dp = 128.dp,
     onClick: () -> Unit = {}
 ) {
-    ElevatedCard(
-        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
-        onClick = onClick,
-    ) {
+    ElevatedBlock(onClick = onClick, gridHeight = gridHeight, gridWidth = gridWidth, iconContent = {
         Box(
             modifier = Modifier
-                .height(gridHeight)
-                .width(gridWidth)
-
-                .background(color = MaterialTheme.colorScheme.primaryContainer, shape = RoundedCornerShape(8.dp))
-                .padding(4.dp),
-            contentAlignment = Alignment.Center
+                .wrapContentSize()
+                .padding(8.dp), contentAlignment = Alignment.Center
         ) {
-            Column(
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxSize()
-            ) {
-                Box(
-                    modifier = Modifier
-                        .wrapContentSize()
-                        .padding(8.dp), contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator(
-                        progress = (state.percent / 100.0).toFloat(),
-                        color = MaterialTheme.colorScheme.tertiary,
-                        strokeWidth = 3.dp,
-                        strokeCap = StrokeCap.Round,
-                        trackColor = MaterialTheme.colorScheme.onTertiary,
-                        modifier = Modifier
-                            .size(60.dp)
-                    )
+            CircularProgressIndicator(
+                progress = (state.percent / 100.0).toFloat(),
+                color = MaterialTheme.colorScheme.tertiary,
+                strokeWidth = 3.dp,
+                strokeCap = StrokeCap.Round,
+                trackColor = MaterialTheme.colorScheme.onTertiary,
+                modifier = Modifier
+                    .size(60.dp)
+            )
 
-                    Icon(
-                        painter = painterResource(id = R.drawable.cloud_percent),
-                        contentDescription = "Cloud direction",
-                        modifier = Modifier
-                            .size(60.dp)
-                            .padding(8.dp),
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-                }
-
-                Text(
-                    text = state.percentText,
-                    color = MaterialTheme.colorScheme.primary,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.wrapContentSize()
-                )
-            }
+            Icon(
+                painter = painterResource(id = R.drawable.cloud_percent),
+                contentDescription = "Cloud direction",
+                modifier = Modifier
+                    .size(60.dp)
+                    .padding(8.dp),
+                tint = MaterialTheme.colorScheme.primary
+            )
         }
+
+    }) {
+        Text(
+            text = state.percentText,
+            color = MaterialTheme.colorScheme.primary,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.wrapContentSize()
+        )
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun precipitationPotential(
     state: WeatherViewModel.WeatherBlock.PrecipitationPotential,
@@ -269,58 +191,39 @@ fun precipitationPotential(
     gridWidth: Dp = 128.dp,
     onClick: () -> Unit = {}
 ) {
-    ElevatedCard(
-        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
-        onClick = onClick,
-    ) {
+    ElevatedBlock(onClick = onClick, gridHeight = gridHeight, gridWidth = gridWidth, iconContent = {
         Box(
             modifier = Modifier
-                .height(gridHeight)
-                .width(gridWidth)
-
-                .background(color = MaterialTheme.colorScheme.primaryContainer, shape = RoundedCornerShape(8.dp))
-                .padding(4.dp),
-            contentAlignment = Alignment.Center
+                .wrapContentSize()
+                .padding(8.dp), contentAlignment = Alignment.Center
         ) {
-            Column(
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxSize()
-            ) {
-                Box(
-                    modifier = Modifier
-                        .wrapContentSize()
-                        .padding(8.dp), contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator(
-                        progress = (state.percent / 100.0f).toFloat(),
-                        color = MaterialTheme.colorScheme.tertiary,
-                        strokeWidth = 3.dp,
-                        strokeCap = StrokeCap.Round,
-                        trackColor = MaterialTheme.colorScheme.onTertiary,
-                        modifier = Modifier
-                            .size(60.dp)
-                    )
+            CircularProgressIndicator(
+                progress = (state.percent / 100.0f).toFloat(),
+                color = MaterialTheme.colorScheme.tertiary,
+                strokeWidth = 3.dp,
+                strokeCap = StrokeCap.Round,
+                trackColor = MaterialTheme.colorScheme.onTertiary,
+                modifier = Modifier
+                    .size(60.dp)
+            )
 
-                    Icon(
-                        painter = painterResource(id = R.drawable.water_percent),
-                        contentDescription = "Cloud direction",
-                        modifier = Modifier
-                            .size(60.dp)
-                            .padding(8.dp),
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-                }
-
-                Text(
-                    text = state.percentText,
-                    color = MaterialTheme.colorScheme.primary,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.wrapContentSize()
-                )
-            }
+            Icon(
+                painter = painterResource(id = R.drawable.water_percent),
+                contentDescription = "Cloud direction",
+                modifier = Modifier
+                    .size(60.dp)
+                    .padding(8.dp),
+                tint = MaterialTheme.colorScheme.primary
+            )
         }
+    }) {
+        Text(
+            text = state.percentText,
+            color = MaterialTheme.colorScheme.primary,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.wrapContentSize()
+        )
     }
 }
 
@@ -517,6 +420,39 @@ fun floatingVerticalSlider(
                 .width(180.dp)
                 .height(50.dp)
         )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ElevatedBlock(
+    onClick: () -> Unit,
+    gridHeight: Dp,
+    gridWidth: Dp,
+    iconContent: @Composable () -> Unit,
+    textContent: @Composable () -> Unit
+) {
+    ElevatedCard(
+        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+        onClick = onClick,
+    ) {
+        Box(
+            modifier = Modifier
+                .height(gridHeight)
+                .width(gridWidth)
+                .background(color = MaterialTheme.colorScheme.primaryContainer, shape = RoundedCornerShape(8.dp))
+                .padding(4.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.fillMaxSize()
+            ) {
+                iconContent()
+                textContent()
+            }
+        }
     }
 }
 
