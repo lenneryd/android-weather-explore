@@ -1,5 +1,8 @@
 package com.cygni.tim.weatherexplore
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -10,6 +13,8 @@ import com.cygni.tim.weatherexplore.presentation.compose.WeatherPreviewState
 import com.cygni.tim.weatherexplore.presentation.compose.WeatherScreen
 import com.cygni.tim.weatherexplore.presentation.compose.WeatherScreenComposable
 import com.cygni.tim.weatherexplore.presentation.viewmodel.WeatherViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.test.runTest
 
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -51,11 +56,12 @@ class ComposeTests {
 
     @Test
     fun testWeatherComposeScreen() {
+        composeTestRule.mainClock.autoAdvance = false
+        var enabled by mutableStateOf(false)
         composeTestRule.setContent {
             AppYuTheme {
                 WeatherScreenComposable(
                     state = testWeatherUIState(),
-                    previewState = WeatherPreviewState(skipAnimations = true),
                     onNavigateToMap = {},
                     onToggleScreenType = {},
                     onUpdateSelectedTime = {},
@@ -63,11 +69,14 @@ class ComposeTests {
                 )
             }
         }
+        enabled = true
+        composeTestRule.mainClock.advanceTimeBy(10_000)
 
         composeTestRule.onNodeWithText("Tuesday 09:00").assertExists("Cannot find selected day")
         composeTestRule.onNodeWithText("-14.3").assertExists("Cannot find Temp with symbol.")
-        composeTestRule.onNodeWithTag(WeatherViewModel.WeatherBlock.Type.TempWithSymbol.type, useUnmergedTree = true).let { node ->
-            node.assertExists("Cannot find WeatherViewModel.WeatherBlock.Type.TempWithSymbol node")
-        }
+        composeTestRule.onNodeWithTag(WeatherViewModel.WeatherBlock.Type.TempWithSymbol.type, useUnmergedTree = true)
+            .let { node ->
+                node.assertExists("Cannot find WeatherViewModel.WeatherBlock.Type.TempWithSymbol node")
+            }
     }
 }

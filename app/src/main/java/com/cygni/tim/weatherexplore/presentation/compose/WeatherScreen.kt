@@ -36,8 +36,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -46,9 +48,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cygni.tim.weatherexplore.R
@@ -67,7 +71,8 @@ fun WeatherScreen(
     onUpdateSelectedTime: (Float) -> Unit,
     onClearMessage: (WeatherViewModel.Message) -> Unit,
 ) {
-    WeatherScreenComposable(state = state, null, onNavigateToMap,
+    WeatherScreenComposable(state = state,
+        onNavigateToMap,
         onUpdateSelectedTime = {
             onUpdateSelectedTime(it)
         }, onToggleScreenType = {
@@ -81,42 +86,48 @@ fun WeatherScreen(
 @Composable
 fun WeatherScreenComposable(
     state: WeatherViewModel.WeatherUIState,
-    previewState: WeatherPreviewState?,
     onNavigateToMap: (Point) -> Unit = {},
     onUpdateSelectedTime: (Float) -> Unit = {},
     onToggleScreenType: () -> Unit = {},
     onDismissMessage: (WeatherViewModel.Message) -> Unit = {}
 ) {
-    when (state) {
-        is WeatherViewModel.WeatherUIState.WeatherUI -> WeatherUIComposable(
-            state,
-            previewState,
-            onNavigateToMap,
-            onUpdateSelectedTime,
-            onToggleScreenType,
-            onDismissMessage,
-        )
 
-        is WeatherViewModel.WeatherUIState.WeatherTimelineUI -> WeatherTimelineScreen(
-            state
+    val isPreview: Boolean = LocalInspectionMode.current
+    CompositionLocalProvider(
+        LocalPreviewState provides WeatherPreviewState(
+            skipAnimations = isPreview,
+            showSlider = isPreview
         )
+    ) {
+        when (state) {
+            is WeatherViewModel.WeatherUIState.WeatherUI -> WeatherUIComposable(
+                state,
+                onNavigateToMap,
+                onUpdateSelectedTime,
+                onToggleScreenType,
+                onDismissMessage,
+            )
 
-        is WeatherViewModel.WeatherUIState.FailureUIState -> FailureComposable(state.message)
-        WeatherViewModel.WeatherUIState.PendingUIState -> PendingComposable()
+            is WeatherViewModel.WeatherUIState.WeatherTimelineUI -> WeatherTimelineScreen(
+                state
+            )
+
+            is WeatherViewModel.WeatherUIState.FailureUIState -> FailureComposable(state.message)
+            WeatherViewModel.WeatherUIState.PendingUIState -> PendingComposable()
+        }
     }
 }
 
 @Composable
 fun WeatherUIComposable(
     state: WeatherViewModel.WeatherUIState.WeatherUI,
-    previewState: WeatherPreviewState?,
     onNavigateToMap: (Point) -> Unit,
     onUpdateSelectedTime: (Float) -> Unit,
     onTimelineClicked: () -> Unit,
     dismissMessage: (WeatherViewModel.Message) -> Unit
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
-    var sliderShown by remember { mutableStateOf(previewState?.showSlider ?: false) }
+    var sliderShown = LocalPreviewState.current.showSlider
 
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -180,7 +191,7 @@ fun WeatherUIComposable(
             CurrentTimeRow(state = state)
 
             CurrentWeatherBlock(
-                state = state, previewState = previewState, modifier = Modifier
+                state = state, modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 24.dp, start = 8.dp, end = 8.dp),
                 onLocationClick = { onNavigateToMap(it) },
@@ -213,12 +224,12 @@ fun CurrentTimeRow(state: WeatherViewModel.WeatherUIState.WeatherUI) {
 @Composable
 fun CurrentWeatherBlock(
     state: WeatherViewModel.WeatherUIState.WeatherUI,
-    previewState: WeatherPreviewState?,
     modifier: Modifier,
     onLocationClick: (Point) -> Unit,
     onTimelineClick: () -> Unit,
 ) {
-    var numItems by remember { mutableIntStateOf(if (previewState?.skipAnimations == true) state.blocks.size else 0) }
+    val skipAnimations = LocalPreviewState.current.skipAnimations
+    var numItems by remember { mutableIntStateOf(if (skipAnimations) state.blocks.size else 0) }
     LaunchedEffect(Unit) {
         this.launch {
             for (i in (0..state.blocks.size)) {
@@ -236,35 +247,37 @@ fun CurrentWeatherBlock(
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
-        for (i in 0 until state.blocks.size) {
-            AnimatedVisibility(visible = i < numItems, enter = fadeIn(), exit = fadeOut()) {
-                when (val item = state.blocks[i]) {
-                    is WeatherViewModel.WeatherBlock.TempWithSymbolIcon -> {
-                        tempWithWeatherIcon(state = item)
-                    }
+        CompositionLocalProvider(LocalGridSize provides GridSize()) {
+            for (i in 0 until state.blocks.size) {
+                AnimatedVisibility(visible = i < numItems, enter = fadeIn(), exit = fadeOut()) {
+                    when (val item = state.blocks[i]) {
+                        is WeatherViewModel.WeatherBlock.TempWithSymbolIcon -> {
+                            tempWithWeatherIcon(state = item)
+                        }
 
-                    is WeatherViewModel.WeatherBlock.WindWithStrength -> {
-                        windDirectionWithStrength(state = item)
-                    }
+                        is WeatherViewModel.WeatherBlock.WindWithStrength -> {
+                            windDirectionWithStrength(state = item)
+                        }
 
-                    is WeatherViewModel.WeatherBlock.CloudCoverage -> {
-                        cloudCoverItem(state = item)
-                    }
+                        is WeatherViewModel.WeatherBlock.CloudCoverage -> {
+                            cloudCoverItem(state = item)
+                        }
 
-                    is WeatherViewModel.WeatherBlock.PrecipitationPotential -> {
-                        precipitationPotential(state = item)
-                    }
+                        is WeatherViewModel.WeatherBlock.PrecipitationPotential -> {
+                            precipitationPotential(state = item)
+                        }
 
-                    is WeatherViewModel.WeatherBlock.PrecipitationAmount -> {
-                        precipitationAmount(state = item, onClick = { onTimelineClick() })
-                    }
+                        is WeatherViewModel.WeatherBlock.PrecipitationAmount -> {
+                            precipitationAmount(state = item, onClick = { onTimelineClick() })
+                        }
 
-                    is WeatherViewModel.WeatherBlock.GoToMap -> {
-                        GoToMapItem(
-                            state = item,
-                            onClick = {
-                            onLocationClick(item.point)
-                        })
+                        is WeatherViewModel.WeatherBlock.GoToMap -> {
+                            GoToMapItem(
+                                state = item,
+                                onClick = {
+                                    onLocationClick(item.point)
+                                })
+                        }
                     }
                 }
             }
@@ -351,7 +364,6 @@ fun WeatherScreenPreview() {
     AppYuTheme {
         WeatherScreenComposable(
             state = weatherPreviewState(),
-            previewState = WeatherPreviewState()
         )
     }
 }
@@ -362,7 +374,6 @@ fun WeatherScreenNightPreview() {
     AppYuTheme {
         WeatherScreenComposable(
             state = weatherPreviewState(),
-            previewState = WeatherPreviewState()
         )
     }
 }
@@ -373,7 +384,6 @@ fun WeatherScreenFailurePreview() {
     AppYuTheme {
         WeatherScreenComposable(
             state = WeatherViewModel.WeatherUIState.FailureUIState("Failed to load weather"),
-            previewState = WeatherPreviewState()
         )
     }
 }
@@ -384,7 +394,6 @@ fun WeatherScreenProgressPreview() {
     AppYuTheme {
         WeatherScreenComposable(
             state = WeatherViewModel.WeatherUIState.PendingUIState,
-            previewState = WeatherPreviewState()
         )
     }
 }
@@ -410,7 +419,15 @@ private fun weatherPreviewState() = WeatherViewModel.WeatherUIState.WeatherUI(
     )
 )
 
+val LocalGridSize = compositionLocalOf { GridSize() }
+val LocalPreviewState = compositionLocalOf { WeatherPreviewState(skipAnimations = false, showSlider = false) }
+
+data class GridSize(
+    val height: Dp = 128.dp,
+    val width: Dp = 128.dp,
+)
+
 data class WeatherPreviewState(
-    val skipAnimations: Boolean = true,
-    val showSlider: Boolean = true
+    val skipAnimations: Boolean,
+    val showSlider: Boolean
 )

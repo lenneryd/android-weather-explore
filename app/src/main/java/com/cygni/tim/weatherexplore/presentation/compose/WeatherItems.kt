@@ -55,91 +55,91 @@ import com.cygni.tim.weatherexplore.presentation.viewmodel.WeatherViewModel
 @Composable
 fun tempWithWeatherIcon(
     state: WeatherViewModel.WeatherBlock.TempWithSymbolIcon,
-    gridHeight: Dp = 128.dp,
-    gridWidth: Dp = 128.dp,
     onClick: () -> Unit = {}
 ) {
-    ElevatedBlock(onClick = onClick, gridHeight, gridWidth, testTag = state.tag, iconContent = {
-        AnimatedContent(targetState = state.weatherIcon, label = "Weather Icon") { icon ->
-            WeatherIcons.resolve(LocalContext.current, icon)?.resId?.let { res ->
-                Image(
-                    painter = painterResource(id = res),
-                    contentDescription = "Map Link to location",
-                    modifier = Modifier
-                        .wrapContentSize()
-                )
+    LocalGridSize.current.let { grid ->
+        ElevatedBlock(onClick = onClick, grid.height, grid.width, testTag = state.tag, iconContent = {
+            AnimatedContent(targetState = state.weatherIcon, label = "Weather Icon") { icon ->
+                WeatherIcons.resolve(LocalContext.current, icon)?.resId?.let { res ->
+                    Image(
+                        painter = painterResource(id = res),
+                        contentDescription = "Map Link to location",
+                        modifier = Modifier
+                            .wrapContentSize()
+                    )
+                }
             }
+        }) {
+            Text(
+                text = state.currentTemp,
+                color = MaterialTheme.colorScheme.primary,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.wrapContentSize()
+            )
         }
-    }) {
-        Text(
-            text = state.currentTemp,
-            color = MaterialTheme.colorScheme.primary,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.wrapContentSize()
-        )
     }
 }
 
 @Composable
 fun GoToMapItem(
     state: WeatherViewModel.WeatherBlock.GoToMap,
-    gridHeight: Dp = 128.dp,
-    gridWidth: Dp = 128.dp,
     onClick: () -> Unit = {}
 ) {
-    ElevatedBlock(
-        onClick = onClick,
-        gridHeight = gridHeight,
-        gridWidth = gridWidth,
-        testTag = state.tag,
-        iconContent = {
-            Icon(
-                painter = painterResource(id = R.drawable.map),
-                contentDescription = "Map Link to location",
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier
-                    .padding(8.dp)
-                    .size(48.dp)
+    LocalGridSize.current.let { grid ->
+        ElevatedBlock(
+            onClick = onClick,
+            gridHeight = grid.height,
+            gridWidth = grid.width,
+            testTag = state.tag,
+            iconContent = {
+                Icon(
+                    painter = painterResource(id = R.drawable.map),
+                    contentDescription = "Map Link to location",
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .size(48.dp)
+                )
+            }
+        ) {
+            Text(
+                text = "Go to Map",
+                color = MaterialTheme.colorScheme.primary,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.wrapContentSize()
             )
         }
-    ) {
-        Text(
-            text = "Go to Map",
-            color = MaterialTheme.colorScheme.primary,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.wrapContentSize()
-        )
     }
 }
 
 @Composable
 fun windDirectionWithStrength(
     state: WeatherViewModel.WeatherBlock.WindWithStrength,
-    gridHeight: Dp = 128.dp,
-    gridWidth: Dp = 128.dp,
     onClick: () -> Unit = {}
 ) {
-    ElevatedBlock(onClick = onClick, gridHeight = gridHeight, gridWidth = gridWidth, testTag = state.tag, iconContent = {
-        Icon(
-            painter = painterResource(id = R.drawable.arrow_projectile),
-            contentDescription = "Wind direction",
-            modifier = Modifier
-                .size(64.dp)
-                .rotate(-45f + 180f + state.degrees)
-                .padding(12.dp),
-            tint = MaterialTheme.colorScheme.primary
+    LocalGridSize.current.let { grid ->
+        ElevatedBlock(onClick = onClick, gridHeight = grid.height, gridWidth = grid.width, testTag = state.tag, iconContent = {
+            Icon(
+                painter = painterResource(id = R.drawable.arrow_projectile),
+                contentDescription = "Wind direction",
+                modifier = Modifier
+                    .size(64.dp)
+                    .rotate(-45f + 180f + state.degrees)
+                    .padding(12.dp),
+                tint = MaterialTheme.colorScheme.primary
 
-        )
-    }) {
-        Text(
-            text = "${state.strength} (${state.direction})",
-            color = MaterialTheme.colorScheme.primary,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.wrapContentSize()
-        )
+            )
+        }) {
+            Text(
+                text = "${state.strength} (${state.direction})",
+                color = MaterialTheme.colorScheme.primary,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.wrapContentSize()
+            )
+        }
     }
 }
 
@@ -147,194 +147,194 @@ fun windDirectionWithStrength(
 @Composable
 fun cloudCoverItem(
     state: WeatherViewModel.WeatherBlock.CloudCoverage,
-    gridHeight: Dp = 128.dp,
-    gridWidth: Dp = 128.dp,
     onClick: () -> Unit = {}
 ) {
-    ElevatedBlock(onClick = onClick, gridHeight = gridHeight, gridWidth = gridWidth, testTag = state.tag, iconContent = {
-        Box(
-            modifier = Modifier
-                .wrapContentSize()
-                .padding(8.dp), contentAlignment = Alignment.Center
-        ) {
-            CircularProgressIndicator(
-                progress = (state.percent / 100.0).toFloat(),
-                color = MaterialTheme.colorScheme.tertiary,
-                strokeWidth = 3.dp,
-                strokeCap = StrokeCap.Round,
-                trackColor = MaterialTheme.colorScheme.onTertiary,
+    LocalGridSize.current.let { grid ->
+        ElevatedBlock(onClick = onClick, gridHeight = grid.height, gridWidth = grid.width, testTag = state.tag, iconContent = {
+            Box(
                 modifier = Modifier
-                    .size(60.dp)
-            )
+                    .wrapContentSize()
+                    .padding(8.dp), contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(
+                    progress = (state.percent / 100.0).toFloat(),
+                    color = MaterialTheme.colorScheme.tertiary,
+                    strokeWidth = 3.dp,
+                    strokeCap = StrokeCap.Round,
+                    trackColor = MaterialTheme.colorScheme.onTertiary,
+                    modifier = Modifier
+                        .size(60.dp)
+                )
 
-            Icon(
-                painter = painterResource(id = R.drawable.cloud_percent),
-                contentDescription = "Cloud direction",
-                modifier = Modifier
-                    .size(60.dp)
-                    .padding(8.dp),
-                tint = MaterialTheme.colorScheme.primary
+                Icon(
+                    painter = painterResource(id = R.drawable.cloud_percent),
+                    contentDescription = "Cloud direction",
+                    modifier = Modifier
+                        .size(60.dp)
+                        .padding(8.dp),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
+
+        }) {
+            Text(
+                text = state.percentText,
+                color = MaterialTheme.colorScheme.primary,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.wrapContentSize()
             )
         }
-
-    }) {
-        Text(
-            text = state.percentText,
-            color = MaterialTheme.colorScheme.primary,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.wrapContentSize()
-        )
     }
 }
 
 @Composable
 fun precipitationPotential(
     state: WeatherViewModel.WeatherBlock.PrecipitationPotential,
-    gridHeight: Dp = 128.dp,
-    gridWidth: Dp = 128.dp,
     onClick: () -> Unit = {}
 ) {
-    ElevatedBlock(onClick = onClick, gridHeight = gridHeight, gridWidth = gridWidth, testTag = state.tag, iconContent = {
-        Box(
-            modifier = Modifier
-                .wrapContentSize()
-                .padding(8.dp), contentAlignment = Alignment.Center
-        ) {
-            CircularProgressIndicator(
-                progress = (state.percent / 100.0f).toFloat(),
-                color = MaterialTheme.colorScheme.tertiary,
-                strokeWidth = 3.dp,
-                strokeCap = StrokeCap.Round,
-                trackColor = MaterialTheme.colorScheme.onTertiary,
+    LocalGridSize.current.let { grid ->
+        ElevatedBlock(onClick = onClick, gridHeight = grid.height, gridWidth = grid.width, testTag = state.tag, iconContent = {
+            Box(
                 modifier = Modifier
-                    .size(60.dp)
-            )
+                    .wrapContentSize()
+                    .padding(8.dp), contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(
+                    progress = (state.percent / 100.0f).toFloat(),
+                    color = MaterialTheme.colorScheme.tertiary,
+                    strokeWidth = 3.dp,
+                    strokeCap = StrokeCap.Round,
+                    trackColor = MaterialTheme.colorScheme.onTertiary,
+                    modifier = Modifier
+                        .size(60.dp)
+                )
 
-            Icon(
-                painter = painterResource(id = R.drawable.water_percent),
-                contentDescription = "Cloud direction",
-                modifier = Modifier
-                    .size(60.dp)
-                    .padding(8.dp),
-                tint = MaterialTheme.colorScheme.primary
+                Icon(
+                    painter = painterResource(id = R.drawable.water_percent),
+                    contentDescription = "Cloud direction",
+                    modifier = Modifier
+                        .size(60.dp)
+                        .padding(8.dp),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
+        }) {
+            Text(
+                text = state.percentText,
+                color = MaterialTheme.colorScheme.primary,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.wrapContentSize()
             )
         }
-    }) {
-        Text(
-            text = state.percentText,
-            color = MaterialTheme.colorScheme.primary,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.wrapContentSize()
-        )
     }
 }
 
 @Composable
 fun precipitationAmountSingle(
     state: WeatherViewModel.PrecipitationData,
-    gridHeight: Dp = 128.dp,
-    gridWidth: Dp = 110.dp
 ) {
 
-    ConstraintLayout(
-        modifier = Modifier
-            .width(gridWidth)
-            .height(gridHeight)
-    ) {
-
-        val (clock, hour, content) = createRefs()
-
-        Icon(
-            painter = painterResource(id = R.drawable.progress_clock),
-            contentDescription = "Hours Icon",
+    LocalGridSize.current.let { grid ->
+        ConstraintLayout(
             modifier = Modifier
-                .constrainAs(clock) {
-                    top.linkTo(parent.top, margin = 4.dp)
-                    start.linkTo(parent.start)
-                }
-                .size(30.dp),
-            tint = MaterialTheme.colorScheme.tertiary
-        )
-
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier
-                .constrainAs(hour) {
-                    top.linkTo(clock.top, margin = (-4).dp)
-                    start.linkTo(clock.end, margin = (-10).dp)
-                }
-                .size(21.dp)
-                .background(MaterialTheme.colorScheme.tertiary, shape = CircleShape)
-
+                .width(grid.width)
+                .height(grid.height)
         ) {
-            Text(
-                text = state.hours,
-                fontSize = 12.sp,
-                textAlign = TextAlign.Center,
-                color = MaterialTheme.colorScheme.onTertiary
-            )
-        }
 
-        Column(
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .constrainAs(content) {
-                    top.linkTo(parent.top)
-                    start.linkTo(parent.start)
-                    bottom.linkTo(parent.bottom)
-                    end.linkTo(parent.end)
-                }
-                .height(gridHeight)
-                .width(gridWidth)
+            val (clock, hour, content) = createRefs()
 
-        ) {
-            Box(
+            Icon(
+                painter = painterResource(id = R.drawable.progress_clock),
+                contentDescription = "Hours Icon",
                 modifier = Modifier
-                    .wrapContentSize()
-                    .padding(8.dp), contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    painter = painterResource(id = state.type.symbol),
-                    contentDescription = "Precipitation Amount",
-                    modifier = Modifier
-                        .size(60.dp)
-                        .padding(12.dp),
-                    tint = MaterialTheme.colorScheme.primary
-                )
+                    .constrainAs(clock) {
+                        top.linkTo(parent.top, margin = 4.dp)
+                        start.linkTo(parent.start)
+                    }
+                    .size(30.dp),
+                tint = MaterialTheme.colorScheme.tertiary
+            )
 
-                if (state.probability != null) {
-                    CircularProgressIndicator(
-                        progress = (state.probability / 100.0f).toFloat(),
-                        color = MaterialTheme.colorScheme.tertiary,
-                        strokeWidth = 2.dp,
-                        strokeCap = StrokeCap.Round,
-                        trackColor = MaterialTheme.colorScheme.onTertiary,
-                        modifier = Modifier
-                            .size(50.dp)
-                    )
-                }
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .constrainAs(hour) {
+                        top.linkTo(clock.top, margin = (-4).dp)
+                        start.linkTo(clock.end, margin = (-10).dp)
+                    }
+                    .size(21.dp)
+                    .background(MaterialTheme.colorScheme.tertiary, shape = CircleShape)
+
+            ) {
+                Text(
+                    text = state.hours,
+                    fontSize = 12.sp,
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colorScheme.onTertiary
+                )
             }
 
-            if (state.amount != null) {
-                Text(
-                    text = state.amount,
-                    color = MaterialTheme.colorScheme.primary,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.wrapContentSize()
-                )
-            } else {
-                state.probabilityText?.let {
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .constrainAs(content) {
+                        top.linkTo(parent.top)
+                        start.linkTo(parent.start)
+                        bottom.linkTo(parent.bottom)
+                        end.linkTo(parent.end)
+                    }
+                    .height(grid.height)
+                    .width(grid.width)
+
+            ) {
+                Box(
+                    modifier = Modifier
+                        .wrapContentSize()
+                        .padding(8.dp), contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        painter = painterResource(id = state.type.symbol),
+                        contentDescription = "Precipitation Amount",
+                        modifier = Modifier
+                            .size(60.dp)
+                            .padding(12.dp),
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+
+                    if (state.probability != null) {
+                        CircularProgressIndicator(
+                            progress = (state.probability / 100.0f).toFloat(),
+                            color = MaterialTheme.colorScheme.tertiary,
+                            strokeWidth = 2.dp,
+                            strokeCap = StrokeCap.Round,
+                            trackColor = MaterialTheme.colorScheme.onTertiary,
+                            modifier = Modifier
+                                .size(50.dp)
+                        )
+                    }
+                }
+
+                if (state.amount != null) {
                     Text(
-                        text = state.probabilityText,
+                        text = state.amount,
                         color = MaterialTheme.colorScheme.primary,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.wrapContentSize()
                     )
+                } else {
+                    state.probabilityText?.let {
+                        Text(
+                            text = state.probabilityText,
+                            color = MaterialTheme.colorScheme.primary,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.wrapContentSize()
+                        )
+                    }
                 }
             }
         }
@@ -345,31 +345,31 @@ fun precipitationAmountSingle(
 @Composable
 fun precipitationAmount(
     state: WeatherViewModel.WeatherBlock.PrecipitationAmount,
-    gridHeight: Dp = 128.dp,
-    gridWidth: Dp = 128.dp,
     onClick: () -> Unit = {}
 ) {
-    ElevatedCard(
-        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
-        onClick = onClick,
-    ) {
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier
-                .height(gridHeight)
-                .width(gridWidth * 3)
-                .background(color = MaterialTheme.colorScheme.primaryContainer, shape = RoundedCornerShape(8.dp))
-                .padding(4.dp)
+    LocalGridSize.current.let { grid ->
+        ElevatedCard(
+            elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+            onClick = onClick,
         ) {
-            state.hours1?.let {
-                precipitationAmountSingle(state = it)
-            }
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier
+                    .height(grid.height)
+                    .width(grid.width * 3)
+                    .background(color = MaterialTheme.colorScheme.primaryContainer, shape = RoundedCornerShape(8.dp))
+                    .padding(4.dp)
+            ) {
+                state.hours1?.let {
+                    precipitationAmountSingle(state = it)
+                }
 
-            state.hours6?.let {
-                precipitationAmountSingle(state = it)
-            }
+                state.hours6?.let {
+                    precipitationAmountSingle(state = it)
+                }
 
-            state.hours12?.let {
-                precipitationAmountSingle(state = it)
+                state.hours12?.let {
+                    precipitationAmountSingle(state = it)
+                }
             }
         }
     }
