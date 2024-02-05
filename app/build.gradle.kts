@@ -42,6 +42,13 @@ android {
         kotlinCompilerExtensionVersion = "1.5.4"
     }
 
+    @Suppress("UnstableApiUsage")
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
+    }
+
     kotlinOptions {
         jvmTarget = "1.8"
     }
@@ -106,9 +113,12 @@ dependencies {
     implementation(libs.lifecycle.viewmodel.compose)
     // Constraint Layout
     implementation(libs.androidx.constraintlayout.compose)
-    // UI Tests
-    androidTestImplementation(libs.androidx.compose.ui.test)
 
+
+    testImplementation(libs.junit)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.androidx.compose.ui.test)
+    androidTestImplementation(libs.androidx.compose.ui.test)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
