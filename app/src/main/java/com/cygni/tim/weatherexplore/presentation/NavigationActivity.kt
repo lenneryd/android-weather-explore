@@ -22,6 +22,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
@@ -59,7 +61,7 @@ class NavigationActivity : AppCompatActivity() {
 
     @Inject
     lateinit var locationUseCase: LocationUseCase
-    
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -182,9 +184,6 @@ fun NavigationActivityScreen(onNavigateToMap: (Point) -> Unit = {}, onCloseApp: 
                     WeatherScreenNav(
                         displayType = this.navArgs.displayType ?: WeatherViewModel.DisplayType.Blocks,
                         onNavigateToMap = { onNavigateToMap(it) },
-                        onToggleScreenType = {
-                            this.destinationsNavigator.navigate(WeatherScreenNavDestination(it.toggle()))
-                        }
                     )
                 }
             }
@@ -219,7 +218,9 @@ fun ClockScreenNav() {
 fun WeatherScreenNav(
     displayType: WeatherViewModel.DisplayType?,
     onNavigateToMap: (Point) -> Unit,
-    onToggleScreenType: (WeatherViewModel.DisplayType) -> Unit
 ) {
-    WeatherScreen(displayType, hiltViewModel(), onNavigateToMap, onToggleScreenType)
+    val vm = hiltViewModel<WeatherViewModel>()
+    vm.onSwitchView(displayType ?: WeatherViewModel.DisplayType.Blocks)
+    val uiState by vm.uiState.collectAsState(WeatherViewModel.WeatherUIState.PendingUIState)
+    WeatherScreen(uiState, onNavigateToMap, { vm.toggleView() }, { vm.onUpdateSelectedTime(it) }, { vm.clearMessage(it) })
 }

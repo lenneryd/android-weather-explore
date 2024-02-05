@@ -61,20 +61,19 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun WeatherScreen(
-    displayType: WeatherViewModel.DisplayType?,
-    viewModel: WeatherViewModel,
+    state: WeatherViewModel.WeatherUIState,
     onNavigateToMap: (Point) -> Unit,
-    onToggleScreenType: (WeatherViewModel.DisplayType) -> Unit,
+    onToggleScreenType: () -> Unit,
+    onUpdateSelectedTime: (Float) -> Unit,
+    onClearMessage: (WeatherViewModel.Message) -> Unit,
 ) {
-    displayType?.let { viewModel.onSwitchView(it) }
-    val uiState by viewModel.uiState.collectAsState(WeatherViewModel.WeatherUIState.PendingUIState)
-    WeatherScreenComposable(state = uiState, null, onNavigateToMap,
+    WeatherScreenComposable(state = state, null, onNavigateToMap,
         onUpdateSelectedTime = {
-            viewModel.onUpdateSelectedTime(it)
+            onUpdateSelectedTime(it)
         }, onToggleScreenType = {
-            onToggleScreenType(viewModel.displayType.value)
+            onToggleScreenType()
         }, onDismissMessage = {
-            viewModel.clearMessage(it)
+            onClearMessage(it)
         }
     )
 }
@@ -261,7 +260,9 @@ fun CurrentWeatherBlock(
                     }
 
                     is WeatherViewModel.WeatherBlock.GoToMap -> {
-                        GoToMapItem(onClick = {
+                        GoToMapItem(
+                            state = item,
+                            onClick = {
                             onLocationClick(item.point)
                         })
                     }

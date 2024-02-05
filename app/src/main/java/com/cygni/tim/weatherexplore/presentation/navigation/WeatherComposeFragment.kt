@@ -9,6 +9,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.addCallback
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.core.view.ViewCompat
 import androidx.core.view.doOnLayout
 import androidx.fragment.app.Fragment
@@ -54,17 +56,20 @@ class WeatherComposeFragment : Fragment() {
 
         binding.weatherCompose.setContent {
             AppYuTheme {
+
+                viewModel.onSwitchView(WeatherViewModel.DisplayType.Blocks)
+                val uiState by viewModel.uiState.collectAsState(WeatherViewModel.WeatherUIState.PendingUIState)
+
                 WeatherScreen(
-                    displayType = WeatherViewModel.DisplayType.Blocks,
-                    viewModel = viewModel,
+                    state = uiState,
                     onNavigateToMap = { point ->
                         if (!navigateToMap(point)) {
                             viewModel.addMessage(WeatherViewModel.Message.FailedToNavigateToMapMessage)
                         }
                     },
-                    onToggleScreenType = {
-                        viewModel.onSwitchView(WeatherViewModel.DisplayType.Timeline)
-                    }
+                    onToggleScreenType = { viewModel.onSwitchView(WeatherViewModel.DisplayType.Timeline) },
+                    onUpdateSelectedTime = { viewModel.onUpdateSelectedTime(it) },
+                    onClearMessage = { viewModel.clearMessage(it) }
                 )
             }
         }

@@ -13,6 +13,7 @@ import com.cygni.tim.weatherexplore.data.models.WeatherModel
 import com.cygni.tim.weatherexplore.data.models.toPoint
 import com.cygni.tim.weatherexplore.domain.usecase.LocationUseCase
 import com.cygni.tim.weatherexplore.domain.usecase.WeatherUseCase
+import com.cygni.tim.weatherexplore.presentation.compose.precipitationAmount
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -51,7 +52,7 @@ class WeatherViewModel @Inject constructor(
     enum class DisplayType(val value: String) {
         Blocks("blocks"), Timeline("timeline");
 
-        fun toggle(): DisplayType = when(this) {
+        fun toggle(): DisplayType = when (this) {
             Blocks -> Timeline
             Timeline -> Blocks
         }
@@ -294,6 +295,10 @@ class WeatherViewModel @Inject constructor(
         _displayType.value = display
     }
 
+    fun toggleView() {
+        _displayType.value = if (DisplayType.Blocks == displayType.value) DisplayType.Timeline else DisplayType.Blocks
+    }
+
     sealed class WeatherUIState {
         data class WeatherUI(
             val location: Point,
@@ -351,22 +356,30 @@ class WeatherViewModel @Inject constructor(
         fun getRange() = 0f..(steps - 1).toFloat()
     }
 
-    sealed class WeatherBlock {
-        data class TempWithSymbolIcon(val weatherIcon: String, val currentTemp: String) : WeatherBlock()
-        data class WindWithStrength(val degrees: Float, val direction: String, val strength: String) : WeatherBlock()
+    sealed class WeatherBlock(val tag: Type) {
+        enum class Type(val type: String) {
+            TempWithSymbol("tempWithSymbol"),
+            WindWithStrength("windWithStrength"),
+            CloudCoverage("cloudCoverage"),
+            PrecipitationPotential("precipitationPotential"),
+            PrecipitationAmount("precipitationAmount"),
+            GoToMap("goToMap");
+        }
+        data class TempWithSymbolIcon(val weatherIcon: String, val currentTemp: String) : WeatherBlock(Type.TempWithSymbol)
+        data class WindWithStrength(val degrees: Float, val direction: String, val strength: String) : WeatherBlock(Type.WindWithStrength)
 
-        data class CloudCoverage(val percent: Double, val percentText: String) : WeatherBlock()
+        data class CloudCoverage(val percent: Double, val percentText: String) : WeatherBlock(Type.CloudCoverage)
 
-        data class PrecipitationPotential(val percent: Double, val percentText: String) : WeatherBlock()
+        data class PrecipitationPotential(val percent: Double, val percentText: String) : WeatherBlock(Type.PrecipitationPotential)
 
         data class PrecipitationAmount(
             val hours1: PrecipitationData?,
             val hours6: PrecipitationData?,
             val hours12: PrecipitationData?,
         ) :
-            WeatherBlock()
+            WeatherBlock(Type.PrecipitationAmount)
 
-        data class GoToMap(val point: Point): WeatherBlock()
+        data class GoToMap(val point: Point) : WeatherBlock(Type.GoToMap)
     }
 
     sealed class Message(val text: String) {

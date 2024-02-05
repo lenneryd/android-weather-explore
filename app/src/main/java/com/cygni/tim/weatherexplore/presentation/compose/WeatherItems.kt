@@ -37,6 +37,7 @@ import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -47,6 +48,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.cygni.tim.weatherexplore.R
+import com.cygni.tim.weatherexplore.data.models.Point
 import com.cygni.tim.weatherexplore.presentation.icons.WeatherIcons
 import com.cygni.tim.weatherexplore.presentation.viewmodel.WeatherViewModel
 
@@ -57,7 +59,7 @@ fun tempWithWeatherIcon(
     gridWidth: Dp = 128.dp,
     onClick: () -> Unit = {}
 ) {
-    ElevatedBlock(onClick = onClick, gridHeight, gridWidth, iconContent = {
+    ElevatedBlock(onClick = onClick, gridHeight, gridWidth, testTag = state.tag, iconContent = {
         AnimatedContent(targetState = state.weatherIcon, label = "Weather Icon") { icon ->
             WeatherIcons.resolve(LocalContext.current, icon)?.resId?.let { res ->
                 Image(
@@ -81,6 +83,7 @@ fun tempWithWeatherIcon(
 
 @Composable
 fun GoToMapItem(
+    state: WeatherViewModel.WeatherBlock.GoToMap,
     gridHeight: Dp = 128.dp,
     gridWidth: Dp = 128.dp,
     onClick: () -> Unit = {}
@@ -89,6 +92,7 @@ fun GoToMapItem(
         onClick = onClick,
         gridHeight = gridHeight,
         gridWidth = gridWidth,
+        testTag = state.tag,
         iconContent = {
             Icon(
                 painter = painterResource(id = R.drawable.map),
@@ -117,7 +121,7 @@ fun windDirectionWithStrength(
     gridWidth: Dp = 128.dp,
     onClick: () -> Unit = {}
 ) {
-    ElevatedBlock(onClick = onClick, gridHeight = gridHeight, gridWidth = gridWidth, iconContent = {
+    ElevatedBlock(onClick = onClick, gridHeight = gridHeight, gridWidth = gridWidth, testTag = state.tag, iconContent = {
         Icon(
             painter = painterResource(id = R.drawable.arrow_projectile),
             contentDescription = "Wind direction",
@@ -147,7 +151,7 @@ fun cloudCoverItem(
     gridWidth: Dp = 128.dp,
     onClick: () -> Unit = {}
 ) {
-    ElevatedBlock(onClick = onClick, gridHeight = gridHeight, gridWidth = gridWidth, iconContent = {
+    ElevatedBlock(onClick = onClick, gridHeight = gridHeight, gridWidth = gridWidth, testTag = state.tag, iconContent = {
         Box(
             modifier = Modifier
                 .wrapContentSize()
@@ -191,7 +195,7 @@ fun precipitationPotential(
     gridWidth: Dp = 128.dp,
     onClick: () -> Unit = {}
 ) {
-    ElevatedBlock(onClick = onClick, gridHeight = gridHeight, gridWidth = gridWidth, iconContent = {
+    ElevatedBlock(onClick = onClick, gridHeight = gridHeight, gridWidth = gridWidth, testTag = state.tag, iconContent = {
         Box(
             modifier = Modifier
                 .wrapContentSize()
@@ -429,12 +433,14 @@ fun ElevatedBlock(
     onClick: () -> Unit,
     gridHeight: Dp,
     gridWidth: Dp,
+    testTag: WeatherViewModel.WeatherBlock.Type,
     iconContent: @Composable () -> Unit,
     textContent: @Composable () -> Unit
 ) {
     ElevatedCard(
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
         onClick = onClick,
+        modifier = Modifier.testTag(testTag.type)
     ) {
         Box(
             modifier = Modifier
@@ -520,5 +526,12 @@ fun precipitationAmountPreview() {
 @Preview
 @Composable
 fun goToMapPreview() {
-    GoToMapItem()
+    GoToMapItem(
+        WeatherViewModel.WeatherBlock.GoToMap(
+            Point(
+                lat = 59.326038,
+                lon = 17.8172507
+            )
+        )
+    )
 }
