@@ -67,12 +67,14 @@ import kotlinx.coroutines.launch
 fun WeatherScreen(
     state: WeatherViewModel.WeatherUIState,
     onNavigateToMap: (Point) -> Unit,
+    onNavigateToGoogleMaps: (Point) -> Unit,
     onToggleScreenType: () -> Unit,
     onUpdateSelectedTime: (Float) -> Unit,
     onClearMessage: (WeatherViewModel.Message) -> Unit,
 ) {
     WeatherScreenComposable(state = state,
         onNavigateToMap,
+        onNavigateToGoogleMaps,
         onUpdateSelectedTime = {
             onUpdateSelectedTime(it)
         }, onToggleScreenType = {
@@ -87,6 +89,7 @@ fun WeatherScreen(
 fun WeatherScreenComposable(
     state: WeatherViewModel.WeatherUIState,
     onNavigateToMap: (Point) -> Unit = {},
+    onNavigateToGoogleMaps: (Point) -> Unit = {},
     onUpdateSelectedTime: (Float) -> Unit = {},
     onToggleScreenType: () -> Unit = {},
     onDismissMessage: (WeatherViewModel.Message) -> Unit = {}
@@ -103,6 +106,7 @@ fun WeatherScreenComposable(
             is WeatherViewModel.WeatherUIState.WeatherUI -> WeatherUIComposable(
                 state,
                 onNavigateToMap,
+                onNavigateToGoogleMaps,
                 onUpdateSelectedTime,
                 onToggleScreenType,
                 onDismissMessage,
@@ -122,6 +126,7 @@ fun WeatherScreenComposable(
 fun WeatherUIComposable(
     state: WeatherViewModel.WeatherUIState.WeatherUI,
     onNavigateToMap: (Point) -> Unit,
+    onNavigateToGoogleMaps: (Point) -> Unit,
     onUpdateSelectedTime: (Float) -> Unit,
     onTimelineClicked: () -> Unit,
     dismissMessage: (WeatherViewModel.Message) -> Unit
@@ -195,7 +200,8 @@ fun WeatherUIComposable(
                     .fillMaxWidth()
                     .padding(top = 24.dp, start = 8.dp, end = 8.dp),
                 onLocationClick = { onNavigateToMap(it) },
-                onTimelineClick = { onTimelineClicked() }
+                onTimelineClick = { onTimelineClicked() },
+                onGoogleMapsClick = { onNavigateToGoogleMaps(it) },
             )
         }
     }
@@ -226,6 +232,7 @@ fun CurrentWeatherBlock(
     state: WeatherViewModel.WeatherUIState.WeatherUI,
     modifier: Modifier,
     onLocationClick: (Point) -> Unit,
+    onGoogleMapsClick: (Point) -> Unit,
     onTimelineClick: () -> Unit,
 ) {
     val skipAnimations = LocalPreviewState.current.skipAnimations
@@ -271,11 +278,21 @@ fun CurrentWeatherBlock(
                             precipitationAmount(state = item, onClick = { onTimelineClick() })
                         }
 
-                        is WeatherViewModel.WeatherBlock.GoToMap -> {
+                        is WeatherViewModel.WeatherBlock.MapLink.GoToMap -> {
                             GoToMapItem(
                                 state = item,
+                                "Show on Map",
                                 onClick = {
                                     onLocationClick(item.point)
+                                })
+                        }
+
+                        is WeatherViewModel.WeatherBlock.MapLink.GoToGoogleMaps -> {
+                            GoToMapItem(
+                                state = item,
+                                "Google Maps",
+                                onClick = {
+                                    onGoogleMapsClick(item.point)
                                 })
                         }
                     }
@@ -398,26 +415,30 @@ fun WeatherScreenProgressPreview() {
     }
 }
 
-private fun weatherPreviewState() = WeatherViewModel.WeatherUIState.WeatherUI(
-    Point(
-        lat = 59.326038,
-        lon = 17.8172507
-    ),
-    updatedAtString = "Updated at 09:41 (14 minutes ago)",
-    selectedTime = "Tuesday 09:00",
-    slider = WeatherViewModel.SliderData(15, 3),
-    listOf(
-        WeatherViewModel.WeatherBlock.TempWithSymbolIcon("partlycloudy_day", "-14.3"),
-        WeatherViewModel.WeatherBlock.WindWithStrength(291.0f, "SW", "3.6 m/s"),
-        WeatherViewModel.WeatherBlock.CloudCoverage(69.0, "69%"),
-        WeatherViewModel.WeatherBlock.PrecipitationPotential(45.0, "45%"),
-        WeatherViewModel.WeatherBlock.PrecipitationAmount(
-            WeatherViewModel.PrecipitationData(WeatherViewModel.PrecipitationType.Rain, "1", "2mm", 85.0, "85%"),
-            WeatherViewModel.PrecipitationData(WeatherViewModel.PrecipitationType.Rain, "6", "2mm", 85.0, "85%"),
-            WeatherViewModel.PrecipitationData(WeatherViewModel.PrecipitationType.Rain, "12", "2mm", 85.0, "85%"),
-        ),
+private fun weatherPreviewState() = Point(
+    lat = 59.326038,
+    lon = 17.8172507
+).let { point ->
+    WeatherViewModel.WeatherUIState.WeatherUI(
+        location = point,
+        updatedAtString = "Updated at 09:41 (14 minutes ago)",
+        selectedTime = "Tuesday 09:00",
+        slider = WeatherViewModel.SliderData(15, 3),
+        listOf(
+            WeatherViewModel.WeatherBlock.TempWithSymbolIcon("partlycloudy_day", "-14.3"),
+            WeatherViewModel.WeatherBlock.WindWithStrength(291.0f, "SW", "3.6 m/s"),
+            WeatherViewModel.WeatherBlock.CloudCoverage(69.0, "69%"),
+            WeatherViewModel.WeatherBlock.PrecipitationPotential(45.0, "45%"),
+            WeatherViewModel.WeatherBlock.PrecipitationAmount(
+                WeatherViewModel.PrecipitationData(WeatherViewModel.PrecipitationType.Rain, "1", "2mm", 85.0, "85%"),
+                WeatherViewModel.PrecipitationData(WeatherViewModel.PrecipitationType.Rain, "6", "2mm", 85.0, "85%"),
+                WeatherViewModel.PrecipitationData(WeatherViewModel.PrecipitationType.Rain, "12", "2mm", 85.0, "85%"),
+            ),
+            WeatherViewModel.WeatherBlock.MapLink.GoToMap(point),
+            WeatherViewModel.WeatherBlock.MapLink.GoToGoogleMaps(point)
+        )
     )
-)
+}
 
 val LocalGridSize = compositionLocalOf { GridSize() }
 val LocalPreviewState = compositionLocalOf { WeatherPreviewState(skipAnimations = false, showSlider = false) }

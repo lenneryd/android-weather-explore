@@ -21,7 +21,8 @@ import com.cygni.tim.weatherexplore.presentation.viewmodel.WeatherViewModel
 @Composable
 fun NavigationScreen(
     onClock: () -> Unit = {},
-    onWeather: (WeatherViewModel.DisplayType) -> Unit = {}
+    onWeather: (WeatherViewModel.DisplayType) -> Unit = {},
+    onMap: () -> Unit = {}
 ) {
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -62,6 +63,13 @@ fun NavigationScreen(
             Button(onClick = { onWeather(WeatherViewModel.DisplayType.Timeline) }, modifier = Modifier.padding(top = 8.dp)) {
                 Text(
                     text = "Navigate to Weather Timeline",
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+            }
+
+            Button(onClick = { onMap() }, modifier = Modifier.padding(top = 8.dp)) {
+                Text(
+                    text = "Navigate to Map",
                     modifier = Modifier.padding(top = 8.dp)
                 )
             }

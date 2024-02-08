@@ -5,6 +5,7 @@ plugins {
     kotlin("plugin.serialization")
     alias(libs.plugins.navigation.safe.args)
     alias(libs.plugins.ksp)
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 }
 
 android {
@@ -31,6 +32,7 @@ android {
     buildFeatures {
         viewBinding = true
         compose = true
+        buildConfig = true
     }
 
     compileOptions {
@@ -52,6 +54,15 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+}
+
+secrets {
+    propertiesFileName = "secrets.properties"
+
+    defaultPropertiesFileName = "local.defaults.properties"
+
+    ignoreList.add("keyToIgnore") // Ignore the key "keyToIgnore"
+    ignoreList.add("sdk.*")       // Ignore all keys matching the regexp "sdk.*"
 }
 
 dependencies {
@@ -109,6 +120,11 @@ dependencies {
     implementation(libs.androidx.compose.animation)
     implementation(libs.androidx.compose.ui)
 
+    implementation(libs.maps.google.android.maps)
+    implementation(libs.maps.google.android.compose)
+    implementation(libs.maps.utils)
+    implementation(libs.maps.compose.utils)
+    implementation(libs.maps.compose.widgets)
 
     implementation(libs.lifecycle.viewmodel.compose)
     // Constraint Layout

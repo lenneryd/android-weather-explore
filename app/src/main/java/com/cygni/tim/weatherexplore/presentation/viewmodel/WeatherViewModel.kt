@@ -13,7 +13,6 @@ import com.cygni.tim.weatherexplore.data.models.WeatherModel
 import com.cygni.tim.weatherexplore.data.models.toPoint
 import com.cygni.tim.weatherexplore.domain.usecase.LocationUseCase
 import com.cygni.tim.weatherexplore.domain.usecase.WeatherUseCase
-import com.cygni.tim.weatherexplore.presentation.compose.precipitationAmount
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -116,7 +115,8 @@ class WeatherViewModel @Inject constructor(
                 nextTimeModel.toCloudCoverOrNull(),
                 nextTimeModel.toPrecipitationPotentialOrNull(),
                 nextTimeModel.toPrecipitationAmountOrNull(units),
-                WeatherBlock.GoToMap(point),
+                WeatherBlock.MapLink.GoToGoogleMaps(point),
+                WeatherBlock.MapLink.GoToMap(point),
             )
         }
 
@@ -363,7 +363,8 @@ class WeatherViewModel @Inject constructor(
             CloudCoverage("cloudCoverage"),
             PrecipitationPotential("precipitationPotential"),
             PrecipitationAmount("precipitationAmount"),
-            GoToMap("goToMap");
+            GoToMap("goToMap"),
+            GoToGoogleMaps("goToGoogleMaps");
         }
         data class TempWithSymbolIcon(val weatherIcon: String, val currentTemp: String) : WeatherBlock(Type.TempWithSymbol)
         data class WindWithStrength(val degrees: Float, val direction: String, val strength: String) : WeatherBlock(Type.WindWithStrength)
@@ -379,7 +380,10 @@ class WeatherViewModel @Inject constructor(
         ) :
             WeatherBlock(Type.PrecipitationAmount)
 
-        data class GoToMap(val point: Point) : WeatherBlock(Type.GoToMap)
+        sealed class MapLink(tag: Type) : WeatherBlock(tag) {
+            data class GoToMap(val point: Point) : MapLink(Type.GoToMap)
+            data class GoToGoogleMaps(val point: Point) : MapLink(Type.GoToGoogleMaps)
+        }
     }
 
     sealed class Message(val text: String) {

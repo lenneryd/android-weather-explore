@@ -20,6 +20,8 @@ kotlinxSerializationJson = "1.6.1"
 kspVersion = "1.9.62"
 lifecycleViewmodelCompose = "2.7.0"
 lifecycleViewmodelKtx = "2.7.0"
+mapsComposeWidgets = "4.3.3"
+mapsComposeUtils = "4.3.3"
 material3 = "1.1.2"
 navigationUiKtx = "2.7.6"
 navigationFragmentKtx = "2.7.6"
@@ -33,6 +35,10 @@ appcompat = "1.6.1"
 material = "1.11.0"
 androidxComposeBom = "2024.01.00"
 robolectric = "4.11.1"
+googleMaps = "18.2.0"
+googleMapsUtils = "3.8.2"
+googleMapsCompose = "4.3.0"
+secretsGradlePlugin = "2.0.1"
 
 [libraries]
 accompanist-flowlayout = { module = "com.google.accompanist:accompanist-flowlayout", version.ref = "accompanistFlowlayout" }
@@ -45,6 +51,9 @@ androidx-espresso-core = { module = "androidx.test.espresso:espresso-core", vers
 androidx-fragment-ktx = { module = "androidx.fragment:fragment-ktx", version.ref = "fragmentKtx" }
 androidx-junit = { module = "androidx.test.ext:junit", version.ref = "junitVersion" }
 junit = { group = "junit", name = "junit", version.ref = "junitVersion" }
+maps-utils = { group = "com.google.maps.android", name = "android-maps-utils", version.ref = "googleMapsUtils"}
+maps-compose-widgets = { module = "com.google.maps.android:maps-compose-widgets", version.ref = "googleMapsCompose" }
+maps-compose-utils = { module = "com.google.maps.android:maps-compose-utils", version.ref = "googleMapsCompose" }
 robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
 androidx-material3 = { module = "androidx.compose.material3:material3", version.ref = "material3" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationUiKtx" }
@@ -73,9 +82,12 @@ androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", versi
 androidx-compose-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout" }
 androidx-compose-animation = { group = "androidx.compose.animation", name = "animation" }
 androidx-compose-ui = { group = "androidx.compose.ui", name = "ui-tooling" }
+maps-google-android-maps = { group = "com.google.android.gms", name = "play-services-maps", version.ref = "googleMaps" }
+maps-google-android-compose = { group = "com.google.maps.android", name = "maps-compose", version.ref = "googleMapsCompose" }
 androidx-compose-material = { group = "androidx.compose.material", name = "material" }
 androidx-compose-ui-test = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-compose-ui-manifest-test = { group = "androidx.compose.ui", name = "ui-test-manifest" }
+secrets-gradle-plugin = { module = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin", version.ref = "secretsGradlePlugin" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }

@@ -8,3 +8,9 @@ plugins {
     alias(libs.plugins.navigation.safe.args) apply false
     alias(libs.plugins.ksp) apply false
 }
+
+buildscript {
+    dependencies {
+        classpath(libs.secrets.gradle.plugin)
+    }
+}

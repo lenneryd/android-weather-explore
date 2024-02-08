@@ -36,12 +36,18 @@ import com.cygni.tim.weatherexplore.data.models.Point
 import com.cygni.tim.weatherexplore.domain.usecase.LocationUseCase
 import com.cygni.tim.weatherexplore.presentation.colors.AppYuTheme
 import com.cygni.tim.weatherexplore.presentation.compose.ClockScreen
+import com.cygni.tim.weatherexplore.presentation.compose.MapScreen
+import com.cygni.tim.weatherexplore.presentation.compose.MapWeatherScreen
 import com.cygni.tim.weatherexplore.presentation.compose.NavigationScreen
 import com.cygni.tim.weatherexplore.presentation.compose.WeatherScreen
 import com.cygni.tim.weatherexplore.presentation.destinations.ClockScreenNavDestination
+import com.cygni.tim.weatherexplore.presentation.destinations.MapScreenNavDestination
+import com.cygni.tim.weatherexplore.presentation.destinations.MapWeatherScreenNavDestination
 import com.cygni.tim.weatherexplore.presentation.destinations.NavigationScreenNavDestination
 import com.cygni.tim.weatherexplore.presentation.destinations.TypedDestination
 import com.cygni.tim.weatherexplore.presentation.destinations.WeatherScreenNavDestination
+import com.cygni.tim.weatherexplore.presentation.viewmodel.MapScreenViewModel
+import com.cygni.tim.weatherexplore.presentation.viewmodel.MapWeatherScreenViewModel
 import com.cygni.tim.weatherexplore.presentation.viewmodel.WeatherViewModel
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.annotation.Destination
@@ -131,7 +137,11 @@ class NavigationActivity : AppCompatActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 @Preview
-fun NavigationActivityScreen(onNavigateToMap: (Point) -> Unit = {}, onCloseApp: () -> Unit = {}) {
+fun NavigationActivityScreen(
+    onNavigateToMap: (Point) -> Unit = {},
+    onNavigateToGoogleMaps: (Point) -> Unit = {},
+    onCloseApp: () -> Unit = {}
+) {
     val navController = rememberNavController()
     AppYuTheme {
         Scaffold(
@@ -183,7 +193,8 @@ fun NavigationActivityScreen(onNavigateToMap: (Point) -> Unit = {}, onCloseApp: 
                 composable(WeatherScreenNavDestination) {
                     WeatherScreenNav(
                         displayType = this.navArgs.displayType ?: WeatherViewModel.DisplayType.Blocks,
-                        onNavigateToMap = { onNavigateToMap(it) },
+                        this.destinationsNavigator,
+                        onNavigateToGoogleMaps = { onNavigateToGoogleMaps(it) }
                     )
                 }
             }
@@ -195,6 +206,8 @@ private fun <T> TypedDestination<T>.toDestinationTitle(): String = when (this) {
     ClockScreenNavDestination -> "Clock"
     NavigationScreenNavDestination -> "Navigation"
     WeatherScreenNavDestination -> "Weather"
+    MapScreenNavDestination -> "Map"
+    MapWeatherScreenNavDestination -> "Map Weather"
 }
 
 @RootNavGraph(start = true)
@@ -204,6 +217,7 @@ fun NavigationScreenNav(navigator: DestinationsNavigator) {
     NavigationScreen(
         onClock = { navigator.navigate(ClockScreenNavDestination) },
         onWeather = { navigator.navigate(WeatherScreenNavDestination(it)) },
+        onMap = { navigator.navigate(MapScreenNavDestination) }
     )
 }
 
@@ -217,10 +231,33 @@ fun ClockScreenNav() {
 @Composable
 fun WeatherScreenNav(
     displayType: WeatherViewModel.DisplayType?,
-    onNavigateToMap: (Point) -> Unit,
+    navigator: DestinationsNavigator,
+    onNavigateToGoogleMaps: (Point) -> Unit,
 ) {
     val vm = hiltViewModel<WeatherViewModel>()
     vm.onSwitchView(displayType ?: WeatherViewModel.DisplayType.Blocks)
     val uiState by vm.uiState.collectAsState(WeatherViewModel.WeatherUIState.PendingUIState)
-    WeatherScreen(uiState, onNavigateToMap, { vm.toggleView() }, { vm.onUpdateSelectedTime(it) }, { vm.clearMessage(it) })
+    WeatherScreen(
+        state = uiState,
+        onNavigateToMap = { navigator.navigate(MapWeatherScreenNavDestination) },
+        onNavigateToGoogleMaps = onNavigateToGoogleMaps,
+        onToggleScreenType = { vm.toggleView() },
+        onUpdateSelectedTime = { vm.onUpdateSelectedTime(it) },
+        onClearMessage = { vm.clearMessage(it) })
+}
+
+@Destination
+@Composable
+fun MapScreenNav() {
+    val vm = hiltViewModel<MapScreenViewModel>()
+    val uiState by vm.uiState.collectAsState()
+    MapScreen(mapState = uiState, onChangedPosition = { vm.onChangedPosition(it) })
+}
+
+@Destination
+@Composable
+fun MapWeatherScreenNav() {
+    val vm = hiltViewModel<MapWeatherScreenViewModel>()
+    val uiState by vm.uiState.collectAsState()
+    MapWeatherScreen(mapWeatherState = uiState)
 }

@@ -83,7 +83,8 @@ fun tempWithWeatherIcon(
 
 @Composable
 fun GoToMapItem(
-    state: WeatherViewModel.WeatherBlock.GoToMap,
+    state: WeatherViewModel.WeatherBlock.MapLink,
+    text: String,
     onClick: () -> Unit = {}
 ) {
     LocalGridSize.current.let { grid ->
@@ -104,7 +105,7 @@ fun GoToMapItem(
             }
         ) {
             Text(
-                text = "Go to Map",
+                text = text,
                 color = MaterialTheme.colorScheme.primary,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
@@ -527,11 +528,12 @@ fun precipitationAmountPreview() {
 @Composable
 fun goToMapPreview() {
     GoToMapItem(
-        WeatherViewModel.WeatherBlock.GoToMap(
+        WeatherViewModel.WeatherBlock.MapLink.GoToMap(
             Point(
                 lat = 59.326038,
                 lon = 17.8172507
             )
-        )
+        ),
+        "Google Maps"
     )
 }
