@@ -11,6 +11,7 @@ plugins {
 android {
     namespace = "com.cygni.tim.weatherexplore"
     compileSdk = 34
+    buildToolsVersion = "34.0.0"
 
     defaultConfig {
         applicationId = "com.cygni.tim.weatherexplore"
