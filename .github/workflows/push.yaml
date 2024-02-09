@@ -58,13 +58,8 @@ jobs:
           jarsigner -keystore app/*.jks \
           -storepass ${{ secrets.KEY_STORE_PASSWORD }} -keypass ${{ secrets.KEY_PASSWORD }} \
           app/build/outputs/bundle/release/app-release.aab ${{ secrets.ALIAS }}
+          keytool -printcert -jarfile app/build/outputs/bundle/release/app-release.aab
 
-  #   STEP 2 : Upload the Artifact
-  upload:
-    needs: [ build ]
-    name: Upload the signed artifact
-    runs-on: ubuntu-latest
-    steps:
       - name: Upload Bundle
         uses: actions/upload-artifact@v2
         with:
