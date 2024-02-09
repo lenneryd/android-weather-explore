@@ -51,6 +51,10 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Generate app bundle
+        env:
+          ALIAS: ${{ secrets.ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          KEY_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
         run: ./gradlew app:assembleRelease app:bundleRelease --stacktrace
 
       - name: Upload APK
@@ -58,7 +62,7 @@ jobs:
         with:
           name: signed_apk
           path: |
-            app/build/outputs/apk/release/app-release.aab
+            app/build/outputs/apk/release/app-release.apk
 
       - name: Upload Bundle
         uses: actions/upload-artifact@v2
