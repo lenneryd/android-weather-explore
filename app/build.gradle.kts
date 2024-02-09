@@ -1,3 +1,6 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -6,6 +9,15 @@ plugins {
     alias(libs.plugins.navigation.safe.args)
     alias(libs.plugins.ksp)
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
+}
+
+val secretsFile: File = rootProject.file("secrets.properties")
+val secretProperties = Properties()
+if(secretsFile.exists()) {
+    project.logger.info("Found secrets file")
+    secretProperties.load(FileInputStream(secretsFile))
+} else {
+    project.logger.info("No Secrets file found, using system env.")
 }
 
 android {
@@ -23,9 +35,20 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        create("release") {
+            storeFile = file("../keystore.jks")
+            storePassword = secretProperties["KEY_STORE_PASSWORD"] as? String ?: System.getenv("KEY_STORE_PASSWORD")
+            keyAlias = secretProperties["ALIAS"] as? String ?: System.getenv("ALIAS")
+            keyPassword = secretProperties["KEY_PASSWORD"] as? String ?: System.getenv("KEY_PASSWORD")
+        }
+    }
+
+
     buildTypes {
-        release {
+        getByName("release")  {
             isMinifyEnabled = false
+            signingConfig = signingConfigs.getByName("release")
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
