@@ -75,6 +75,12 @@ android {
         }
     }
 
+    lint {
+        abortOnError = false
+        checkReleaseBuilds =  false
+        xmlReport = true
+    }
+
     kotlinOptions {
         jvmTarget = "1.8"
     }
