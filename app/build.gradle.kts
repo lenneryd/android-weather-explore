@@ -79,6 +79,10 @@ android {
         abortOnError = false
         checkReleaseBuilds =  false
         xmlReport = true
+        htmlReport = false
+        checkDependencies = true
+        disable += "UnsafeExperimentalUsageError"
+        disable += "UnsafeExperimentalUsageWarning"
     }
 
     kotlinOptions {

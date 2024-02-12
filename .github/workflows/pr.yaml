@@ -8,22 +8,38 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+
       - name: Setup Ruby, JRuby and TruffleRuby
         uses: ruby/setup-ruby@v1.171.0
         with:
           ruby-version: '3.3' # Not needed with a .ruby-version file
           bundler-cache: true # runs 'bundle install' and caches installed gems automatically
+
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v2
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      - uses: actions/cache@v2
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Run Android Lint
+        run: ./gradlew lint
+
       - name: Run Danger
         env:
-          GITHUB_TOKEN: ${{ secrets.DANGER_GITHUB_API_TOKEN }}
-        run: |
-          event_path=${{ github.event_path }}
-
-          if [ $GITHUB_EVENT_NAME = "pull_request_review" ]; then
-            echo "Override event json file for pull_request_review event."
-
-            event_path="event.json"
-            cat ${{ github.event_path }} | jq '. |= .+ {"number": .pull_request.number}' > $event_path 
-          fi
-
-          GITHUB_EVENT_PATH=$event_path GITHUB_EVENT_NAME=pull_request bundle exec danger
+          DANGER_GITHUB_API_TOKEN: ${{ secrets.DANGER_GITHUB_API_TOKEN }}
+        run: bundle exec danger
