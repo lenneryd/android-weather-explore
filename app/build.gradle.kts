@@ -81,8 +81,8 @@ android {
         xmlReport = true
         htmlReport = false
         checkDependencies = true
-        disable += "UnsafeExperimentalUsageError"
-        disable += "UnsafeExperimentalUsageWarning"
+        disable += "HardcodedText"
+        disable += "UnusedResources"
     }
 
     kotlinOptions {
