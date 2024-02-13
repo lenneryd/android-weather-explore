@@ -53,7 +53,7 @@ import com.cygni.tim.weatherexplore.presentation.icons.WeatherIcons
 import com.cygni.tim.weatherexplore.presentation.viewmodel.WeatherViewModel
 
 @Composable
-fun tempWithWeatherIcon(
+fun TempWithWeatherIcon(
     state: WeatherViewModel.WeatherBlock.TempWithSymbolIcon,
     onClick: () -> Unit = {}
 ) {
@@ -116,7 +116,7 @@ fun GoToMapItem(
 }
 
 @Composable
-fun windDirectionWithStrength(
+fun WindDirectionWithStrength(
     state: WeatherViewModel.WeatherBlock.WindWithStrength,
     onClick: () -> Unit = {}
 ) {
@@ -146,7 +146,7 @@ fun windDirectionWithStrength(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun cloudCoverItem(
+fun CloudCoverItem(
     state: WeatherViewModel.WeatherBlock.CloudCoverage,
     onClick: () -> Unit = {}
 ) {
@@ -190,7 +190,7 @@ fun cloudCoverItem(
 }
 
 @Composable
-fun precipitationPotential(
+fun PrecipitationPotential(
     state: WeatherViewModel.WeatherBlock.PrecipitationPotential,
     onClick: () -> Unit = {}
 ) {
@@ -233,7 +233,7 @@ fun precipitationPotential(
 }
 
 @Composable
-fun precipitationAmountSingle(
+fun PrecipitationAmountSingle(
     state: WeatherViewModel.PrecipitationData,
 ) {
 
@@ -344,7 +344,7 @@ fun precipitationAmountSingle(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun precipitationAmount(
+fun PrecipitationAmount(
     state: WeatherViewModel.WeatherBlock.PrecipitationAmount,
     onClick: () -> Unit = {}
 ) {
@@ -361,15 +361,15 @@ fun precipitationAmount(
                     .padding(4.dp)
             ) {
                 state.hours1?.let {
-                    precipitationAmountSingle(state = it)
+                    PrecipitationAmountSingle(state = it)
                 }
 
                 state.hours6?.let {
-                    precipitationAmountSingle(state = it)
+                    PrecipitationAmountSingle(state = it)
                 }
 
                 state.hours12?.let {
-                    precipitationAmountSingle(state = it)
+                    PrecipitationAmountSingle(state = it)
                 }
             }
         }
@@ -377,10 +377,10 @@ fun precipitationAmount(
 }
 
 @Composable
-fun floatingVerticalSlider(
+fun FloatingVerticalSlider(
+    modifier: Modifier = Modifier,
     slider: WeatherViewModel.SliderData,
-    onUpdateSelectedTime: (Float) -> Unit = {},
-    modifier: Modifier = Modifier
+    onUpdateSelectedTime: (Float) -> Unit = {}
 ) {
     var sliderPosition by remember { mutableFloatStateOf(slider.currentStep.toFloat()) }
 
@@ -465,9 +465,9 @@ fun ElevatedBlock(
 
 @Preview
 @Composable
-fun floatingVerticalSliderPreview() {
-    floatingVerticalSlider(
-        WeatherViewModel.SliderData(
+fun FloatingVerticalSliderPreview() {
+    FloatingVerticalSlider(
+        slider = WeatherViewModel.SliderData(
             25,
             15
         )
@@ -476,32 +476,32 @@ fun floatingVerticalSliderPreview() {
 
 @Preview
 @Composable
-fun tempWithWeatherIconPreview() {
-    tempWithWeatherIcon(state = (WeatherViewModel.WeatherBlock.TempWithSymbolIcon("partlycloudy_day", "-14.3")))
+fun TempWithWeatherIconPreview() {
+    TempWithWeatherIcon(state = (WeatherViewModel.WeatherBlock.TempWithSymbolIcon("partlycloudy_day", "-14.3")))
 }
 
 @Preview
 @Composable
-fun windDirectionWithStrengthPreview() {
-    windDirectionWithStrength(state = (WeatherViewModel.WeatherBlock.WindWithStrength(291.0f, "SW", "3.6 m/s")))
+fun WindDirectionWithStrengthPreview() {
+    WindDirectionWithStrength(state = (WeatherViewModel.WeatherBlock.WindWithStrength(291.0f, "SW", "3.6 m/s")))
 }
 
 @Preview
 @Composable
-fun cloudCoverageItemPreview() {
-    cloudCoverItem(state = (WeatherViewModel.WeatherBlock.CloudCoverage(69.0, "69%")))
+fun CloudCoverageItemPreview() {
+    CloudCoverItem(state = (WeatherViewModel.WeatherBlock.CloudCoverage(69.0, "69%")))
 }
 
 @Preview
 @Composable
-fun precipitationPotentialPreview() {
-    precipitationPotential(state = (WeatherViewModel.WeatherBlock.PrecipitationPotential(45.0, "45%")))
+fun PrecipitationPotentialPreview() {
+    PrecipitationPotential(state = (WeatherViewModel.WeatherBlock.PrecipitationPotential(45.0, "45%")))
 }
 
 @Preview
 @Composable
-fun precipitationAmountSinglePreview() {
-    precipitationAmountSingle(
+fun PrecipitationAmountSinglePreview() {
+    PrecipitationAmountSingle(
         state = WeatherViewModel.PrecipitationData(
             WeatherViewModel.PrecipitationType.Rain,
             "1",
@@ -514,8 +514,8 @@ fun precipitationAmountSinglePreview() {
 
 @Preview
 @Composable
-fun precipitationAmountPreview() {
-    precipitationAmount(
+fun PrecipitationAmountPreview() {
+    PrecipitationAmount(
         state = WeatherViewModel.WeatherBlock.PrecipitationAmount(
             WeatherViewModel.PrecipitationData(WeatherViewModel.PrecipitationType.Rain, "1", "0.5mm", 100.0, "100%"),
             WeatherViewModel.PrecipitationData(WeatherViewModel.PrecipitationType.Snow, "6", "2.5mm", 60.0, "60%"),
@@ -526,7 +526,7 @@ fun precipitationAmountPreview() {
 
 @Preview
 @Composable
-fun goToMapPreview() {
+fun GoToMapPreview() {
     GoToMapItem(
         WeatherViewModel.WeatherBlock.MapLink.GoToMap(
             Point(

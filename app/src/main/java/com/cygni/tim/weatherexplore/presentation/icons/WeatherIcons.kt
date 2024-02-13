@@ -1,5 +1,6 @@
 package com.cygni.tim.weatherexplore.presentation.icons
 
+import android.annotation.SuppressLint
 import android.content.Context
 import androidx.annotation.DrawableRes
 import kotlinx.serialization.SerialName
@@ -363,6 +364,7 @@ class WeatherIcons {
     """.trimIndent()
         private val weatherIcons = json.decodeFromString<List<WeatherIconEntity>>(jsonString)
 
+        @SuppressLint("DiscouragedApi")
         fun resolve(context: Context, id: String): WeatherIconData? {
             try {
                 val split = id.split("_", limit = 2)
