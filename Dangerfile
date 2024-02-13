@@ -7,8 +7,9 @@ Dir[lint_dir].each do |file_name|
 end
 
 message("Using: #{ENV["ANDROID_HOME"]}/cmdline-tools/latest/bin/apkanalyzer")
-#apkstats.apkanalyzer_path="#{ENV["ANDROID_HOME"]}/cmdline-tools/latest/bin/apkanalyzer"
-#apkstats.apk_filepath='app/build/outputs/apk/debug/app-debug.apk'
+apkstats.apkanalyzer_path="#{ENV["ANDROID_HOME"]}/cmdline-tools/latest/bin/apkanalyzer"
+apkstats.apk_filepath='./app/build/outputs/apk/debug/app-debug.apk'
+message("Filesize: #{apkstats.file_size}")
 #message(apkstats.file_size)
 #message(apkstats.download_size)
 #message(apkstats.required_features)
