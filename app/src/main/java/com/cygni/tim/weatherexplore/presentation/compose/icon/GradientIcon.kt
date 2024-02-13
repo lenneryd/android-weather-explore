@@ -116,7 +116,7 @@ fun FillIconSample() {
         vectorRes2,
         modifier = Modifier
             .clickable(
-                interactionSource = MutableInteractionSource(),
+                interactionSource = remember {MutableInteractionSource() },
                 indication = null,
             ) {
                 targetValue = if (targetValue == 0f) {
