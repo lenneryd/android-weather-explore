@@ -1,7 +1,7 @@
 [versions]
 accompanistFlowlayout = "0.32.0"
 activityKtx = "1.8.2"
-androidGradlePlugin = "8.2.1"
+androidGradlePlugin = "8.2.2"
 constraintlayoutCompose = "1.0.1"
 core = "1.9.62"
 coilCompose = "1.4.0"
@@ -10,8 +10,8 @@ fragmentKtx = "1.6.2"
 hiltNavigationCompose = "1.1.0"
 hiltAndroidCompiler = "2.50"
 hiltAndroidVersion = "2.50"
-junitVersion = "1.1.5"
-junit = "4.13.2"
+androidXExtJUnit = "1.1.5"
+junitVersion = "4.13.2"
 kotlinAndroid = "1.9.20"
 hiltAndroid = "2.50"
 kotlinReflect = "1.8.20"
@@ -22,18 +22,18 @@ lifecycleViewmodelCompose = "2.7.0"
 lifecycleViewmodelKtx = "2.7.0"
 mapsComposeWidgets = "4.3.3"
 mapsComposeUtils = "4.3.3"
-material3 = "1.1.2"
-navigationUiKtx = "2.7.6"
-navigationFragmentKtx = "2.7.6"
+material3 = "1.2.0"
+navigationUiKtx = "2.7.7"
+navigationFragmentKtx = "2.7.7"
 okhttp = "4.9.0"
 retrofit = "2.9.0"
 retrofit2KotlinxSerializationConverter = "0.8.0"
-safeargsKotlin = "2.7.6"
+safeargsKotlin = "2.7.7"
 ksp = "1.9.20-1.0.14"
 ktxCore = "1.12.0"
 appcompat = "1.6.1"
 material = "1.11.0"
-androidxComposeBom = "2024.01.00"
+androidxComposeBom = "2024.02.00"
 robolectric = "4.11.1"
 googleMaps = "18.2.0"
 googleMapsUtils = "3.8.2"
@@ -49,7 +49,7 @@ androidx-core = { group = "androidx.core", name = "core-ktx", version.ref = "ktx
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 androidx-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "espressoCore" }
 androidx-fragment-ktx = { module = "androidx.fragment:fragment-ktx", version.ref = "fragmentKtx" }
-androidx-junit = { module = "androidx.test.ext:junit", version.ref = "junitVersion" }
+androidx-junit = { module = "androidx.test.ext:junit", version.ref = "androidXExtJUnit" }
 junit = { group = "junit", name = "junit", version.ref = "junitVersion" }
 maps-utils = { group = "com.google.maps.android", name = "android-maps-utils", version.ref = "googleMapsUtils"}
 maps-compose-widgets = { module = "com.google.maps.android:maps-compose-widgets", version.ref = "googleMapsCompose" }
