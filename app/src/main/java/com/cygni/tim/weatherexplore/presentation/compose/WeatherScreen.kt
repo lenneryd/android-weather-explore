@@ -38,11 +38,9 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -142,9 +140,9 @@ fun WeatherUIComposable(
         floatingActionButton = {
             Column {
                 AnimatedVisibility(visible = sliderShown) {
-                    floatingVerticalSlider(
-                        slider = state.slider,
+                    FloatingVerticalSlider(
                         modifier = Modifier.padding(bottom = 8.dp),
+                        slider = state.slider,
                         onUpdateSelectedTime = onUpdateSelectedTime
                     )
                 }
@@ -259,23 +257,23 @@ fun CurrentWeatherBlock(
                 AnimatedVisibility(visible = i < numItems, enter = fadeIn(), exit = fadeOut()) {
                     when (val item = state.blocks[i]) {
                         is WeatherViewModel.WeatherBlock.TempWithSymbolIcon -> {
-                            tempWithWeatherIcon(state = item)
+                            TempWithWeatherIcon(state = item)
                         }
 
                         is WeatherViewModel.WeatherBlock.WindWithStrength -> {
-                            windDirectionWithStrength(state = item)
+                            WindDirectionWithStrength(state = item)
                         }
 
                         is WeatherViewModel.WeatherBlock.CloudCoverage -> {
-                            cloudCoverItem(state = item)
+                            CloudCoverItem(state = item)
                         }
 
                         is WeatherViewModel.WeatherBlock.PrecipitationPotential -> {
-                            precipitationPotential(state = item)
+                            PrecipitationPotential(state = item)
                         }
 
                         is WeatherViewModel.WeatherBlock.PrecipitationAmount -> {
-                            precipitationAmount(state = item, onClick = { onTimelineClick() })
+                            PrecipitationAmount(state = item, onClick = { onTimelineClick() })
                         }
 
                         is WeatherViewModel.WeatherBlock.MapLink.GoToMap -> {

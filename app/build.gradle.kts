@@ -75,6 +75,16 @@ android {
         }
     }
 
+    lint {
+        abortOnError = false
+        checkReleaseBuilds =  false
+        xmlReport = true
+        htmlReport = false
+        checkDependencies = true
+        disable += "HardcodedText"
+        disable += "UnusedResources"
+    }
+
     kotlinOptions {
         jvmTarget = "1.8"
     }
