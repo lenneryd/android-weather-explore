@@ -6,6 +6,26 @@ Dir[lint_dir].each do |file_name|
   android_lint.lint(inline_mode: true)
 end
 
-apkanalyzer.apk_file = "app/build/outputs/apk/debug/app-debug.apk"
-apkanalyzer.file_size
-apkanalyzer.permissions
+def convert_size(bytes)
+  size = ""
+  if bytes > 1024 * 1024
+    size = "#{(bytes.to_f / (1024 * 1024)).round} MB"
+  elsif bytes > 1024
+    size = "#{(bytes.to_f / 1024).round} KB"
+  else
+    size = "#{bytes} b"
+  end
+  size
+end
+
+message("Using: #{ENV["ANDROID_HOME"]}/cmdline-tools/latest/bin/apkanalyzer")
+apkstats.apkanalyzer_path="#{ENV["ANDROID_HOME"]}/cmdline-tools/latest/bin/apkanalyzer"
+apkstats.apk_filepath='./app/build/outputs/apk/debug/app-debug.apk'
+message("Size: #{convert_size(apkstats.file_size)}")
+message("Download Size: #{convert_size(apkstats.download_size)}")
+#message(apkstats.required_features)
+#message(apkstats.non_required_features)
+message("Permissions: #{apkstats.permissions.map { |perm| perm.sub("android.permission.", "") }.map { |str| "[#{str}](https://developer.android.com/reference/android/Manifest.permission##{str})"  } }")
+message("Min SDK: [#{apkstats.min_sdk}](https://apilevels.com/)")
+message("Target SDK: [#{apkstats.target_sdk}](https://apilevels.com/)")
+#message("#{apkstats.method_reference_count}")
