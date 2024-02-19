@@ -37,7 +37,7 @@ jobs:
             ${{ runner.os }}-gradle-
 
       - name: Run Android Lint, Test, Assemble
-        run: ./gradlew lintDebug testDebug assembleDebug
+        run: ./gradlew lintDebug testDebug detekt assembleDebug
 
       - name: Run Danger
         env:

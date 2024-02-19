@@ -1,3 +1,5 @@
+import io.gitlab.arturbosch.detekt.Detekt
+import io.gitlab.arturbosch.detekt.DetektCreateBaselineTask
 import java.io.FileInputStream
 import java.util.Properties
 
@@ -8,6 +10,7 @@ plugins {
     kotlin("plugin.serialization")
     alias(libs.plugins.navigation.safe.args)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.detekt)
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 }
 
@@ -18,6 +21,29 @@ if(secretsFile.exists()) {
     secretProperties.load(FileInputStream(secretsFile))
 } else {
     project.logger.info("No Secrets file found, using system env.")
+}
+
+detekt {
+    buildUponDefaultConfig = true
+    allRules = false
+    config.setFrom("$projectDir/detekt/detekt.yml")
+    baseline = file("$projectDir/detekt/baseline.xml")
+    ignoreFailures = true
+    ignoredBuildTypes = listOf("release")
+}
+
+tasks.withType<Detekt>().configureEach {
+    reports {
+        html.required.set(true)
+        xml.required.set(true)
+    }
+}
+
+tasks.withType<Detekt>().configureEach {
+    jvmTarget = "1.8"
+}
+tasks.withType<DetektCreateBaselineTask>().configureEach {
+    jvmTarget = "1.8"
 }
 
 android {
@@ -174,4 +200,6 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.compose.ui.test)
     debugImplementation(libs.androidx.compose.ui.manifest.test)
+
+    detektPlugins(libs.detekt.formatting)
 }

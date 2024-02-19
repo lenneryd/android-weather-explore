@@ -7,6 +7,7 @@ plugins {
     kotlin("plugin.serialization").version(libs.versions.kotlinAndroid).apply(false)
     alias(libs.plugins.navigation.safe.args) apply false
     alias(libs.plugins.ksp) apply false
+    alias(libs.plugins.detekt) apply false
 }
 
 buildscript {
