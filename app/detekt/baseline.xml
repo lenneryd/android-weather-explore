@@ -1,0 +1,341 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues></ManuallySuppressedIssues>
+  <CurrentIssues>
+    <ID>ArgumentListWrapping:ClockScreen.kt$( state = stopwatchPreviewState(), preStartedStopwatch = Date.from( Instant.ofEpochMilli(Date().time) .minusSeconds(70) .minusMillis(12) ) )</ID>
+    <ID>ArgumentListWrapping:GradientIcon.kt$( initialValue = 0f, targetValue = 1f, animationSpec = infiniteRepeatable( animation = tween(3500, easing = LinearEasing), repeatMode = RepeatMode.Restart ), label = "Shimmering progress animation" )</ID>
+    <ID>ArgumentListWrapping:NavigationActivity.kt$( state = uiState, onNavigateToMap = { navigator.navigate(MapWeatherScreenNavDestination) }, onNavigateToGoogleMaps = onNavigateToGoogleMaps, onToggleScreenType = { vm.toggleView() }, onUpdateSelectedTime = { vm.onUpdateSelectedTime(it) }, onClearMessage = { vm.clearMessage(it) })</ID>
+    <ID>ArgumentListWrapping:NavigationScreen.kt$(WeatherViewModel.DisplayType.Blocks)</ID>
+    <ID>ArgumentListWrapping:NavigationScreen.kt$(WeatherViewModel.DisplayType.Timeline)</ID>
+    <ID>ArgumentListWrapping:NavigationScreen.kt$(onClick = { onWeather(WeatherViewModel.DisplayType.Blocks) }, modifier = Modifier.padding(top = 8.dp))</ID>
+    <ID>ArgumentListWrapping:NavigationScreen.kt$(onClick = { onWeather(WeatherViewModel.DisplayType.Timeline) }, modifier = Modifier.padding(top = 8.dp))</ID>
+    <ID>ArgumentListWrapping:NavigationScreen.kt$(top = 8.dp)</ID>
+    <ID>ArgumentListWrapping:WeatherItems.kt$( horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier .height(grid.height) .width(grid.width * 3) .background(color = MaterialTheme.colorScheme.primaryContainer, shape = RoundedCornerShape(8.dp)) .padding(4.dp) )</ID>
+    <ID>ArgumentListWrapping:WeatherItems.kt$( modifier = Modifier .wrapContentSize() .padding(8.dp), contentAlignment = Alignment.Center )</ID>
+    <ID>ArgumentListWrapping:WeatherRepository.kt$( airPressureAtSeaLevel, airTemperature, cloudAreaFraction, relativeHumidity, windFromDirection, windSpeed )</ID>
+    <ID>ArgumentListWrapping:WeatherScreen.kt$( painterResource(id = R.drawable.alert_circle_outline), listOf( MaterialTheme.colorScheme.surfaceVariant, MaterialTheme.colorScheme.background, MaterialTheme.colorScheme.surfaceVariant, ), modifier = Modifier.size(128.dp) )</ID>
+    <ID>ArgumentListWrapping:WeatherScreen.kt$( state = item, "Google Maps", onClick = { onGoogleMapsClick(item.point) })</ID>
+    <ID>ArgumentListWrapping:WeatherScreen.kt$( state = item, "Show on Map", onClick = { onLocationClick(item.point) })</ID>
+    <ID>ArgumentListWrapping:WeatherScreen.kt$( state = state, modifier = Modifier .fillMaxWidth() .padding(top = 24.dp, start = 8.dp, end = 8.dp), onLocationClick = { onNavigateToMap(it) }, onTimelineClick = { onTimelineClicked() }, onGoogleMapsClick = { onNavigateToGoogleMaps(it) }, )</ID>
+    <ID>ArgumentListWrapping:WeatherScreen.kt$(state = state, onNavigateToMap, onNavigateToGoogleMaps, onUpdateSelectedTime = { onUpdateSelectedTime(it) }, onToggleScreenType = { onToggleScreenType() }, onDismissMessage = { onClearMessage(it) } )</ID>
+    <ID>ArgumentListWrapping:WeatherTimeline.kt$( state = state, modifier = Modifier .fillMaxSize() .padding(padding) )</ID>
+    <ID>ArgumentListWrapping:WeatherTimeline.kt$(text = state.text, fontSize = 16.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)</ID>
+    <ID>ArgumentListWrapping:WeatherViewModel.kt$WeatherViewModel$( percent = details.cloudAreaFraction, percentText = "${percentFormat.format(details.cloudAreaFraction)} %" )</ID>
+    <ID>ArgumentListWrapping:WeatherViewModel.kt$WeatherViewModel$(it)</ID>
+    <ID>ArgumentListWrapping:WeatherViewModel.kt$WeatherViewModel$(this.data.instant.details.airTemperature)</ID>
+    <ID>ArgumentListWrapping:WeatherViewModel.kt$WeatherViewModel.WeatherBlock.PrecipitationPotential$(Type.PrecipitationPotential)</ID>
+    <ID>ArgumentListWrapping:WeatherViewModel.kt$WeatherViewModel.WeatherBlock.TempWithSymbolIcon$(Type.TempWithSymbol)</ID>
+    <ID>ArgumentListWrapping:WeatherViewModel.kt$WeatherViewModel.WeatherBlock.WindWithStrength$(Type.WindWithStrength)</ID>
+    <ID>CommentSpacing:NavigationActivity.kt$NavigationActivity$//mapIntent.setPackage("com.google.android.apps.maps")</ID>
+    <ID>CommentSpacing:Type.kt$//Replace with your font locations</ID>
+    <ID>DestructuringDeclarationWithTooManyEntries:ClockScreen.kt$val (background, clockBox, stopwatch, stopwatchBackground) = createRefs()</ID>
+    <ID>EmptyClassBlock:WeatherExploreActivity.kt$WeatherExploreActivity${ }</ID>
+    <ID>EmptyClassBlock:WeatherExploreApplication.kt$WeatherExploreApplication${ }</ID>
+    <ID>EmptyDefaultConstructor:RetrofitExt.kt$NoResponseException$()</ID>
+    <ID>Filename:Bindings.kt$com.cygni.tim.weatherexplore.domain.usecase.Bindings.kt</ID>
+    <ID>FinalNewline:AppTheme.kt$com.cygni.tim.weatherexplore.presentation.colors.AppTheme.kt</ID>
+    <ID>FinalNewline:Bindings.kt$com.cygni.tim.weatherexplore.data.Bindings.kt</ID>
+    <ID>FinalNewline:Bindings.kt$com.cygni.tim.weatherexplore.domain.repository.Bindings.kt</ID>
+    <ID>FinalNewline:ClockComposeFragment.kt$com.cygni.tim.weatherexplore.presentation.navigation.ClockComposeFragment.kt</ID>
+    <ID>FinalNewline:ClockRepository.kt$com.cygni.tim.weatherexplore.domain.repository.ClockRepository.kt</ID>
+    <ID>FinalNewline:ClockScreen.kt$com.cygni.tim.weatherexplore.presentation.compose.ClockScreen.kt</ID>
+    <ID>FinalNewline:ClockUseCase.kt$com.cygni.tim.weatherexplore.domain.usecase.ClockUseCase.kt</ID>
+    <ID>FinalNewline:ClockViewModel.kt$com.cygni.tim.weatherexplore.presentation.viewmodel.ClockViewModel.kt</ID>
+    <ID>FinalNewline:Color.kt$com.cygni.tim.weatherexplore.presentation.colors.builder.Color.kt</ID>
+    <ID>FinalNewline:ColorsViewModel.kt$com.cygni.tim.weatherexplore.presentation.viewmodel.ColorsViewModel.kt</ID>
+    <ID>FinalNewline:GradientIcon.kt$com.cygni.tim.weatherexplore.presentation.compose.icon.GradientIcon.kt</ID>
+    <ID>FinalNewline:LocationUseCase.kt$com.cygni.tim.weatherexplore.domain.usecase.LocationUseCase.kt</ID>
+    <ID>FinalNewline:MapScreen.kt$com.cygni.tim.weatherexplore.presentation.compose.MapScreen.kt</ID>
+    <ID>FinalNewline:MapScreenViewModel.kt$com.cygni.tim.weatherexplore.presentation.viewmodel.MapScreenViewModel.kt</ID>
+    <ID>FinalNewline:MapWeatherScreenViewModel.kt$com.cygni.tim.weatherexplore.presentation.viewmodel.MapWeatherScreenViewModel.kt</ID>
+    <ID>FinalNewline:NavigationActivity.kt$com.cygni.tim.weatherexplore.presentation.NavigationActivity.kt</ID>
+    <ID>FinalNewline:NavigationScreen.kt$com.cygni.tim.weatherexplore.presentation.compose.NavigationScreen.kt</ID>
+    <ID>FinalNewline:RetrofitTests.kt$com.cygni.tim.weatherexplore.RetrofitTests.kt</ID>
+    <ID>FinalNewline:WeatherApi.kt$com.cygni.tim.weatherexplore.data.api.retrofit.WeatherApi.kt</ID>
+    <ID>FinalNewline:WeatherEntity.kt$com.cygni.tim.weatherexplore.data.api.models.WeatherEntity.kt</ID>
+    <ID>FinalNewline:WeatherExploreActivity.kt$com.cygni.tim.weatherexplore.WeatherExploreActivity.kt</ID>
+    <ID>FinalNewline:WeatherExploreApplication.kt$com.cygni.tim.weatherexplore.presentation.WeatherExploreApplication.kt</ID>
+    <ID>FinalNewline:WeatherIcons.kt$com.cygni.tim.weatherexplore.presentation.icons.WeatherIcons.kt</ID>
+    <ID>FinalNewline:WeatherItems.kt$com.cygni.tim.weatherexplore.presentation.compose.WeatherItems.kt</ID>
+    <ID>FinalNewline:WeatherModel.kt$com.cygni.tim.weatherexplore.data.models.WeatherModel.kt</ID>
+    <ID>FinalNewline:WeatherRepository.kt$com.cygni.tim.weatherexplore.data.repo.WeatherRepository.kt</ID>
+    <ID>FinalNewline:WeatherScreen.kt$com.cygni.tim.weatherexplore.presentation.compose.WeatherScreen.kt</ID>
+    <ID>FinalNewline:WeatherTimeline.kt$com.cygni.tim.weatherexplore.presentation.compose.WeatherTimeline.kt</ID>
+    <ID>FinalNewline:WeatherUseCase.kt$com.cygni.tim.weatherexplore.domain.usecase.WeatherUseCase.kt</ID>
+    <ID>FunctionNaming:AppTheme.kt$@Composable fun AppTheme(dark: Boolean = isSystemInDarkTheme(), content: @Composable () -&gt; Unit)</ID>
+    <ID>FunctionNaming:AppTheme.kt$@Composable fun AppYuTheme(dark: Boolean = isSystemInDarkTheme(), content: @Composable () -&gt; Unit)</ID>
+    <ID>FunctionNaming:ClockScreen.kt$@Composable fun ClockGraphicsComposable( state: ClockGraphicsState, modifier: Modifier, onClick: () -&gt; Unit = {} )</ID>
+    <ID>FunctionNaming:ClockScreen.kt$@Composable fun ClockScreen( viewModel: ClockViewModel )</ID>
+    <ID>FunctionNaming:ClockScreen.kt$@Composable fun ClockScreenComposable( state: ClockScreenState, preStartedStopwatch: Date? = null )</ID>
+    <ID>FunctionNaming:ClockScreen.kt$@Composable fun ClockTextComposable(state: ClockTextState, modifier: Modifier)</ID>
+    <ID>FunctionNaming:ClockScreen.kt$@Composable fun StopWatchComposable(state: StopWatchState, modifier: Modifier)</ID>
+    <ID>FunctionNaming:ClockScreen.kt$@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_NO) @Composable fun ClockScreenPreview()</ID>
+    <ID>FunctionNaming:ClockScreen.kt$@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES) @Composable fun ClockScreenNightPreview()</ID>
+    <ID>FunctionNaming:ClockScreen.kt$@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES) @Composable fun StopWatchPreview()</ID>
+    <ID>FunctionNaming:ColorsScreen.kt$@Composable fun ColorBox(textColor: Color, backgroundColor: Color, title: String)</ID>
+    <ID>FunctionNaming:ColorsScreen.kt$@Composable fun ColorsScreenComposable()</ID>
+    <ID>FunctionNaming:GradientIcon.kt$@Composable fun ClipIconSample()</ID>
+    <ID>FunctionNaming:GradientIcon.kt$@Composable fun FillIconSample()</ID>
+    <ID>FunctionNaming:GradientIcon.kt$@Composable fun GradientClipIconSample()</ID>
+    <ID>FunctionNaming:GradientIcon.kt$@Composable fun ShimmerIcon(painter: Painter, colors: List&lt;Color&gt;, modifier: Modifier)</ID>
+    <ID>FunctionNaming:MapScreen.kt$@Composable fun MapScreen(mapState: MapScreenViewModel.MapState, onChangedPosition: (LatLng) -&gt; Unit = {})</ID>
+    <ID>FunctionNaming:MapScreen.kt$@Composable fun MapWeatherScreen(mapWeatherState: MapWeatherScreenViewModel.MapWeatherState)</ID>
+    <ID>FunctionNaming:MapScreen.kt$@Preview @Composable fun MapScreenPreview()</ID>
+    <ID>FunctionNaming:NavigationActivity.kt$@Destination @Composable fun ClockScreenNav()</ID>
+    <ID>FunctionNaming:NavigationActivity.kt$@Destination @Composable fun MapScreenNav()</ID>
+    <ID>FunctionNaming:NavigationActivity.kt$@Destination @Composable fun MapWeatherScreenNav()</ID>
+    <ID>FunctionNaming:NavigationActivity.kt$@Destination @Composable fun WeatherScreenNav( displayType: WeatherViewModel.DisplayType?, navigator: DestinationsNavigator, onNavigateToGoogleMaps: (Point) -&gt; Unit, )</ID>
+    <ID>FunctionNaming:NavigationActivity.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable @Preview fun NavigationActivityScreen( onNavigateToMap: (Point) -&gt; Unit = {}, onNavigateToGoogleMaps: (Point) -&gt; Unit = {}, onCloseApp: () -&gt; Unit = {} )</ID>
+    <ID>FunctionNaming:NavigationActivity.kt$@RootNavGraph(start = true) @Destination @Composable fun NavigationScreenNav(navigator: DestinationsNavigator)</ID>
+    <ID>FunctionNaming:NavigationScreen.kt$@Composable fun NavigationScreen( onClock: () -&gt; Unit = {}, onWeather: (WeatherViewModel.DisplayType) -&gt; Unit = {}, onMap: () -&gt; Unit = {} )</ID>
+    <ID>FunctionNaming:NavigationScreen.kt$@Preview @Composable fun NavigationScreenPreview()</ID>
+    <ID>FunctionNaming:WeatherItems.kt$@Composable fun FloatingVerticalSlider( modifier: Modifier = Modifier, slider: WeatherViewModel.SliderData, onUpdateSelectedTime: (Float) -&gt; Unit = {} )</ID>
+    <ID>FunctionNaming:WeatherItems.kt$@Composable fun GoToMapItem( state: WeatherViewModel.WeatherBlock.MapLink, text: String, onClick: () -&gt; Unit = {} )</ID>
+    <ID>FunctionNaming:WeatherItems.kt$@Composable fun PrecipitationAmountSingle( state: WeatherViewModel.PrecipitationData, )</ID>
+    <ID>FunctionNaming:WeatherItems.kt$@Composable fun PrecipitationPotential( state: WeatherViewModel.WeatherBlock.PrecipitationPotential, onClick: () -&gt; Unit = {} )</ID>
+    <ID>FunctionNaming:WeatherItems.kt$@Composable fun TempWithWeatherIcon( state: WeatherViewModel.WeatherBlock.TempWithSymbolIcon, onClick: () -&gt; Unit = {} )</ID>
+    <ID>FunctionNaming:WeatherItems.kt$@Composable fun WindDirectionWithStrength( state: WeatherViewModel.WeatherBlock.WindWithStrength, onClick: () -&gt; Unit = {} )</ID>
+    <ID>FunctionNaming:WeatherItems.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun CloudCoverItem( state: WeatherViewModel.WeatherBlock.CloudCoverage, onClick: () -&gt; Unit = {} )</ID>
+    <ID>FunctionNaming:WeatherItems.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun ElevatedBlock( onClick: () -&gt; Unit, gridHeight: Dp, gridWidth: Dp, testTag: WeatherViewModel.WeatherBlock.Type, iconContent: @Composable () -&gt; Unit, textContent: @Composable () -&gt; Unit )</ID>
+    <ID>FunctionNaming:WeatherItems.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun PrecipitationAmount( state: WeatherViewModel.WeatherBlock.PrecipitationAmount, onClick: () -&gt; Unit = {} )</ID>
+    <ID>FunctionNaming:WeatherItems.kt$@Preview @Composable fun CloudCoverageItemPreview()</ID>
+    <ID>FunctionNaming:WeatherItems.kt$@Preview @Composable fun FloatingVerticalSliderPreview()</ID>
+    <ID>FunctionNaming:WeatherItems.kt$@Preview @Composable fun GoToMapPreview()</ID>
+    <ID>FunctionNaming:WeatherItems.kt$@Preview @Composable fun PrecipitationAmountPreview()</ID>
+    <ID>FunctionNaming:WeatherItems.kt$@Preview @Composable fun PrecipitationAmountSinglePreview()</ID>
+    <ID>FunctionNaming:WeatherItems.kt$@Preview @Composable fun PrecipitationPotentialPreview()</ID>
+    <ID>FunctionNaming:WeatherItems.kt$@Preview @Composable fun TempWithWeatherIconPreview()</ID>
+    <ID>FunctionNaming:WeatherItems.kt$@Preview @Composable fun WindDirectionWithStrengthPreview()</ID>
+    <ID>FunctionNaming:WeatherScreen.kt$@Composable fun CurrentTimeRow(state: WeatherViewModel.WeatherUIState.WeatherUI)</ID>
+    <ID>FunctionNaming:WeatherScreen.kt$@Composable fun FailureComposable(message: String)</ID>
+    <ID>FunctionNaming:WeatherScreen.kt$@Composable fun PendingComposable()</ID>
+    <ID>FunctionNaming:WeatherScreen.kt$@Composable fun WeatherBottomAppBar(updatedAtString: String)</ID>
+    <ID>FunctionNaming:WeatherScreen.kt$@Composable fun WeatherScreen( state: WeatherViewModel.WeatherUIState, onNavigateToMap: (Point) -&gt; Unit, onNavigateToGoogleMaps: (Point) -&gt; Unit, onToggleScreenType: () -&gt; Unit, onUpdateSelectedTime: (Float) -&gt; Unit, onClearMessage: (WeatherViewModel.Message) -&gt; Unit, )</ID>
+    <ID>FunctionNaming:WeatherScreen.kt$@Composable fun WeatherScreenComposable( state: WeatherViewModel.WeatherUIState, onNavigateToMap: (Point) -&gt; Unit = {}, onNavigateToGoogleMaps: (Point) -&gt; Unit = {}, onUpdateSelectedTime: (Float) -&gt; Unit = {}, onToggleScreenType: () -&gt; Unit = {}, onDismissMessage: (WeatherViewModel.Message) -&gt; Unit = {} )</ID>
+    <ID>FunctionNaming:WeatherScreen.kt$@Composable fun WeatherUIComposable( state: WeatherViewModel.WeatherUIState.WeatherUI, onNavigateToMap: (Point) -&gt; Unit, onNavigateToGoogleMaps: (Point) -&gt; Unit, onUpdateSelectedTime: (Float) -&gt; Unit, onTimelineClicked: () -&gt; Unit, dismissMessage: (WeatherViewModel.Message) -&gt; Unit )</ID>
+    <ID>FunctionNaming:WeatherScreen.kt$@OptIn(ExperimentalLayoutApi::class) @Composable fun CurrentWeatherBlock( state: WeatherViewModel.WeatherUIState.WeatherUI, modifier: Modifier, onLocationClick: (Point) -&gt; Unit, onGoogleMapsClick: (Point) -&gt; Unit, onTimelineClick: () -&gt; Unit, )</ID>
+    <ID>FunctionNaming:WeatherScreen.kt$@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO) @Composable fun WeatherScreenFailurePreview()</ID>
+    <ID>FunctionNaming:WeatherScreen.kt$@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO) @Composable fun WeatherScreenProgressPreview()</ID>
+    <ID>FunctionNaming:WeatherScreen.kt$@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES) @Composable fun WeatherScreenNightPreview()</ID>
+    <ID>FunctionNaming:WeatherScreen.kt$@Preview(showSystemUi = true, showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO) @Composable fun WeatherScreenPreview()</ID>
+    <ID>FunctionNaming:WeatherTimeline.kt$@Composable fun WeatherTimelineDividerItem(state: WeatherViewModel.WeatherTimelineItem.WeatherDayDivider)</ID>
+    <ID>FunctionNaming:WeatherTimeline.kt$@Composable fun WeatherTimelineHourItem(state: WeatherViewModel.WeatherTimelineItem.WeatherHourlyTimelineItem)</ID>
+    <ID>FunctionNaming:WeatherTimeline.kt$@Composable fun WeatherTimelineScreen(state: WeatherViewModel.WeatherUIState.WeatherTimelineUI)</ID>
+    <ID>FunctionNaming:WeatherTimeline.kt$@OptIn(ExperimentalFoundationApi::class) @Composable fun WeatherTimelineComposable(state: WeatherViewModel.WeatherUIState.WeatherTimelineUI, modifier: Modifier)</ID>
+    <ID>FunctionNaming:WeatherTimeline.kt$@Preview @Composable fun WeatherTimelineComposablePreview()</ID>
+    <ID>Indentation:Theme.kt$ </ID>
+    <ID>Indentation:WeatherIcons.kt$WeatherIcons.Companion$ </ID>
+    <ID>LongMethod:ClockScreen.kt$@Composable fun ClockScreenComposable( state: ClockScreenState, preStartedStopwatch: Date? = null )</ID>
+    <ID>LongMethod:MapScreen.kt$@Composable fun MapWeatherScreen(mapWeatherState: MapWeatherScreenViewModel.MapWeatherState)</ID>
+    <ID>LongMethod:WeatherItems.kt$@Composable fun PrecipitationAmountSingle( state: WeatherViewModel.PrecipitationData, )</ID>
+    <ID>LongMethod:WeatherScreen.kt$@Composable fun WeatherUIComposable( state: WeatherViewModel.WeatherUIState.WeatherUI, onNavigateToMap: (Point) -&gt; Unit, onNavigateToGoogleMaps: (Point) -&gt; Unit, onUpdateSelectedTime: (Float) -&gt; Unit, onTimelineClicked: () -&gt; Unit, dismissMessage: (WeatherViewModel.Message) -&gt; Unit )</ID>
+    <ID>LongMethod:WeatherScreen.kt$@OptIn(ExperimentalLayoutApi::class) @Composable fun CurrentWeatherBlock( state: WeatherViewModel.WeatherUIState.WeatherUI, modifier: Modifier, onLocationClick: (Point) -&gt; Unit, onGoogleMapsClick: (Point) -&gt; Unit, onTimelineClick: () -&gt; Unit, )</ID>
+    <ID>LongMethod:WeatherTimeline.kt$@Composable fun WeatherTimelineHourItem(state: WeatherViewModel.WeatherTimelineItem.WeatherHourlyTimelineItem)</ID>
+    <ID>LongMethod:WeatherTimeline.kt$@Preview @Composable fun WeatherTimelineComposablePreview()</ID>
+    <ID>LongParameterList:WeatherItems.kt$( onClick: () -&gt; Unit, gridHeight: Dp, gridWidth: Dp, testTag: WeatherViewModel.WeatherBlock.Type, iconContent: @Composable () -&gt; Unit, textContent: @Composable () -&gt; Unit )</ID>
+    <ID>LongParameterList:WeatherScreen.kt$( state: WeatherViewModel.WeatherUIState, onNavigateToMap: (Point) -&gt; Unit = {}, onNavigateToGoogleMaps: (Point) -&gt; Unit = {}, onUpdateSelectedTime: (Float) -&gt; Unit = {}, onToggleScreenType: () -&gt; Unit = {}, onDismissMessage: (WeatherViewModel.Message) -&gt; Unit = {} )</ID>
+    <ID>LongParameterList:WeatherScreen.kt$( state: WeatherViewModel.WeatherUIState, onNavigateToMap: (Point) -&gt; Unit, onNavigateToGoogleMaps: (Point) -&gt; Unit, onToggleScreenType: () -&gt; Unit, onUpdateSelectedTime: (Float) -&gt; Unit, onClearMessage: (WeatherViewModel.Message) -&gt; Unit, )</ID>
+    <ID>LongParameterList:WeatherScreen.kt$( state: WeatherViewModel.WeatherUIState.WeatherUI, onNavigateToMap: (Point) -&gt; Unit, onNavigateToGoogleMaps: (Point) -&gt; Unit, onUpdateSelectedTime: (Float) -&gt; Unit, onTimelineClicked: () -&gt; Unit, dismissMessage: (WeatherViewModel.Message) -&gt; Unit )</ID>
+    <ID>MagicNumber:ClockRepository.kt$ClockRepository$100</ID>
+    <ID>MagicNumber:ClockRepository.kt$ClockRepository$200</ID>
+    <ID>MagicNumber:ClockScreen.kt$12</ID>
+    <ID>MagicNumber:ClockScreen.kt$3</ID>
+    <ID>MagicNumber:ClockScreen.kt$36.0f</ID>
+    <ID>MagicNumber:ClockScreen.kt$360f</ID>
+    <ID>MagicNumber:ClockScreen.kt$70</ID>
+    <ID>MagicNumber:ClockScreen.kt$90f</ID>
+    <ID>MagicNumber:Color.kt$0xFF00201c</ID>
+    <ID>MagicNumber:Color.kt$0xFF003732</ID>
+    <ID>MagicNumber:Color.kt$0xFF005049</ID>
+    <ID>MagicNumber:Color.kt$0xFF006a61</ID>
+    <ID>MagicNumber:Color.kt$0xFF1c1b1e</ID>
+    <ID>MagicNumber:Color.kt$0xFF21005e</ID>
+    <ID>MagicNumber:Color.kt$0xFF313033</ID>
+    <ID>MagicNumber:Color.kt$0xFF380094</ID>
+    <ID>MagicNumber:Color.kt$0xFF3f0015</ID>
+    <ID>MagicNumber:Color.kt$0xFF410001</ID>
+    <ID>MagicNumber:Color.kt$0xFF48454e</ID>
+    <ID>MagicNumber:Color.kt$0xFF51dbcc</ID>
+    <ID>MagicNumber:Color.kt$0xFF5200ce</ID>
+    <ID>MagicNumber:Color.kt$0xFF6200ee</ID>
+    <ID>MagicNumber:Color.kt$0xFF660027</ID>
+    <ID>MagicNumber:Color.kt$0xFF680003</ID>
+    <ID>MagicNumber:Color.kt$0xFF6d23f8</ID>
+    <ID>MagicNumber:Color.kt$0xFF72f7e8</ID>
+    <ID>MagicNumber:Color.kt$0xFF79757f</ID>
+    <ID>MagicNumber:Color.kt$0xFF8c0f3d</ID>
+    <ID>MagicNumber:Color.kt$0xFF930006</ID>
+    <ID>MagicNumber:Color.kt$0xFF948f99</ID>
+    <ID>MagicNumber:Color.kt$0xFFac2c54</ID>
+    <ID>MagicNumber:Color.kt$0xFFba1b1b</ID>
+    <ID>MagicNumber:Color.kt$0xFFcac4d0</ID>
+    <ID>MagicNumber:Color.kt$0xFFd0bcff</ID>
+    <ID>MagicNumber:Color.kt$0xFFe6e0eb</ID>
+    <ID>MagicNumber:Color.kt$0xFFe6e1e6</ID>
+    <ID>MagicNumber:Color.kt$0xFFeaddff</ID>
+    <ID>MagicNumber:Color.kt$0xFFf4eff3</ID>
+    <ID>MagicNumber:Color.kt$0xFFffb2c2</ID>
+    <ID>MagicNumber:Color.kt$0xFFffb4a9</ID>
+    <ID>MagicNumber:Color.kt$0xFFffd9e0</ID>
+    <ID>MagicNumber:Color.kt$0xFFffdad4</ID>
+    <ID>MagicNumber:Color.kt$0xFFfffbfe</ID>
+    <ID>MagicNumber:Color.kt$0xFFffffff</ID>
+    <ID>MagicNumber:Colors.kt$0xFF000000</ID>
+    <ID>MagicNumber:Colors.kt$0xFF212121</ID>
+    <ID>MagicNumber:Colors.kt$0xFF26A69A</ID>
+    <ID>MagicNumber:Colors.kt$0xFF3700B3</ID>
+    <ID>MagicNumber:Colors.kt$0xFF424242</ID>
+    <ID>MagicNumber:Colors.kt$0xFF4A148C</ID>
+    <ID>MagicNumber:Colors.kt$0xFF4DB6AC</ID>
+    <ID>MagicNumber:Colors.kt$0xFF6200EE</ID>
+    <ID>MagicNumber:Colors.kt$0xFF757575</ID>
+    <ID>MagicNumber:Colors.kt$0xFF8E24AA</ID>
+    <ID>MagicNumber:Colors.kt$0xFF9575CD</ID>
+    <ID>MagicNumber:Colors.kt$0xFFAB47BC</ID>
+    <ID>MagicNumber:Colors.kt$0xFFBB86FC</ID>
+    <ID>MagicNumber:Colors.kt$0xFFBDBDBD</ID>
+    <ID>MagicNumber:Colors.kt$0xFFE0E0E0</ID>
+    <ID>MagicNumber:Colors.kt$0xFFF44336</ID>
+    <ID>MagicNumber:Colors.kt$0xFFFFFFFF</ID>
+    <ID>MagicNumber:ColorsViewModel.kt$ColorOrder.Background$4</ID>
+    <ID>MagicNumber:ColorsViewModel.kt$ColorOrder.Error$3</ID>
+    <ID>MagicNumber:ColorsViewModel.kt$ColorOrder.Outline$6</ID>
+    <ID>MagicNumber:ColorsViewModel.kt$ColorOrder.Surface$5</ID>
+    <ID>MagicNumber:ColorsViewModel.kt$ColorOrder.Unknown$7</ID>
+    <ID>MagicNumber:GradientIcon.kt$0xffEC407A</ID>
+    <ID>MagicNumber:GradientIcon.kt$1000</ID>
+    <ID>MagicNumber:GradientIcon.kt$3500</ID>
+    <ID>MagicNumber:LocationUseCase.kt$LocationUseCase$17.8172507</ID>
+    <ID>MagicNumber:LocationUseCase.kt$LocationUseCase$500</ID>
+    <ID>MagicNumber:LocationUseCase.kt$LocationUseCase$59.326038</ID>
+    <ID>MagicNumber:MapScreen.kt$11f</ID>
+    <ID>MagicNumber:MapWeatherScreenViewModel.kt$MapWeatherScreenViewModel$12</ID>
+    <ID>MagicNumber:MapWeatherScreenViewModel.kt$MapWeatherScreenViewModel$12.0</ID>
+    <ID>MagicNumber:MapWeatherScreenViewModel.kt$MapWeatherScreenViewModel$360.0</ID>
+    <ID>MagicNumber:WeatherItems.kt$100.0</ID>
+    <ID>MagicNumber:WeatherItems.kt$15</ID>
+    <ID>MagicNumber:WeatherItems.kt$180f</ID>
+    <ID>MagicNumber:WeatherItems.kt$25</ID>
+    <ID>MagicNumber:WeatherItems.kt$270f</ID>
+    <ID>MagicNumber:WeatherItems.kt$291.0f</ID>
+    <ID>MagicNumber:WeatherItems.kt$3</ID>
+    <ID>MagicNumber:WeatherItems.kt$42.0</ID>
+    <ID>MagicNumber:WeatherItems.kt$45.0</ID>
+    <ID>MagicNumber:WeatherItems.kt$45f</ID>
+    <ID>MagicNumber:WeatherItems.kt$60.0</ID>
+    <ID>MagicNumber:WeatherItems.kt$69.0</ID>
+    <ID>MagicNumber:WeatherItems.kt$85.0</ID>
+    <ID>MagicNumber:WeatherScreen.kt$15</ID>
+    <ID>MagicNumber:WeatherScreen.kt$200</ID>
+    <ID>MagicNumber:WeatherScreen.kt$291.0f</ID>
+    <ID>MagicNumber:WeatherScreen.kt$3</ID>
+    <ID>MagicNumber:WeatherScreen.kt$45.0</ID>
+    <ID>MagicNumber:WeatherScreen.kt$69.0</ID>
+    <ID>MagicNumber:WeatherScreen.kt$85.0</ID>
+    <ID>MagicNumber:WeatherTimeline.kt$0.7f</ID>
+    <ID>MagicNumber:WeatherTimeline.kt$180f</ID>
+    <ID>MagicNumber:WeatherTimeline.kt$45f</ID>
+    <ID>MagicNumber:WeatherViewModel.kt$WeatherViewModel$112.5</ID>
+    <ID>MagicNumber:WeatherViewModel.kt$WeatherViewModel$157.5</ID>
+    <ID>MagicNumber:WeatherViewModel.kt$WeatherViewModel$2.5</ID>
+    <ID>MagicNumber:WeatherViewModel.kt$WeatherViewModel$202.5</ID>
+    <ID>MagicNumber:WeatherViewModel.kt$WeatherViewModel$22.5</ID>
+    <ID>MagicNumber:WeatherViewModel.kt$WeatherViewModel$247.5</ID>
+    <ID>MagicNumber:WeatherViewModel.kt$WeatherViewModel$292.5</ID>
+    <ID>MagicNumber:WeatherViewModel.kt$WeatherViewModel$337.5</ID>
+    <ID>MagicNumber:WeatherViewModel.kt$WeatherViewModel$60</ID>
+    <ID>MagicNumber:WeatherViewModel.kt$WeatherViewModel$67.5</ID>
+    <ID>MatchingDeclarationName:Bindings.kt$ClockUseCaseModule</ID>
+    <ID>MaxLineLength:MapScreen.kt$position = CameraPosition.fromLatLngZoom(LatLng(mapWeatherState.point.lat, mapWeatherState.point.lon), 11f)</ID>
+    <ID>MaxLineLength:MapWeatherScreenViewModel.kt$MapWeatherScreenViewModel$class</ID>
+    <ID>MaxLineLength:NavigationScreen.kt$Button</ID>
+    <ID>MaxLineLength:WeatherItems.kt$ElevatedBlock</ID>
+    <ID>MaxLineLength:WeatherModel.kt$WeatherModel</ID>
+    <ID>MaxLineLength:WeatherTimeline.kt$Text(text = state.text, fontSize = 16.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)</ID>
+    <ID>MaxLineLength:WeatherViewModel.kt$WeatherViewModel$currentTemp = "${tempFormat.format(this.data.instant.details.airTemperature)} ${units.airTemperature.toTemperatureUnit()}"</ID>
+    <ID>MaxLineLength:WeatherViewModel.kt$WeatherViewModel$precipitation = this.data.next1Hours?.details?.precipitationAmount?.let { precipitationFormat.format(it) }.orEmpty()</ID>
+    <ID>MaxLineLength:WeatherViewModel.kt$WeatherViewModel$time.data.next12Hours?.details?.precipitationAmount?.let { "${precipitationFormat.format(it)}${units.precipitationAmount}" }</ID>
+    <ID>MaxLineLength:WeatherViewModel.kt$WeatherViewModel$time.data.next1Hours?.details?.precipitationAmount?.let { "${precipitationFormat.format(it)}${units.precipitationAmount}" }</ID>
+    <ID>MaxLineLength:WeatherViewModel.kt$WeatherViewModel$time.data.next6Hours?.details?.precipitationAmount?.let { "${precipitationFormat.format(it)}${units.precipitationAmount}" }</ID>
+    <ID>MaxLineLength:WeatherViewModel.kt$WeatherViewModel.WeatherBlock$PrecipitationPotential : WeatherBlock</ID>
+    <ID>MaxLineLength:WeatherViewModel.kt$WeatherViewModel.WeatherBlock$TempWithSymbolIcon : WeatherBlock</ID>
+    <ID>MaxLineLength:WeatherViewModel.kt$WeatherViewModel.WeatherBlock$WindWithStrength : WeatherBlock</ID>
+    <ID>MaximumLineLength:MapScreen.kt$ </ID>
+    <ID>MaximumLineLength:MapWeatherScreenViewModel.kt$MapWeatherScreenViewModel$class</ID>
+    <ID>MaximumLineLength:NavigationScreen.kt$ </ID>
+    <ID>MaximumLineLength:WeatherItems.kt$ </ID>
+    <ID>MaximumLineLength:WeatherModel.kt$WeatherModel$data</ID>
+    <ID>MaximumLineLength:WeatherTimeline.kt$ </ID>
+    <ID>MaximumLineLength:WeatherViewModel.kt$WeatherViewModel$ </ID>
+    <ID>MaximumLineLength:WeatherViewModel.kt$WeatherViewModel.WeatherBlock$ </ID>
+    <ID>MemberNameEqualsClassName:WeatherIcons.kt$WeatherIcons.Companion$private val weatherIcons = json.decodeFromString&lt;List&lt;WeatherIconEntity&gt;&gt;(jsonString)</ID>
+    <ID>NewLineAtEndOfFile:AppTheme.kt$com.cygni.tim.weatherexplore.presentation.colors.AppTheme.kt</ID>
+    <ID>NewLineAtEndOfFile:Bindings.kt$com.cygni.tim.weatherexplore.data.Bindings.kt</ID>
+    <ID>NewLineAtEndOfFile:Bindings.kt$com.cygni.tim.weatherexplore.domain.repository.Bindings.kt</ID>
+    <ID>NoBlankLineBeforeRbrace:ClockComposeFragment.kt$ClockComposeFragment$ </ID>
+    <ID>NoBlankLineBeforeRbrace:GradientIcon.kt$ </ID>
+    <ID>NoBlankLineBeforeRbrace:MapScreen.kt$ </ID>
+    <ID>NoBlankLineBeforeRbrace:MapWeatherScreenViewModel.kt$MapWeatherScreenViewModel$ </ID>
+    <ID>NoBlankLineBeforeRbrace:WeatherApi.kt$WeatherApi$ </ID>
+    <ID>NoBlankLineBeforeRbrace:WeatherExploreActivity.kt$WeatherExploreActivity$ </ID>
+    <ID>NoBlankLineBeforeRbrace:WeatherExploreApplication.kt$WeatherExploreApplication$ </ID>
+    <ID>NoBlankLineBeforeRbrace:WeatherItems.kt$ </ID>
+    <ID>NoBlankLineBeforeRbrace:WeatherScreen.kt$ </ID>
+    <ID>NoConsecutiveBlankLines:Bindings.kt$ </ID>
+    <ID>NoConsecutiveBlankLines:Color.kt$ </ID>
+    <ID>NoConsecutiveBlankLines:Colors.kt$ </ID>
+    <ID>NoConsecutiveBlankLines:MapScreen.kt$ </ID>
+    <ID>NoConsecutiveBlankLines:MapScreenViewModel.kt$MapScreenViewModel$ </ID>
+    <ID>NoConsecutiveBlankLines:MapWeatherScreenViewModel.kt$ </ID>
+    <ID>NoConsecutiveBlankLines:RetrofitExt.kt$ </ID>
+    <ID>NoConsecutiveBlankLines:WeatherViewModel.kt$WeatherViewModel$ </ID>
+    <ID>NoEmptyClassBody:WeatherExploreActivity.kt$WeatherExploreActivity${ }</ID>
+    <ID>NoEmptyClassBody:WeatherExploreApplication.kt$WeatherExploreApplication${ }</ID>
+    <ID>NoEmptyFirstLineInMethodBlock:NavigationActivity.kt$ </ID>
+    <ID>NoEmptyFirstLineInMethodBlock:WeatherItems.kt$ </ID>
+    <ID>NoEmptyFirstLineInMethodBlock:WeatherScreen.kt$ </ID>
+    <ID>NoSemicolons:NavigationActivity.kt$NavigationActivity$;</ID>
+    <ID>NoSemicolons:WeatherViewModel.kt$WeatherViewModel.WeatherBlock.Type.GoToGoogleMaps$;</ID>
+    <ID>NoTrailingSpaces:Theme.kt$ </ID>
+    <ID>NoUnusedImports:ClockRepository.kt$com.cygni.tim.weatherexplore.domain.repository.ClockRepository.kt</ID>
+    <ID>NoUnusedImports:LocationUseCase.kt$com.cygni.tim.weatherexplore.domain.usecase.LocationUseCase.kt</ID>
+    <ID>NoUnusedImports:MapScreen.kt$com.cygni.tim.weatherexplore.presentation.compose.MapScreen.kt</ID>
+    <ID>NoUnusedImports:MapWeatherScreenViewModel.kt$com.cygni.tim.weatherexplore.presentation.viewmodel.MapWeatherScreenViewModel.kt</ID>
+    <ID>NoUnusedImports:Theme.kt$com.cygni.tim.weatherexplore.presentation.colors.builder.Theme.kt</ID>
+    <ID>NoWildcardImports:ClockViewModel.kt$import kotlinx.coroutines.flow.*</ID>
+    <ID>ParameterListWrapping:MapWeatherScreenViewModel.kt$MapWeatherScreenViewModel$(private val locationUseCase: LocationUseCase, private val weatherUseCase: WeatherUseCase)</ID>
+    <ID>ParameterListWrapping:WeatherViewModel.kt$WeatherViewModel.WeatherBlock.TempWithSymbolIcon$(val weatherIcon: String, val currentTemp: String)</ID>
+    <ID>ParameterListWrapping:WeatherViewModel.kt$WeatherViewModel.WeatherBlock.WindWithStrength$(val degrees: Float, val direction: String, val strength: String)</ID>
+    <ID>PrintStackTrace:WeatherIcons.kt$WeatherIcons.Companion$e</ID>
+    <ID>SpacingAroundColon:WeatherEntity.kt$TimeSeriesInstantDetails$:</ID>
+    <ID>SpacingAroundColon:WeatherExploreActivity.kt$WeatherExploreActivity$:</ID>
+    <ID>SpacingAroundColon:WeatherExploreApplication.kt$WeatherExploreApplication$:</ID>
+    <ID>SpacingAroundCurly:GradientIcon.kt${</ID>
+    <ID>SpacingAroundCurly:WeatherTimeline.kt${</ID>
+    <ID>SpacingAroundCurly:WeatherTimeline.kt$}</ID>
+    <ID>SwallowedException:NavigationActivity.kt$NavigationActivity$e: ActivityNotFoundException</ID>
+    <ID>TooGenericExceptionCaught:NavigationActivity.kt$NavigationActivity$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:RetrofitExt.kt$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:WeatherIcons.kt$WeatherIcons.Companion$e: Exception</ID>
+    <ID>UnnecessaryParenthesesBeforeTrailingLambda:WeatherTimeline.kt$()</ID>
+    <ID>UnusedParameter:NavigationActivity.kt$onNavigateToMap: (Point) -&gt; Unit = {}</ID>
+    <ID>UnusedPrivateProperty:Colors.kt$private val Black400 = Color(0xFFBDBDBD)</ID>
+    <ID>UnusedPrivateProperty:Colors.kt$private val Black600 = Color(0xFF757575)</ID>
+    <ID>UnusedPrivateProperty:Colors.kt$private val Purple600 = Color(0xFF8E24AA)</ID>
+    <ID>UnusedPrivateProperty:Colors.kt$private val Purple900 = Color(0xFF4A148C)</ID>
+    <ID>UnusedPrivateProperty:GradientIcon.kt$val filledHeight = totalHeight * progress</ID>
+    <ID>WildcardImport:ClockViewModel.kt$import kotlinx.coroutines.flow.*</ID>
+    <ID>Wrapping:ClockScreen.kt$( state = stopwatchPreviewState(), preStartedStopwatch = Date.from( Instant.ofEpochMilli(Date().time) .minusSeconds(70) .minusMillis(12) ) )</ID>
+    <ID>Wrapping:ColorsViewModel.kt$(</ID>
+    <ID>Wrapping:GradientIcon.kt$( initialValue = 0f, targetValue = 1f, animationSpec = infiniteRepeatable( animation = tween(3500, easing = LinearEasing), repeatMode = RepeatMode.Restart ), label = "Shimmering progress animation" )</ID>
+    <ID>Wrapping:NavigationActivity.kt$(</ID>
+    <ID>Wrapping:WeatherItems.kt$( horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier .height(grid.height) .width(grid.width * 3) .background(color = MaterialTheme.colorScheme.primaryContainer, shape = RoundedCornerShape(8.dp)) .padding(4.dp) )</ID>
+    <ID>Wrapping:WeatherItems.kt$( modifier = Modifier .wrapContentSize() .padding(8.dp), contentAlignment = Alignment.Center )</ID>
+    <ID>Wrapping:WeatherRepository.kt$WeatherRepository$(</ID>
+    <ID>Wrapping:WeatherScreen.kt$(</ID>
+    <ID>Wrapping:WeatherScreen.kt$( painterResource(id = R.drawable.alert_circle_outline), listOf( MaterialTheme.colorScheme.surfaceVariant, MaterialTheme.colorScheme.background, MaterialTheme.colorScheme.surfaceVariant, ), modifier = Modifier.size(128.dp) )</ID>
+    <ID>Wrapping:WeatherScreen.kt$( state = state, modifier = Modifier .fillMaxWidth() .padding(top = 24.dp, start = 8.dp, end = 8.dp), onLocationClick = { onNavigateToMap(it) }, onTimelineClick = { onTimelineClicked() }, onGoogleMapsClick = { onNavigateToGoogleMaps(it) }, )</ID>
+    <ID>Wrapping:WeatherTimeline.kt$( state = state, modifier = Modifier .fillMaxSize() .padding(padding) )</ID>
+    <ID>Wrapping:WeatherViewModel.kt$WeatherViewModel$"${precipitationFormat.format(it)}${units.precipitationAmount}"</ID>
+  </CurrentIssues>
+</SmellBaseline>

@@ -29,3 +29,9 @@ message("Permissions: #{apkstats.permissions.map { |perm| perm.sub("android.perm
 message("Min SDK: [#{apkstats.min_sdk}](https://apilevels.com/)")
 message("Target SDK: [#{apkstats.target_sdk}](https://apilevels.com/)")
 #message("#{apkstats.method_reference_count}")
+
+# options are ["warning", error "error"]
+kotlin_detekt.skip_gradle_task = true
+kotlin_detekt.severity = "warning"
+kotlin_detekt.report_file = "app/build/reports/detekt/detekt.xml"
+kotlin_detekt.detekt

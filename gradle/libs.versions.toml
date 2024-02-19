@@ -29,6 +29,7 @@ okhttp = "4.9.0"
 retrofit = "2.9.0"
 retrofit2KotlinxSerializationConverter = "0.8.0"
 safeargsKotlin = "2.7.7"
+detektVersion = "1.23.5"
 ksp = "1.9.20-1.0.14"
 ktxCore = "1.12.0"
 appcompat = "1.6.1"
@@ -88,6 +89,7 @@ androidx-compose-material = { group = "androidx.compose.material", name = "mater
 androidx-compose-ui-test = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-compose-ui-manifest-test = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 secrets-gradle-plugin = { module = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin", version.ref = "secretsGradlePlugin" }
+detekt-formatting = { group = "io.gitlab.arturbosch.detekt", name = "detekt-formatting", version.ref = "detektVersion" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
@@ -95,3 +97,4 @@ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlinAnd
 hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hiltAndroid" }
 navigation-safe-args = { id = "androidx.navigation.safeargs.kotlin", version.ref = "safeargsKotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detektVersion" }
