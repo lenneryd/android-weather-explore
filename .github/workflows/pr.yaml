@@ -36,8 +36,20 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
+      - name: Enable KVM group perms
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
       - name: Run Android Lint, Test, Assemble
         run: ./gradlew lintDebug testDebug detekt assembleDebug
+
+      - name: run tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 29
+          script: ./gradlew connectedDebugAndroidTest
 
       - name: Danger Kotlin
         uses: docker://ghcr.io/danger/danger-kotlin:1.2.0
