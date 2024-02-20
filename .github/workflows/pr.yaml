@@ -9,9 +9,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Setup Ruby, JRuby and TruffleRuby
+      - name: Setup Ruby
         uses: ruby/setup-ruby@v1.171.0
-        if: ${{ false }}
         with:
           ruby-version: '3.3' # Not needed with a .ruby-version file
           bundler-cache: true # runs 'bundle install' and caches installed gems automatically
@@ -40,15 +39,14 @@ jobs:
       - name: Run Android Lint, Test, Assemble
         run: ./gradlew lintDebug testDebug detekt assembleDebug
 
-      - name: Run Danger
-        if: ${{ false }}
-        env:
-          DANGER_GITHUB_API_TOKEN: ${{ secrets.DANGER_GITHUB_API_TOKEN }}
-        run: bundle exec danger
-
-      - name: Danger Kotlin # And Danger action
+      - name: Danger Kotlin
         uses: docker://ghcr.io/danger/danger-kotlin:1.2.0
         with:
           args: --dangerfile ./Dangerfile.df.kts
         env:
-          GITHUB_TOKEN: ${{ secrets.DANGER_GITHUB_API_TOKEN }} # Extracted automatically
+          GITHUB_TOKEN: ${{ secrets.DANGER_GITHUB_API_TOKEN }}
+
+      - name: Danger Ruby
+        env:
+          DANGER_GITHUB_API_TOKEN: ${{ secrets.DANGER_GITHUB_API_TOKEN }}
+        run: bundle exec danger
