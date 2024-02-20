@@ -49,7 +49,10 @@ jobs:
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 29
-          script: ./gradlew connectedDebugAndroidTest
+          script: |
+            adb logcat *:S TestRunner:V -T 1 & LOGCAT_PID=$! ; \
+            ./gradlew connectedDebugAndroidTest ; \
+            if [ -n "$LOGCAT_PID" ] ; then kill $LOGCAT_PID; fi
 
       - name: Danger Kotlin
         uses: docker://ghcr.io/danger/danger-kotlin:1.2.0
