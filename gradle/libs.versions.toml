@@ -3,7 +3,6 @@ accompanistFlowlayout = "0.32.0"
 activityKtx = "1.8.2"
 androidGradlePlugin = "8.2.2"
 constraintlayoutCompose = "1.0.1"
-core = "1.9.62"
 coilCompose = "1.4.0"
 espressoCore = "3.5.1"
 fragmentKtx = "1.6.2"
@@ -63,7 +62,6 @@ androidx-navigation-testing = { module = "androidx.navigation:navigation-testing
 androidx-navigation-ui-ktx = { module = "androidx.navigation:navigation-ui-ktx", version.ref = "navigationUiKtx" }
 androidx-navigation-fragment-ktx = { module = "androidx.navigation:navigation-fragment-ktx", version.ref = "navigationFragmentKtx" }
 androidx-navigation-navigation-ui-ktx = { module = "androidx.navigation:navigation-ui-ktx", version.ref = "navigationFragmentKtx" }
-core = { module = "io.github.raamcosta.compose-destinations:core", version.ref = "core" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
 androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hiltAndroidCompiler" }
