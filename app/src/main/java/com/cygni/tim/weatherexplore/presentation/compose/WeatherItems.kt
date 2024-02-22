@@ -85,7 +85,7 @@ fun TempWithWeatherIcon(
 fun GoToMapItem(
     state: WeatherViewModel.WeatherBlock.MapLink,
     text: String,
-    onClick: () -> Unit = {}
+    onClick: () -> Unit
 ) {
     LocalGridSize.current.let { grid ->
         ElevatedBlock(
@@ -535,5 +535,5 @@ fun GoToMapPreview() {
             )
         ),
         "Google Maps"
-    )
+    ) {}
 }

@@ -41,6 +41,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -71,8 +72,8 @@ fun WeatherScreen(
     onClearMessage: (WeatherViewModel.Message) -> Unit,
 ) {
     WeatherScreenComposable(state = state,
-        onNavigateToMap,
-        onNavigateToGoogleMaps,
+        onNavigateToMap = { onNavigateToMap(it) },
+        onNavigateToGoogleMaps = { onNavigateToGoogleMaps(it) },
         onUpdateSelectedTime = {
             onUpdateSelectedTime(it)
         }, onToggleScreenType = {
@@ -102,12 +103,12 @@ fun WeatherScreenComposable(
     ) {
         when (state) {
             is WeatherViewModel.WeatherUIState.WeatherUI -> WeatherUIComposable(
-                state,
-                onNavigateToMap,
-                onNavigateToGoogleMaps,
-                onUpdateSelectedTime,
-                onToggleScreenType,
-                onDismissMessage,
+                state = state,
+                onNavigateToMap = onNavigateToMap,
+                onNavigateToGoogleMaps = onNavigateToGoogleMaps,
+                onUpdateSelectedTime = onUpdateSelectedTime,
+                onTimelineClicked = onToggleScreenType,
+                dismissMessage = onDismissMessage,
             )
 
             is WeatherViewModel.WeatherUIState.WeatherTimelineUI -> WeatherTimelineScreen(
@@ -130,7 +131,7 @@ fun WeatherUIComposable(
     dismissMessage: (WeatherViewModel.Message) -> Unit
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
-    var sliderShown = LocalPreviewState.current.showSlider
+    var sliderShown by remember { mutableStateOf(false) }
 
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -148,7 +149,9 @@ fun WeatherUIComposable(
                 }
 
                 FloatingActionButton(
-                    onClick = { sliderShown = !sliderShown },
+                    onClick = {
+                        sliderShown = !sliderShown
+                    },
                     containerColor = MaterialTheme.colorScheme.tertiaryContainer,
                     contentColor = MaterialTheme.colorScheme.tertiary,
                     shape = CircleShape
@@ -194,11 +197,12 @@ fun WeatherUIComposable(
             CurrentTimeRow(state = state)
 
             CurrentWeatherBlock(
-                state = state, modifier = Modifier
+                state = state,
+                modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 24.dp, start = 8.dp, end = 8.dp),
-                onLocationClick = { onNavigateToMap(it) },
                 onTimelineClick = { onTimelineClicked() },
+                onLocationClick = { onNavigateToMap(it) },
                 onGoogleMapsClick = { onNavigateToGoogleMaps(it) },
             )
         }
@@ -373,7 +377,7 @@ fun WeatherBottomAppBar(updatedAtString: String) {
     }
 }
 
-@Preview(showSystemUi = true, showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Preview(showSystemUi = true, apiLevel = 33, showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Composable
 fun WeatherScreenPreview() {
     AppYuTheme {
@@ -383,7 +387,7 @@ fun WeatherScreenPreview() {
     }
 }
 
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Preview(showBackground = true, apiLevel = 33, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun WeatherScreenNightPreview() {
     AppYuTheme {
@@ -393,7 +397,7 @@ fun WeatherScreenNightPreview() {
     }
 }
 
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Preview(showBackground = true, apiLevel = 33, uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Composable
 fun WeatherScreenFailurePreview() {
     AppYuTheme {
@@ -403,7 +407,7 @@ fun WeatherScreenFailurePreview() {
     }
 }
 
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Preview(showBackground = true, apiLevel = 33, uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Composable
 fun WeatherScreenProgressPreview() {
     AppYuTheme {

@@ -156,7 +156,6 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.coil.compose)
     implementation(libs.accompanist.flowlayout)
-    implementation(libs.core)
     ksp(libs.ksp)
 
     // Java language implementation
