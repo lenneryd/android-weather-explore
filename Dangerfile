@@ -38,3 +38,7 @@ message("Permissions: #{permissions_list(apkstats.permissions)}")
 message("Min SDK: [#{apkstats.min_sdk}](https://apilevels.com/)")
 message("Target SDK: [#{apkstats.target_sdk}](https://apilevels.com/)")
 #message("#{apkstats.method_reference_count}")
+
+test_output = Dir.glob("**/build/outputs/androidTest-results/connected/TEST*.xml").first
+junit.parse test_output
+junit.report

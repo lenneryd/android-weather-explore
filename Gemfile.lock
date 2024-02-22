@@ -32,6 +32,9 @@ GEM
       oga
     danger-apkstats (0.3.1)
       danger-plugin-api (~> 1.0)
+    danger-junit (1.0.2)
+      danger (> 2.0)
+      ox (~> 2.0)
     danger-plugin-api (1.0.0)
       danger (> 2.0)
     diff-lcs (1.5.1)
@@ -64,9 +67,10 @@ GEM
       ast
       ruby-ll (~> 2.1)
     open4 (1.3.4)
+    ox (2.14.17)
     public_suffix (5.0.4)
     racc (1.7.3)
-    rack (2.2.8)
+    rack (2.2.8.1)
     rchardet (1.8.0)
     rexml (3.2.6)
     rspec (3.13.0)
@@ -101,6 +105,7 @@ DEPENDENCIES
   danger
   danger-android_lint
   danger-apkstats
+  danger-junit
   nokogiri
   rack (~> 2.2.4)
   rspec
