@@ -12,7 +12,9 @@ import com.cygni.tim.weatherexplore.data.models.Point
 import com.cygni.tim.weatherexplore.presentation.colors.AppYuTheme
 import com.cygni.tim.weatherexplore.presentation.compose.WeatherScreenComposable
 import com.cygni.tim.weatherexplore.presentation.viewmodel.WeatherViewModel
+import junit.framework.TestCase.assertTrue
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -79,5 +81,11 @@ class RetrofitTests {
             .let { node ->
                 node.assertExists("Cannot find WeatherViewModel.WeatherBlock.Type.TempWithSymbol node")
             }
+    }
+
+    @Ignore("Intentionally skipped test")
+    @Test
+    fun testFailingTest() {
+        assertTrue(false)
     }
 }

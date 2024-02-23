@@ -9,17 +9,14 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.cygni.tim.weatherexplore.data.models.Point
 import com.cygni.tim.weatherexplore.presentation.colors.AppYuTheme
-import com.cygni.tim.weatherexplore.presentation.compose.WeatherPreviewState
-import com.cygni.tim.weatherexplore.presentation.compose.WeatherScreen
 import com.cygni.tim.weatherexplore.presentation.compose.WeatherScreenComposable
 import com.cygni.tim.weatherexplore.presentation.viewmodel.WeatherViewModel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.test.runTest
 
 import org.junit.Test
 import org.junit.runner.RunWith
 
 import org.junit.Assert.*
+import org.junit.Ignore
 import org.junit.Rule
 
 /**
@@ -33,7 +30,7 @@ class ComposeTests {
     @get:Rule
     val composeTestRule = createComposeRule()
 
-    private fun testWeatherUIState() = WeatherViewModel.WeatherUIState.WeatherUI(
+    private fun weatherUIState() = WeatherViewModel.WeatherUIState.WeatherUI(
         Point(
             lat = 59.326038,
             lon = 17.8172507
@@ -61,7 +58,7 @@ class ComposeTests {
         composeTestRule.setContent {
             AppYuTheme {
                 WeatherScreenComposable(
-                    state = testWeatherUIState(),
+                    state = weatherUIState(),
                     onNavigateToMap = {},
                     onToggleScreenType = {},
                     onUpdateSelectedTime = {},
@@ -78,5 +75,11 @@ class ComposeTests {
             .let { node ->
                 node.assertExists("Cannot find WeatherViewModel.WeatherBlock.Type.TempWithSymbol node")
             }
+    }
+
+    @Ignore("Ignored as it is an intentionally skipped test.")
+    @Test
+    fun testFailingTest() {
+        assertTrue(false)
     }
 }

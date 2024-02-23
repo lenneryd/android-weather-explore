@@ -38,3 +38,10 @@ message("Permissions: #{permissions_list(apkstats.permissions)}")
 message("Min SDK: [#{apkstats.min_sdk}](https://apilevels.com/)")
 message("Target SDK: [#{apkstats.target_sdk}](https://apilevels.com/)")
 #message("#{apkstats.method_reference_count}")
+
+instrument_test_output = Dir.glob("**/build/outputs/androidTest-results/connected/debug/TEST*.xml")
+unit_test_output = Dir.glob("**/build/test-results/testDebugUnitTest/TEST*.xml")
+junit.parse_files unit_test_output + instrument_test_output
+message("Ran a total of #{junit.passes.length()} tests that took #{junit.passes.inject(0){ |sum, test| sum + test.time.to_f }.round(2) } seconds")
+junit.show_skipped_tests = true
+junit.report
