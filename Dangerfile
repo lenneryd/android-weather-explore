@@ -39,6 +39,9 @@ message("Min SDK: [#{apkstats.min_sdk}](https://apilevels.com/)")
 message("Target SDK: [#{apkstats.target_sdk}](https://apilevels.com/)")
 #message("#{apkstats.method_reference_count}")
 
-test_output = Dir.glob("**/build/outputs/androidTest-results/connected/TEST*.xml").first
+test_output = Dir.glob("**/build/outputs/androidTest-results/connected/debug/TEST*.xml").first
+message("Showing test report from: #{test_output}")
 junit.parse test_output
+message("Ran a total of #{junit.passes.length()} tests that took #{junit.passes.inject(0){ |sum, test| sum + test.time.to_f } } seconds")
+junit.show_skipped_tests = true
 junit.report
