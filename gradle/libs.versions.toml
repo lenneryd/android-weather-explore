@@ -40,6 +40,7 @@ googleMapsUtils = "3.8.2"
 googleMapsCompose = "4.3.0"
 secretsGradlePlugin = "2.0.1"
 koverVersion = "0.7.6"
+mockkVersion = "1.13.9"
 
 [libraries]
 accompanist-flowlayout = { module = "com.google.accompanist:accompanist-flowlayout", version.ref = "accompanistFlowlayout" }
@@ -89,6 +90,8 @@ androidx-compose-ui-test = { group = "androidx.compose.ui", name = "ui-test-juni
 androidx-compose-ui-manifest-test = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 secrets-gradle-plugin = { module = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin", version.ref = "secretsGradlePlugin" }
 detekt-formatting = { group = "io.gitlab.arturbosch.detekt", name = "detekt-formatting", version.ref = "detektVersion" }
+mock-mockk = { module = "io.mockk:mockk", version.ref = "mockkVersion"}
+mock-mockk-android = { module = "io.mockk:mockk-android", version.ref = "mockkVersion"}
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }

@@ -28,6 +28,7 @@ koverReport {
     filters {
         excludes {
             classes(
+                "com.cygni.tim.weatherexplore.Fixtures",
                 "dagger.hilt.internal.aggregatedroot.*",
                 "hilt_aggregated_deps.*",
                 "_com_cygni_tim_weatherexplore*",
@@ -104,7 +105,6 @@ android {
         }
     }
 
-
     buildTypes {
         getByName("release") {
             isMinifyEnabled = false
@@ -140,6 +140,13 @@ android {
                     }
                 }
             }
+        }
+    }
+
+    packaging {
+        resources.excludes.add("META-INF/*")
+        jniLibs {
+            useLegacyPackaging = true
         }
     }
 
@@ -240,6 +247,7 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.compose.ui.test)
     debugImplementation(libs.androidx.compose.ui.manifest.test)
-
+    testImplementation(libs.mock.mockk)
+    androidTestImplementation(libs.mock.mockk.android)
     detektPlugins(libs.detekt.formatting)
 }

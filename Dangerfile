@@ -46,4 +46,7 @@ message("Ran a total of #{junit.passes.length()} tests that took #{junit.passes.
 junit.show_skipped_tests = true
 junit.report
 
-kover.report 'App', 'app/build/reports/kover/report.xml'
+kover.total_threshold = 50
+kover.file_threshold = 40
+kover.fail_if_under_threshold = false
+kover.report 'App', 'app/build/reports/kover/reportDebug.xml'
