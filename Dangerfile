@@ -45,3 +45,5 @@ junit.parse_files unit_test_output + instrument_test_output
 message("Ran a total of #{junit.passes.length()} tests that took #{junit.passes.inject(0){ |sum, test| sum + test.time.to_f }.round(2) } seconds")
 junit.show_skipped_tests = true
 junit.report
+
+kover.report 'App', 'app/build/reports/kover/report.xml'

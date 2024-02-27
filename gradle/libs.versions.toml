@@ -39,6 +39,7 @@ googleMaps = "18.2.0"
 googleMapsUtils = "3.8.2"
 googleMapsCompose = "4.3.0"
 secretsGradlePlugin = "2.0.1"
+koverVersion = "0.7.6"
 
 [libraries]
 accompanist-flowlayout = { module = "com.google.accompanist:accompanist-flowlayout", version.ref = "accompanistFlowlayout" }
@@ -96,3 +97,4 @@ hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hiltAndro
 navigation-safe-args = { id = "androidx.navigation.safeargs.kotlin", version.ref = "safeargsKotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detektVersion" }
+kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "koverVersion"}

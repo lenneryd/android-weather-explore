@@ -11,16 +11,50 @@ plugins {
     alias(libs.plugins.navigation.safe.args)
     alias(libs.plugins.ksp)
     alias(libs.plugins.detekt)
+    alias(libs.plugins.kover)
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 }
 
 val secretsFile: File = rootProject.file("secrets.properties")
 val secretProperties = Properties()
-if(secretsFile.exists()) {
+if (secretsFile.exists()) {
     project.logger.info("Found secrets file")
     secretProperties.load(FileInputStream(secretsFile))
 } else {
     project.logger.info("No Secrets file found, using system env.")
+}
+
+koverReport {
+    filters {
+        excludes {
+            classes(
+                "dagger.hilt.internal.aggregatedroot.*",
+                "hilt_aggregated_deps.*",
+                "_com_cygni_tim_weatherexplore*",
+                "com.cygni.tim.weatherexplore.BuildConfig",
+                "com.cygni.tim.weatherexplore.data*.*Factory",
+                "com.cygni.tim.weatherexplore.data*.*Module",
+                "com.cygni.tim.weatherexplore.databinding.*",
+                "com.cygni.tim.weatherexplore.domain*.*Factory",
+                "com.cygni.tim.weatherexplore.domain*.*Module",
+                "com.cygni.tim.weatherexplore.domain.*.*Factory",
+                "com.cygni.tim.weatherexplore.domain*.*.*Module",
+                "dagger.hilt.internal.aggregatedroot.codegen.*",
+                "hilt_aggregated_deps.*",
+                "om.cygni.tim.weatherexplore.*.di.*",
+                "om.cygni.tim.weatherexplore.*.Hilt_*",
+                "om.cygni.tim.weatherexplore.*.*_Factory*",
+                "om.cygni.tim.weatherexplore.*.*_HiltModules*",
+                "om.cygni.tim.weatherexplore.*.*Module_*",
+                "om.cygni.tim.weatherexplore.*.*MembersInjector*",
+                "om.cygni.tim.weatherexplore.*.*_Impl*",
+                "om.cygni.tim.weatherexplore.ComposableSingletons*",
+                "om.cygni.tim.weatherexplore.BuildConfig*",
+                "om.cygni.tim.weatherexplore.*.Fake*",
+                "om.cygni.tim.weatherexplore.app.ComposableSingletons*"
+            )
+        }
+    }
 }
 
 detekt {
@@ -72,7 +106,7 @@ android {
 
 
     buildTypes {
-        getByName("release")  {
+        getByName("release") {
             isMinifyEnabled = false
             signingConfig = signingConfigs.getByName("release")
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
@@ -111,7 +145,7 @@ android {
 
     lint {
         abortOnError = false
-        checkReleaseBuilds =  false
+        checkReleaseBuilds = false
         xmlReport = true
         htmlReport = false
         checkDependencies = true
