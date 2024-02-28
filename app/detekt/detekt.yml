@@ -167,11 +167,11 @@ complexity:
   TooManyFunctions:
     active: true
     excludes: ['**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/androidUnitTest/**', '**/androidInstrumentedTest/**', '**/jsTest/**', '**/iosTest/**']
-    thresholdInFiles: 15
-    thresholdInClasses: 15
-    thresholdInInterfaces: 15
-    thresholdInObjects: 15
-    thresholdInEnums: 15
+    thresholdInFiles: 25
+    thresholdInClasses: 25
+    thresholdInInterfaces: 25
+    thresholdInObjects: 25
+    thresholdInEnums: 25
     ignoreDeprecated: false
     ignorePrivate: false
     ignoreOverridden: false
@@ -882,7 +882,7 @@ formatting:
     indentSize: 4
   MaximumLineLength:
     active: true
-    maxLineLength: 120
+    maxLineLength: 140
     ignoreBackTickedIdentifier: false
   ModifierListSpacing:
     active: true

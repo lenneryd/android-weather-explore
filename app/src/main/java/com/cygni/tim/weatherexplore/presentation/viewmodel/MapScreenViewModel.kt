@@ -20,7 +20,6 @@ class MapScreenViewModel @Inject constructor(private val locationUseCase: Locati
     val uiState get(): StateFlow<MapState> = _uiState
 
     init {
-
         viewModelScope.launch {
             val location = locationUseCase.getLocation().firstOrNull()?.getOrNull()
             _uiState.value = MapState(location?.toPoint())
@@ -30,7 +29,6 @@ class MapScreenViewModel @Inject constructor(private val locationUseCase: Locati
     fun onChangedPosition(pos: LatLng) {
         locationUseCase.setLocation(Point(pos.latitude, pos.longitude))
     }
-
 
     data class MapState(val pos: Point? = null)
 }

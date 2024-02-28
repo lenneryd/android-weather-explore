@@ -41,7 +41,6 @@ koverReport {
                 "com.cygni.tim.weatherexplore.domain.*.*Factory",
                 "com.cygni.tim.weatherexplore.domain*.*.*Module",
                 "dagger.hilt.internal.aggregatedroot.codegen.*",
-                "hilt_aggregated_deps.*",
                 "om.cygni.tim.weatherexplore.*.di.*",
                 "om.cygni.tim.weatherexplore.*.Hilt_*",
                 "om.cygni.tim.weatherexplore.*.*_Factory*",
@@ -53,6 +52,11 @@ koverReport {
                 "om.cygni.tim.weatherexplore.BuildConfig*",
                 "om.cygni.tim.weatherexplore.*.Fake*",
                 "om.cygni.tim.weatherexplore.app.ComposableSingletons*"
+            )
+            packages(
+                "hilt_aggregated_deps",
+                "hilt_aggregated_deps.*",
+                "dagger.hilt.internal.aggregatedroot"
             )
         }
     }

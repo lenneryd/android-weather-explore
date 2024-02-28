@@ -15,7 +15,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.Text
+import androidx.compose.material3.Text
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
@@ -191,6 +191,7 @@ fun sweepAngle(second: Int): State<Float> {
             durationMillis = 1000,
             easing = LinearEasing
         ),
+        label = "Animated sweep angle"
     )
 }
 
@@ -333,7 +334,7 @@ fun StopWatchComposable(state: StopWatchState, modifier: Modifier) {
     }
 }
 
-@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
+@Preview(showBackground = true, apiLevel = 33, uiMode = UI_MODE_NIGHT_YES)
 @Composable
 fun StopWatchPreview() {
     AppYuTheme {
@@ -348,7 +349,7 @@ fun StopWatchPreview() {
     }
 }
 
-@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_NO)
+@Preview(showBackground = true, apiLevel = 33, uiMode = UI_MODE_NIGHT_NO)
 @Composable
 fun ClockScreenPreview() {
     AppYuTheme {
@@ -358,7 +359,7 @@ fun ClockScreenPreview() {
     }
 }
 
-@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
+@Preview(showBackground = true, apiLevel = 33, uiMode = UI_MODE_NIGHT_YES)
 @Composable
 fun ClockScreenNightPreview() {
     AppYuTheme {

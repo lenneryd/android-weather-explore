@@ -9,6 +9,5 @@ import javax.inject.Inject
 class WeatherUseCase @Inject constructor(
     private val repo: WeatherRepository
 ) {
-
     fun getWeather(point: Point): Flow<Result<WeatherModel>> = repo.getWeather(point)
 }

@@ -9,6 +9,7 @@ import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
@@ -31,6 +32,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -132,7 +134,6 @@ class NavigationActivity : AppCompatActivity() {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 @Preview
 fun NavigationActivityScreen(
@@ -142,80 +143,90 @@ fun NavigationActivityScreen(
     val navController = rememberNavController()
     AppYuTheme {
         Scaffold(
-            topBar = {
-
-                CenterAlignedTopAppBar(
-                    title = {
-                        Text(
-                            navController.currentDestination?.asRoute()?.title.orEmpty(),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            style = MaterialTheme.typography.headlineSmall,
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                    },
-                    navigationIcon = {
-                        Icon(
-                            imageVector = Icons.Filled.ArrowBack,
-                            contentDescription = "Back button",
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier
-                                .padding(start = 8.dp)
-                                .size(32.dp)
-                                .clickable(
-                                    interactionSource = remember { MutableInteractionSource() },
-                                    indication = rememberRipple(bounded = false)
-                                ) {
-                                    if (!navController.navigateUp()) {
-                                        onCloseApp()
-                                    }
-                                }
-                        )
-                    },
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                        titleContentColor = MaterialTheme.colorScheme.onTertiaryContainer
-                    )
-                )
-            }
+            topBar = { NavigationTopBar(navController, onCloseApp) }
         ) { padding ->
-            NavHost(
-                navController = navController,
-                startDestination = Route.Navigation.routeDefinition(),
-                modifier = Modifier.padding(padding)
-            ) {
-                composable(Route.Navigation.value) {
-                    NavigationScreen(
-                        onClock = { navController.navigate(Route.Clock.resolved()) },
-                        onWeather = { navController.navigate(Route.Weather.resolved(it.value)) },
-                        onMap = { navController.navigate(Route.Map.resolved()) }
-                    )
-                }
-                composable(
-                    Route.Weather.routeDefinition(),
-                    arguments = listOf(navArgument(Arguments.Type.value) {
-                        defaultValue = WeatherViewModel.DisplayType.Blocks.value
-                    })
-                ) {
-                    WeatherScreenNav(
-                        displayType = WeatherViewModel.DisplayType.entries.firstOrNull { enum ->
-                            enum.value == it.get(Arguments.Type)
-                        } ?: WeatherViewModel.DisplayType.Blocks,
-                        navigateToMap = { navController.navigate(Route.WeatherMap.resolved()) },
-                        onNavigateToGoogleMaps = { onNavigateToGoogleMaps(it) }
-                    )
-                }
-                composable(Route.Clock.value) {
-                    ClockScreenNav()
-                }
-                composable(Route.Map.value) {
-                    MapScreenNav()
-                }
+            NavigationNavHost(padding, navController, onNavigateToGoogleMaps)
+        }
+    }
+}
 
-                composable(Route.WeatherMap.value) {
-                    MapWeatherScreenNav()
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun NavigationTopBar(navController: NavHostController, onCloseApp: () -> Unit) {
+    CenterAlignedTopAppBar(
+        title = {
+            Text(
+                navController.currentDestination?.asRoute()?.title.orEmpty(),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                style = MaterialTheme.typography.headlineSmall,
+                color = MaterialTheme.colorScheme.primary
+            )
+        },
+        navigationIcon = {
+            Icon(
+                imageVector = Icons.Filled.ArrowBack,
+                contentDescription = "Back button",
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier
+                    .padding(start = 8.dp)
+                    .size(32.dp)
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = rememberRipple(bounded = false)
+                    ) {
+                        if (!navController.navigateUp()) {
+                            onCloseApp()
+                        }
+                    }
+            )
+        },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+            titleContentColor = MaterialTheme.colorScheme.onTertiaryContainer
+        )
+    )
+}
+
+@Composable
+fun NavigationNavHost(padding: PaddingValues, navController: NavHostController, onNavigateToGoogleMaps: (Point) -> Unit) {
+    NavHost(
+        navController = navController,
+        startDestination = Route.Navigation.routeDefinition(),
+        modifier = Modifier.padding(padding)
+    ) {
+        composable(Route.Navigation.value) {
+            NavigationScreen(
+                onClock = { navController.navigate(Route.Clock.resolved()) },
+                onWeather = { navController.navigate(Route.Weather.resolved(it.value)) },
+                onMap = { navController.navigate(Route.Map.resolved()) }
+            )
+        }
+        composable(
+            Route.Weather.routeDefinition(),
+            arguments = listOf(
+                navArgument(Arguments.Type.value) {
+                    defaultValue = WeatherViewModel.DisplayType.Blocks.value
                 }
-            }
+            )
+        ) {
+            WeatherScreenNav(
+                displayType = WeatherViewModel.DisplayType.entries.firstOrNull { enum ->
+                    enum.value == it.get(Arguments.Type)
+                } ?: WeatherViewModel.DisplayType.Blocks,
+                navigateToMap = { navController.navigate(Route.WeatherMap.resolved()) },
+                onNavigateToGoogleMaps = { onNavigateToGoogleMaps(it) }
+            )
+        }
+        composable(Route.Clock.value) {
+            ClockScreenNav()
+        }
+        composable(Route.Map.value) {
+            MapScreenNav()
+        }
+
+        composable(Route.WeatherMap.value) {
+            MapWeatherScreenNav()
         }
     }
 }

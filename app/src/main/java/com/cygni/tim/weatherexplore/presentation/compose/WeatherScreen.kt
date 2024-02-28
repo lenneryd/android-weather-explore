@@ -71,16 +71,13 @@ fun WeatherScreen(
     onUpdateSelectedTime: (Float) -> Unit,
     onClearMessage: (WeatherViewModel.Message) -> Unit,
 ) {
-    WeatherScreenComposable(state = state,
+    WeatherScreenComposable(
+        state = state,
         onNavigateToMap = { onNavigateToMap(it) },
         onNavigateToGoogleMaps = { onNavigateToGoogleMaps(it) },
-        onUpdateSelectedTime = {
-            onUpdateSelectedTime(it)
-        }, onToggleScreenType = {
-            onToggleScreenType()
-        }, onDismissMessage = {
-            onClearMessage(it)
-        }
+        onUpdateSelectedTime = { onUpdateSelectedTime(it) },
+        onToggleScreenType = { onToggleScreenType() },
+        onDismissMessage = { onClearMessage(it) }
     )
 }
 

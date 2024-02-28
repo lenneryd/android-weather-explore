@@ -7,6 +7,5 @@ import javax.inject.Inject
 class ClockUseCase @Inject constructor(
     private val clockRepository: ClockRepository
 ) {
-
     fun getTime(): Flow<Long> = clockRepository.getTime()
 }
