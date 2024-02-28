@@ -37,7 +37,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v3
 
       - name: Run Android Lint, Test, Assemble
-        run: ./gradlew lintDebug testDebug detekt assembleDebug
+        run: ./gradlew lintDebug testDebug detekt koverXmlReportDebug assembleDebug
 
       - name: AVD cache
         uses: actions/cache@v4
