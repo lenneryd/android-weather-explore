@@ -14,6 +14,7 @@ import com.cygni.tim.weatherexplore.data.models.toPoint
 import com.cygni.tim.weatherexplore.domain.usecase.LocationUseCase
 import com.cygni.tim.weatherexplore.domain.usecase.WeatherUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -58,7 +59,7 @@ class WeatherViewModel @Inject constructor(
     }
 
     private val _displayType = MutableStateFlow(DisplayType.Blocks)
-    val displayType get(): StateFlow<DisplayType> = _displayType
+    private val displayType get(): StateFlow<DisplayType> = _displayType
 
     private val weatherResponse = MutableStateFlow<Result<WeatherModel>?>(null)
 
@@ -75,6 +76,7 @@ class WeatherViewModel @Inject constructor(
         }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     val uiState: Flow<WeatherUIState> = _displayType.flatMapLatest { type ->
 
         when (type) {
@@ -218,7 +220,7 @@ class WeatherViewModel @Inject constructor(
         val precipitationType = time.data.instant.toPrecipitationType()
 
         WeatherBlock.PrecipitationAmount(
-            hours1 = time.data.next1Hours?.details.let {
+            hours1 = time.data.next1Hours?.details.let { _ ->
                 PrecipitationData(
                     precipitationType,
                     "1",
@@ -228,7 +230,7 @@ class WeatherViewModel @Inject constructor(
 
                 )
             },
-            hours6 = time.data.next6Hours?.details.let {
+            hours6 = time.data.next6Hours?.details.let { _ ->
                 PrecipitationData(
                     precipitationType,
                     "6",
@@ -237,7 +239,7 @@ class WeatherViewModel @Inject constructor(
                     time.data.next6Hours?.details?.precipitationProbability?.let { "${percentFormat.format(it)}%" }
                 )
             },
-            hours12 = time.data.next12Hours?.details.let {
+            hours12 = time.data.next12Hours?.details.let { _ ->
                 PrecipitationData(
                     precipitationType,
                     "12",
@@ -249,14 +251,14 @@ class WeatherViewModel @Inject constructor(
         )
     }
 
-    private fun TimeInstant.toPrecipitationType() = this?.details?.airTemperature?.let { min ->
+    private fun TimeInstant.toPrecipitationType() = this.details.airTemperature.let { min ->
         when {
             min < 2.5 && min > 0 -> PrecipitationType.Sleet
             min > 2.5 -> PrecipitationType.Rain
             min < -2.5 -> PrecipitationType.Snow
             else -> PrecipitationType.Rain
         }
-    } ?: PrecipitationType.Rain
+    }
 
     private fun Double.toDirection(): String = when {
         this < 22.5 -> "N"

@@ -13,7 +13,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -165,7 +165,7 @@ fun NavigationTopBar(navController: NavHostController, onCloseApp: () -> Unit) {
         },
         navigationIcon = {
             Icon(
-                imageVector = Icons.Filled.ArrowBack,
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = "Back button",
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier
@@ -195,7 +195,7 @@ fun NavigationNavHost(padding: PaddingValues, navController: NavHostController, 
         startDestination = Route.Navigation.routeDefinition(),
         modifier = Modifier.padding(padding)
     ) {
-        composable(Route.Navigation.value) {
+        composable(Route.Navigation.value) { _ ->
             NavigationScreen(
                 onClock = { navController.navigate(Route.Clock.resolved()) },
                 onWeather = { navController.navigate(Route.Weather.resolved(it.value)) },
@@ -209,10 +209,10 @@ fun NavigationNavHost(padding: PaddingValues, navController: NavHostController, 
                     defaultValue = WeatherViewModel.DisplayType.Blocks.value
                 }
             )
-        ) {
+        ) { backstack ->
             WeatherScreenNav(
                 displayType = WeatherViewModel.DisplayType.entries.firstOrNull { enum ->
-                    enum.value == it.get(Arguments.Type)
+                    enum.value == backstack.get(Arguments.Type)
                 } ?: WeatherViewModel.DisplayType.Blocks,
                 navigateToMap = { navController.navigate(Route.WeatherMap.resolved()) },
                 onNavigateToGoogleMaps = { onNavigateToGoogleMaps(it) }
