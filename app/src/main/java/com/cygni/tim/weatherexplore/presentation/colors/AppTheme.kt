@@ -12,14 +12,6 @@ import com.cygni.tim.weatherexplore.presentation.colors.builder.DarkThemeColors
 import com.cygni.tim.weatherexplore.presentation.colors.builder.LightThemeColors
 
 @Composable
-fun AppTheme(dark: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
-    androidx.compose.material.MaterialTheme(
-        colors = if (dark) DarkColors else LightColors,
-        content = content
-    )
-}
-
-@Composable
 fun AppYuTheme(dark: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
     val context = LocalContext.current
     val scheme = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {

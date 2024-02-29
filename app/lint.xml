@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lint>
+    <!-- Ignore the IconDensities issue in the given files -->
+    <issue id="IconDensities">
+        <ignore path="**/res/drawable-xxxhdpi/ic_launcher.webp"/>
+        <ignore path="**/res/drawable-xxxhdpi/ic_launcher_round.webp"/>
+    </issue>
+    <issue id="IconMissingDensityFolder" severity="ignore" />
+
+</lint>

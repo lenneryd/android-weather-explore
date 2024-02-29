@@ -15,8 +15,8 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.Text
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
@@ -43,7 +43,7 @@ import com.cygni.tim.weatherexplore.presentation.viewmodel.ClockViewModel
 import com.cygni.tim.weatherexplore.presentation.viewmodel.mapStopWatchState
 import com.cygni.tim.weatherexplore.presentation.viewmodel.mapTimeState
 import java.time.Instant
-import java.util.*
+import java.util.Date
 
 @Composable
 fun ClockScreen(
@@ -119,9 +119,11 @@ fun ClockScreenComposable(
                 is StopWatchRunningState.Started -> {
                     state.date.mapStopWatchState(fromDate = runningState.startedAt)
                 }
+
                 is StopWatchRunningState.Stopped -> {
                     runningState.stoppedAt.mapStopWatchState(fromDate = runningState.startedAt)
                 }
+
                 else -> null
             }
 
@@ -167,9 +169,11 @@ fun StopWatchRunningState.toggle(now: Date): StopWatchRunningState =
         is StopWatchRunningState.Empty -> StopWatchRunningState.Started(
             startedAt = now
         )
+
         is StopWatchRunningState.Stopped -> StopWatchRunningState.Started(
             startedAt = now,
         )
+
         is StopWatchRunningState.Started -> StopWatchRunningState.Stopped(
             startedAt = startedAt,
             stoppedAt = now
@@ -191,6 +195,7 @@ fun sweepAngle(second: Int): State<Float> {
             durationMillis = 1000,
             easing = LinearEasing
         ),
+        label = "Animated sweep angle"
     )
 }
 
@@ -333,7 +338,7 @@ fun StopWatchComposable(state: StopWatchState, modifier: Modifier) {
     }
 }
 
-@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
+@Preview(showBackground = true, apiLevel = 33, uiMode = UI_MODE_NIGHT_YES)
 @Composable
 fun StopWatchPreview() {
     AppYuTheme {
@@ -348,7 +353,7 @@ fun StopWatchPreview() {
     }
 }
 
-@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_NO)
+@Preview(showBackground = true, apiLevel = 33, uiMode = UI_MODE_NIGHT_NO)
 @Composable
 fun ClockScreenPreview() {
     AppYuTheme {
@@ -358,7 +363,7 @@ fun ClockScreenPreview() {
     }
 }
 
-@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
+@Preview(showBackground = true, apiLevel = 33, uiMode = UI_MODE_NIGHT_YES)
 @Composable
 fun ClockScreenNightPreview() {
     AppYuTheme {

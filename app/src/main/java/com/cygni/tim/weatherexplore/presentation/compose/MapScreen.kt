@@ -27,6 +27,7 @@ import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
+import com.google.maps.android.compose.MapsComposeExperimentalApi
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.clustering.Clustering
@@ -44,8 +45,8 @@ fun MapScreen(mapState: MapScreenViewModel.MapState, onChangedPosition: (LatLng)
             position = CameraPosition.fromLatLngZoom(LatLng(mapState.pos.lat, mapState.pos.lon), 11f)
         }
 
-        var uiSettings by remember { mutableStateOf(MapUiSettings()) }
-        var properties by remember {
+        val uiSettings by remember { mutableStateOf(MapUiSettings()) }
+        val properties by remember {
             mutableStateOf(MapProperties(mapType = MapType.SATELLITE))
         }
 
@@ -75,11 +76,12 @@ fun MapScreen(mapState: MapScreenViewModel.MapState, onChangedPosition: (LatLng)
     }
 }
 
+@OptIn(MapsComposeExperimentalApi::class)
 @Composable
 fun MapWeatherScreen(mapWeatherState: MapWeatherScreenViewModel.MapWeatherState) {
     when (mapWeatherState) {
         is MapWeatherScreenViewModel.MapWeatherState.Weather -> {
-            var initial by remember {
+            val initial by remember {
                 mutableStateOf(LatLng(mapWeatherState.point.lat, mapWeatherState.point.lon))
             }
 
@@ -90,8 +92,8 @@ fun MapWeatherScreen(mapWeatherState: MapWeatherScreenViewModel.MapWeatherState)
                 position = CameraPosition.fromLatLngZoom(LatLng(mapWeatherState.point.lat, mapWeatherState.point.lon), 11f)
             }
 
-            var uiSettings by remember { mutableStateOf(MapUiSettings()) }
-            var properties by remember {
+            val uiSettings by remember { mutableStateOf(MapUiSettings()) }
+            val properties by remember {
                 mutableStateOf(MapProperties(mapType = MapType.SATELLITE))
             }
 
@@ -110,55 +112,29 @@ fun MapWeatherScreen(mapWeatherState: MapWeatherScreenViewModel.MapWeatherState)
                         }
                     }
                 ) {
-                    Marker(
-                        state = MarkerState(position = initial),
-                        title = "Position",
-                        snippet = "Weather Source"
-                    )
+                    Marker(state = MarkerState(position = initial), title = "Position", snippet = "Weather Source")
 
                     Clustering(
                         items = mapWeatherState.items,
-                        // Optional: Handle clicks on clusters, cluster items, and cluster item info windows
                         onClusterClick = {
                             scope.launch {
                                 cameraPositionState.animate(
-                                    CameraUpdateFactory.newLatLngZoom(
-                                        it.position,
-                                        cameraPositionState.position.zoom + 1
-                                    )
+                                    CameraUpdateFactory.newLatLngZoom(it.position, cameraPositionState.position.zoom + 1)
                                 )
                             }
                             false
                         },
                         onClusterItemClick = { false },
-                        onClusterItemInfoWindowClick = { false },
+                        onClusterItemInfoWindowClick = { },
                         // Optional: Custom rendering for clusters
                         clusterContent = {
                             it.items.firstOrNull()?.symbol?.let { symbol ->
-                                Box {
-                                    WeatherIcons.resolve(LocalContext.current, symbol)?.resId?.let { res ->
-                                        Image(
-                                            painter = painterResource(id = res),
-                                            contentDescription = "Map Link to location",
-                                            modifier = Modifier
-                                                .wrapContentSize()
-                                        )
-                                    }
-                                }
+                                ClusterContent(symbol)
                             }
                         },
                         // Optional: Custom rendering for non-clustered items
                         clusterItemContent = {
-                            Box {
-                                WeatherIcons.resolve(LocalContext.current, it.symbol)?.resId?.let { res ->
-                                    Image(
-                                        painter = painterResource(id = res),
-                                        contentDescription = "Map Link to location",
-                                        modifier = Modifier
-                                            .wrapContentSize()
-                                    )
-                                }
-                            }
+                            ClusterItemContent(it.symbol)
                         },
                     )
                 }
@@ -170,6 +146,33 @@ fun MapWeatherScreen(mapWeatherState: MapWeatherScreenViewModel.MapWeatherState)
     }
 }
 
+@Composable
+fun ClusterContent(symbol: String) {
+    Box {
+        WeatherIcons.resolve(LocalContext.current, symbol)?.resId?.let { res ->
+            Image(
+                painter = painterResource(id = res),
+                contentDescription = "Map Link to location",
+                modifier = Modifier
+                    .wrapContentSize()
+            )
+        }
+    }
+}
+
+@Composable
+fun ClusterItemContent(symbol: String) {
+    Box {
+        WeatherIcons.resolve(LocalContext.current, symbol)?.resId?.let { res ->
+            Image(
+                painter = painterResource(id = res),
+                contentDescription = "Map Link to location",
+                modifier = Modifier
+                    .wrapContentSize()
+            )
+        }
+    }
+}
 
 @Preview
 @Composable
