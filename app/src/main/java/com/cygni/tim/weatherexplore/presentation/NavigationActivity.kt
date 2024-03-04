@@ -1,11 +1,16 @@
 package com.cygni.tim.weatherexplore.presentation
 
+import android.app.Activity
+import android.app.Activity.RESULT_OK
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
+import androidx.activity.result.IntentSenderRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -23,10 +28,14 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -41,6 +50,7 @@ import com.cygni.tim.weatherexplore.data.models.Point
 import com.cygni.tim.weatherexplore.domain.usecase.LocationUseCase
 import com.cygni.tim.weatherexplore.presentation.colors.AppYuTheme
 import com.cygni.tim.weatherexplore.presentation.compose.ClockScreen
+import com.cygni.tim.weatherexplore.presentation.compose.DocumentScanScreen
 import com.cygni.tim.weatherexplore.presentation.compose.MapScreen
 import com.cygni.tim.weatherexplore.presentation.compose.MapWeatherScreen
 import com.cygni.tim.weatherexplore.presentation.compose.NavigationScreen
@@ -51,15 +61,20 @@ import com.cygni.tim.weatherexplore.presentation.navigation.asRoute
 import com.cygni.tim.weatherexplore.presentation.navigation.get
 import com.cygni.tim.weatherexplore.presentation.navigation.resolved
 import com.cygni.tim.weatherexplore.presentation.navigation.routeDefinition
+import com.cygni.tim.weatherexplore.presentation.viewmodel.DocumentScanViewModel
 import com.cygni.tim.weatherexplore.presentation.viewmodel.MapScreenViewModel
 import com.cygni.tim.weatherexplore.presentation.viewmodel.MapWeatherScreenViewModel
 import com.cygni.tim.weatherexplore.presentation.viewmodel.WeatherViewModel
+import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions
+import com.google.mlkit.vision.documentscanner.GmsDocumentScanning
+import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -199,7 +214,8 @@ fun NavigationNavHost(padding: PaddingValues, navController: NavHostController, 
             NavigationScreen(
                 onClock = { navController.navigate(Route.Clock.resolved()) },
                 onWeather = { navController.navigate(Route.Weather.resolved(it.value)) },
-                onMap = { navController.navigate(Route.Map.resolved()) }
+                onMap = { navController.navigate(Route.Map.resolved()) },
+                onScanning = { navController.navigate(Route.DocumentScan.resolved()) }
             )
         }
         composable(
@@ -227,6 +243,10 @@ fun NavigationNavHost(padding: PaddingValues, navController: NavHostController, 
 
         composable(Route.WeatherMap.value) {
             MapWeatherScreenNav()
+        }
+
+        composable(Route.DocumentScan.value) {
+            DocumentScanNav()
         }
     }
 }
@@ -267,4 +287,80 @@ fun MapWeatherScreenNav() {
     val vm = hiltViewModel<MapWeatherScreenViewModel>()
     val uiState by vm.uiState.collectAsState()
     MapWeatherScreen(mapWeatherState = uiState)
+}
+
+@Composable
+fun DocumentScanNav() {
+    val vm = hiltViewModel<DocumentScanViewModel>()
+    val uiState by vm.uiState.collectAsState()
+
+    val client by remember {
+        mutableStateOf(
+            GmsDocumentScanning.getClient(
+                GmsDocumentScannerOptions.Builder()
+                    .setGalleryImportAllowed(false)
+                    .setPageLimit(2)
+                    .setResultFormats(GmsDocumentScannerOptions.RESULT_FORMAT_JPEG)
+                    .setScannerMode(GmsDocumentScannerOptions.SCANNER_MODE_FULL)
+                    .build()
+            )
+        )
+    }
+
+
+    val activityLauncher = rememberLauncherForActivityResult(contract = ActivityResultContracts.StartIntentSenderForResult()) { result ->
+        val scanResult = when (result.resultCode) {
+            RESULT_OK -> {
+                val data = GmsDocumentScanningResult.fromActivityResultIntent(result.data)
+                data?.pages?.let { pages ->
+                    pages.firstOrNull()?.imageUri
+                }
+            }
+
+            else -> {
+                Log.w(NavigationActivity::class.java.simpleName, "Document scan failed")
+                null
+            }
+        }
+
+        Log.d(NavigationActivity::class.java.simpleName, "Received scanning result: $scanResult")
+        vm.onScanResult(scanResult)
+    }
+
+    when (uiState) {
+        is DocumentScanViewModel.DocumentScanUIState.StartScanningState -> {
+            val activity = LocalContext.current as Activity
+            LaunchedEffect(Unit) {
+
+                val intent = client.getStartScanIntent(activity).addOnSuccessListener {
+                    IntentSenderRequest.Builder(it).build()
+                }
+                    .addOnFailureListener { error ->
+                        Log.w(
+                            NavigationActivity::class.java.simpleName,
+                            "Document scan failed: ${error.message}"
+                        )
+                    }
+                    .await()
+                vm.onScanIntent(intent)
+            }
+        }
+
+        is DocumentScanViewModel.DocumentScanUIState.ScanWithIntent -> {
+            activityLauncher.launch(
+                IntentSenderRequest.Builder(
+                    (uiState as DocumentScanViewModel.DocumentScanUIState.ScanWithIntent).intent
+                ).build()
+            )
+        }
+
+        else -> {}
+    }
+
+    DocumentScanScreen(state = uiState, scanClicked = {
+        vm.onScanClicked()
+    },
+        retryClicked = {
+            vm.onRetryClicked()
+        })
 }

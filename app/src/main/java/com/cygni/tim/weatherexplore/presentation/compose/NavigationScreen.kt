@@ -22,7 +22,8 @@ import com.cygni.tim.weatherexplore.presentation.viewmodel.WeatherViewModel
 fun NavigationScreen(
     onClock: () -> Unit = {},
     onWeather: (WeatherViewModel.DisplayType) -> Unit = {},
-    onMap: () -> Unit = {}
+    onMap: () -> Unit = {},
+    onScanning: () -> Unit = {},
 ) {
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -70,6 +71,13 @@ fun NavigationScreen(
             Button(onClick = { onMap() }, modifier = Modifier.padding(top = 8.dp)) {
                 Text(
                     text = "Navigate to Map",
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+            }
+
+            Button(onClick = { onScanning() }, modifier = Modifier.padding(top = 8.dp)) {
+                Text(
+                    text = "Navigate to Scanning",
                     modifier = Modifier.padding(top = 8.dp)
                 )
             }

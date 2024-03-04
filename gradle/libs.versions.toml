@@ -3,7 +3,7 @@ accompanistFlowlayout = "0.32.0"
 activityKtx = "1.8.2"
 androidGradlePlugin = "8.2.2"
 constraintlayoutCompose = "1.0.1"
-coilCompose = "1.4.0"
+coilCompose = "2.6.0"
 espressoCore = "3.5.1"
 fragmentKtx = "1.6.2"
 hiltNavigationCompose = "1.1.0"
@@ -44,6 +44,7 @@ googleMapsCompose = "4.3.0"
 secretsGradlePlugin = "2.0.1"
 koverVersion = "0.7.6"
 mockkVersion = "1.13.9"
+documentScanner = "16.0.0-beta1"
 
 [libraries]
 accompanist-flowlayout = { module = "com.google.accompanist:accompanist-flowlayout", version.ref = "accompanistFlowlayout" }
@@ -72,6 +73,7 @@ androidx-navigation-testing = { module = "androidx.navigation:navigation-testing
 androidx-navigation-ui-ktx = { module = "androidx.navigation:navigation-ui-ktx", version.ref = "navigationUiKtx" }
 androidx-navigation-fragment-ktx = { module = "androidx.navigation:navigation-fragment-ktx", version.ref = "navigationFragmentKtx" }
 androidx-navigation-navigation-ui-ktx = { module = "androidx.navigation:navigation-ui-ktx", version.ref = "navigationFragmentKtx" }
+coil-base = { module = "io.coil-kt:coil", version.ref = "coilCompose"}
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
 androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hiltAndroidCompiler" }
@@ -79,6 +81,7 @@ hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltA
 androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycleViewmodelKtx" }
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlinReflect" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutinesCore" }
+kotlinx-coroutines-playservices = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-play-services", version.ref = "kotlinxCoroutinesCore" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 ksp = { module = "io.github.raamcosta.compose-destinations:ksp", version.ref = "kspVersion" }
 lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleViewmodelCompose" }
@@ -100,6 +103,7 @@ secrets-gradle-plugin = { module = "com.google.android.libraries.mapsplatform.se
 detekt-formatting = { group = "io.gitlab.arturbosch.detekt", name = "detekt-formatting", version.ref = "detektVersion" }
 mock-mockk = { module = "io.mockk:mockk", version.ref = "mockkVersion"}
 mock-mockk-android = { module = "io.mockk:mockk-android", version.ref = "mockkVersion"}
+google-android-documentscanner = { module = "com.google.android.gms:play-services-mlkit-document-scanner", version.ref = "documentScanner"}
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }

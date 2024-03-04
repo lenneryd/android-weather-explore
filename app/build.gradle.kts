@@ -189,6 +189,7 @@ dependencies {
     implementation(libs.androidx.activity.ktx)
     implementation(libs.androidx.fragment.ktx)
     implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.coroutines.playservices)
 
     implementation(libs.retrofit)
     implementation(libs.okhttp)
@@ -199,9 +200,12 @@ dependencies {
     implementation(libs.hilt.android)
     ksp(libs.hilt.android.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.coil.base)
     implementation(libs.coil.compose)
     implementation(libs.accompanist.flowlayout)
     ksp(libs.ksp)
+
+    implementation(libs.google.android.documentscanner)
 
     // Java language implementation
     implementation(libs.androidx.navigation.fragment.ktx)
