@@ -45,6 +45,7 @@ secretsGradlePlugin = "2.0.1"
 koverVersion = "0.7.6"
 mockkVersion = "1.13.9"
 documentScanner = "16.0.0-beta1"
+textRecognition = "19.0.0"
 
 [libraries]
 accompanist-flowlayout = { module = "com.google.accompanist:accompanist-flowlayout", version.ref = "accompanistFlowlayout" }
@@ -104,6 +105,7 @@ detekt-formatting = { group = "io.gitlab.arturbosch.detekt", name = "detekt-form
 mock-mockk = { module = "io.mockk:mockk", version.ref = "mockkVersion"}
 mock-mockk-android = { module = "io.mockk:mockk-android", version.ref = "mockkVersion"}
 google-android-documentscanner = { module = "com.google.android.gms:play-services-mlkit-document-scanner", version.ref = "documentScanner"}
+google-android-textrecognition = { module = "com.google.android.gms:play-services-mlkit-text-recognition", version.ref = "textRecognition"}
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }

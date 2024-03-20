@@ -19,6 +19,10 @@
         android:enableOnBackInvokedCallback="true"
         tools:targetApi="31"
         tools:ignore="UnusedAttribute">
+
+        <meta-data
+            android:name="com.google.mlkit.vision.DEPENDENCIES"
+            android:value="ocr" />
         <activity
             android:name=".presentation.NavigationActivity"
             android:exported="true"

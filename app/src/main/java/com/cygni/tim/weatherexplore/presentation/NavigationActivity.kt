@@ -360,7 +360,10 @@ fun DocumentScanNav() {
     DocumentScanScreen(state = uiState, scanClicked = {
         vm.onScanClicked()
     },
-        retryClicked = {
-            vm.onRetryClicked()
-        })
+        generateOCRClicked = { src ->
+            vm.onGenerateOCRClicked(src)
+        }
+    ) {
+        vm.onRetryClicked()
+    }
 }

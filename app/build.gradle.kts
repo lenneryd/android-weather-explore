@@ -206,6 +206,7 @@ dependencies {
     ksp(libs.ksp)
 
     implementation(libs.google.android.documentscanner)
+    implementation(libs.google.android.textrecognition)
 
     // Java language implementation
     implementation(libs.androidx.navigation.fragment.ktx)
