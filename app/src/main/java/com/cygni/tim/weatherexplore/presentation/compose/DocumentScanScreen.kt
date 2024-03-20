@@ -34,7 +34,10 @@ import com.cygni.tim.weatherexplore.presentation.viewmodel.DocumentScanViewModel
 
 @Composable
 fun DocumentScanScreen(
-    state: DocumentScanViewModel.DocumentScanUIState, scanClicked: () -> Unit = {}, generateOCRClicked: (DocumentScanViewModel.OCRSource) -> Unit = {}, retryClicked: () -> Unit = {}
+    state: DocumentScanViewModel.DocumentScanUIState,
+    scanClicked: () -> Unit = {},
+    generateOCRClicked: (DocumentScanViewModel.OCRSource) -> Unit = {},
+    retryClicked: () -> Unit = {}
 ) {
     when (state) {
         is DocumentScanViewModel.DocumentScanUIState.ReadyToScanState -> ReadyToScan(scanClicked)
@@ -124,7 +127,7 @@ fun ScanOCR(state: DocumentScanViewModel.DocumentScanUIState.ScanOCRState) {
             )
         }
 
-        if(state.scanResults != null) {
+        if (state.scanResults != null) {
             LazyColumn(modifier = Modifier.fillMaxSize()) {
                 state.scanResults.map { line ->
                     item {
@@ -142,7 +145,11 @@ fun ScanOCR(state: DocumentScanViewModel.DocumentScanUIState.ScanOCRState) {
 }
 
 @Composable
-fun ScanResult(state: DocumentScanViewModel.DocumentScanUIState.ScanResultState, generateOCRClicked: (DocumentScanViewModel.OCRSource) -> Unit, scanAgainClicked: () -> Unit) {
+fun ScanResult(
+    state: DocumentScanViewModel.DocumentScanUIState.ScanResultState,
+    generateOCRClicked: (DocumentScanViewModel.OCRSource) -> Unit,
+    scanAgainClicked: () -> Unit
+) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
@@ -171,7 +178,10 @@ fun ScanResult(state: DocumentScanViewModel.DocumentScanUIState.ScanResultState,
             )
         }
 
-        Button(onClick = { generateOCRClicked(DocumentScanViewModel.OCRSource.ResSource(R.drawable.the_call)) }, modifier = Modifier.padding(top = 12.dp)) {
+        Button(
+            onClick = { generateOCRClicked(DocumentScanViewModel.OCRSource.UriSource(state.uri)) },
+            modifier = Modifier.padding(top = 12.dp)
+        ) {
             Icon(imageVector = Icons.Default.Create, contentDescription = "Scan", modifier = Modifier.padding(end = 8.dp))
             Text(
                 text = "Generate OCR"
@@ -184,11 +194,13 @@ fun ScanResult(state: DocumentScanViewModel.DocumentScanUIState.ScanResultState,
 @Composable
 fun DocumentScanOCRPreview() {
     ScanOCR(
-        state = DocumentScanViewModel.DocumentScanUIState.ScanOCRState(DocumentScanViewModel.OCRSource.ResSource(R.drawable.the_call), scanResults = listOf(
-            "This is the first line",
-            "This is the second line",
-            "This is the third line"
-        ))
+        state = DocumentScanViewModel.DocumentScanUIState.ScanOCRState(
+            DocumentScanViewModel.OCRSource.ResSource(R.drawable.the_call), scanResults = listOf(
+                "This is the first line",
+                "This is the second line",
+                "This is the third line"
+            )
+        )
     )
 }
 

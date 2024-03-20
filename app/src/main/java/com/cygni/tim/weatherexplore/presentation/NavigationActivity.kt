@@ -307,7 +307,6 @@ fun DocumentScanNav() {
         )
     }
 
-
     val activityLauncher = rememberLauncherForActivityResult(contract = ActivityResultContracts.StartIntentSenderForResult()) { result ->
         val scanResult = when (result.resultCode) {
             RESULT_OK -> {
@@ -348,18 +347,18 @@ fun DocumentScanNav() {
 
         is DocumentScanViewModel.DocumentScanUIState.ScanWithIntent -> {
             activityLauncher.launch(
-                IntentSenderRequest.Builder(
-                    (uiState as DocumentScanViewModel.DocumentScanUIState.ScanWithIntent).intent
-                ).build()
+                IntentSenderRequest.Builder((uiState as DocumentScanViewModel.DocumentScanUIState.ScanWithIntent).intent).build()
             )
         }
 
         else -> {}
     }
 
-    DocumentScanScreen(state = uiState, scanClicked = {
-        vm.onScanClicked()
-    },
+    DocumentScanScreen(
+        state = uiState,
+        scanClicked = {
+            vm.onScanClicked()
+        },
         generateOCRClicked = { src ->
             vm.onGenerateOCRClicked(src)
         }
