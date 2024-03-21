@@ -19,6 +19,8 @@ sealed class Route(
     data object Map : Route(value = "map", "Pick Weather Location")
     data object Weather : Route("weather", "Weather at location", optional = listOf(Arguments.Type))
     data object WeatherMap : Route("mapWeather", "Weather")
+
+    data object DocumentScan : Route("documentScan", "Document Scan")
     companion object {
         val entries = listOf(Navigation, Clock, Map, Weather, WeatherMap)
     }
