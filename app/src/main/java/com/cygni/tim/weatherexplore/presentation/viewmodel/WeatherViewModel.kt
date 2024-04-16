@@ -13,6 +13,9 @@ import com.cygni.tim.weatherexplore.data.models.WeatherModel
 import com.cygni.tim.weatherexplore.data.models.toPoint
 import com.cygni.tim.weatherexplore.domain.usecase.LocationUseCase
 import com.cygni.tim.weatherexplore.domain.usecase.WeatherUseCase
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -30,13 +33,18 @@ import java.time.LocalDateTime
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.UUID
-import javax.inject.Inject
 
-@HiltViewModel
-class WeatherViewModel @Inject constructor(
+@HiltViewModel(assistedFactory = WeatherViewModel.WeatherViewModelFactory::class)
+class WeatherViewModel @AssistedInject constructor(
+    @Assisted displayType: DisplayType?,
     private val useCase: WeatherUseCase,
     private val locationUseCase: LocationUseCase
 ) : ViewModel() {
+
+    @AssistedFactory
+    interface WeatherViewModelFactory {
+        fun create(displayType: DisplayType?): WeatherViewModel
+    }
 
     private val tempFormat = DecimalFormat("##.#")
     private val tempNoDecimals = DecimalFormat("##")
@@ -47,7 +55,6 @@ class WeatherViewModel @Inject constructor(
     private val hourFormat = DateTimeFormatter.ofPattern("H")
 
     private val messages = MutableStateFlow(listOf<Message>())
-    private val selectedTime = MutableStateFlow(SliderData(0, 0))
 
     enum class DisplayType(val value: String) {
         Blocks("blocks"), Timeline("timeline");
@@ -58,7 +65,7 @@ class WeatherViewModel @Inject constructor(
         }
     }
 
-    private val _displayType = MutableStateFlow(DisplayType.Blocks)
+    private val _displayType = MutableStateFlow(displayType ?: DisplayType.Blocks)
     private val displayType get(): StateFlow<DisplayType> = _displayType
 
     private val weatherResponse = MutableStateFlow<Result<WeatherModel>?>(null)
@@ -68,7 +75,8 @@ class WeatherViewModel @Inject constructor(
             val result = locationUseCase.getLocation().first()
             when {
                 result.isSuccess -> {
-                    weatherResponse.value = useCase.getWeather(result.getOrThrow().toPoint()).first()
+                    val response = useCase.getWeather(result.getOrThrow().toPoint()).first()
+                    weatherResponse.value = response
                 }
 
                 else -> weatherResponse.value = Result.failure(FailedToGetLocationException())
@@ -81,11 +89,13 @@ class WeatherViewModel @Inject constructor(
 
         when (type) {
             DisplayType.Blocks -> weatherResponse.combine(messages) { response, messages ->
-                response to messages
-            }.combine(selectedTime) { (response, messages), time ->
                 when {
                     response == null -> WeatherUIState.PendingUIState
-                    response.isSuccess -> response.getOrThrow().mapToUI(time, messages)
+                    response.isSuccess -> {
+                        val result = response.getOrThrow()
+                        result.mapToUI(messages)
+                    }
+
                     else -> WeatherUIState.FailureUIState("No weather response")
                 }
             }
@@ -93,40 +103,44 @@ class WeatherViewModel @Inject constructor(
             DisplayType.Timeline -> weatherResponse.map { response ->
                 when {
                     response == null -> WeatherUIState.PendingUIState
-                    response.isSuccess -> response.getOrThrow().mapToTimeline()
+                    response.isSuccess -> {
+                        val result = response.getOrThrow()
+                        result.mapToTimeline()
+                    }
+
                     else -> WeatherUIState.FailureUIState("No weather response")
                 }
             }
         }
     }
 
-    private fun WeatherModel.mapToUI(slider: SliderData, messages: List<Message> = listOf()): WeatherUIState {
+    private fun WeatherModel.mapToUI(messages: List<Message> = listOf()): WeatherUIState {
         val now = LocalDateTime.now()
         val filtered = this.timeseries.filterOutdated(now)
-        val selected = filtered.filterSelected(slider)
 
-        if (selected.isEmpty()) {
+        if (filtered.isEmpty()) {
             return WeatherUIState.FailureUIState("No up to date weather available.")
         }
 
-        val selectedTime = ZonedDateTime.parse(selected.first().time).toLocalDateTime()
-        val blocks = selected.first().let { nextTimeModel ->
-            listOfNotNull(
-                nextTimeModel.toTempWithSymbolOrNull(this.units),
-                nextTimeModel.toWindWithStrengthOrNull(this.units),
-                nextTimeModel.toCloudCoverOrNull(),
-                nextTimeModel.toPrecipitationPotentialOrNull(),
-                nextTimeModel.toPrecipitationAmountOrNull(units),
-                WeatherBlock.MapLink.GoToGoogleMaps(point),
-                WeatherBlock.MapLink.GoToMap(point),
+        val blocks = filtered.map { series ->
+            WeatherUIState.TimeSeriesBlock(
+                series.time,
+                listOfNotNull(
+                    series.toTempWithSymbolOrNull(this.units),
+                    series.toWindWithStrengthOrNull(this.units),
+                    series.toCloudCoverOrNull(),
+                    series.toPrecipitationPotentialOrNull(),
+                    series.toPrecipitationAmountOrNull(units),
+                    WeatherBlock.MapLink.GoToGoogleMaps(point),
+                    WeatherBlock.MapLink.GoToMap(point),
+                )
             )
         }
 
         return WeatherUIState.WeatherUI(
             location = point,
             updatedAtString = getUpdatedAtString(updatedAt),
-            selectedTime = selectedTime.format(DateTimeFormatter.ofPattern("cccc HH:mm")),
-            slider = SliderData(filtered.size, slider.currentStep),
+            selectedTimeFormat = "cccc HH:mm",
             snackbarMessages = messages,
             blocks = blocks
         )
@@ -284,13 +298,12 @@ class WeatherViewModel @Inject constructor(
         return listOfNotNull(history.lastOrNull()) + future
     }
 
-    private fun List<TimeSeriesModel>.filterSelected(slider: SliderData): List<TimeSeriesModel> {
-        return this.subList(slider.currentStep, this.size)
+    private fun List<TimeSeriesModel>.filterSelected(position: Int): List<TimeSeriesModel> {
+        return this.subList(position, this.size)
     }
 
-    fun onUpdateSelectedTime(value: Float) {
-        val slider = selectedTime.value
-        selectedTime.value = slider.copy(currentStep = value.toInt())
+    fun onUpdateSelectedTime(position: Float, finished: Boolean) {
+
     }
 
     fun onSwitchView(display: DisplayType) {
@@ -305,11 +318,15 @@ class WeatherViewModel @Inject constructor(
         data class WeatherUI(
             val location: Point,
             val updatedAtString: String,
-            val selectedTime: String,
-            val slider: SliderData,
-            val blocks: List<WeatherBlock>,
+            val selectedTimeFormat: String,
+            val blocks: List<TimeSeriesBlock>,
             val snackbarMessages: List<Message> = listOf()
         ) : WeatherUIState()
+
+        data class TimeSeriesBlock(
+            val time: String,
+            val blocks: List<WeatherBlock>
+        )
 
         data class WeatherTimelineUI(
             val updatedAtString: String,
@@ -368,6 +385,7 @@ class WeatherViewModel @Inject constructor(
             GoToMap("goToMap"),
             GoToGoogleMaps("goToGoogleMaps");
         }
+
         data class TempWithSymbolIcon(val weatherIcon: String, val currentTemp: String) : WeatherBlock(Type.TempWithSymbol)
         data class WindWithStrength(val degrees: Float, val direction: String, val strength: String) : WeatherBlock(Type.WindWithStrength)
 

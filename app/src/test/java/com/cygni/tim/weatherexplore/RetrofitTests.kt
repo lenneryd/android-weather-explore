@@ -42,19 +42,22 @@ class RetrofitTests {
             lon = 17.8172507
         ),
         updatedAtString = "Updated at 09:41 (14 minutes ago)",
-        selectedTime = "Tuesday 09:00",
-        slider = WeatherViewModel.SliderData(15, 3),
-        listOf(
-            WeatherViewModel.WeatherBlock.TempWithSymbolIcon("partlycloudy_day", "-14.3"),
-            WeatherViewModel.WeatherBlock.WindWithStrength(291.0f, "SW", "3.6 m/s"),
-            WeatherViewModel.WeatherBlock.CloudCoverage(69.0, "69%"),
-            WeatherViewModel.WeatherBlock.PrecipitationPotential(45.0, "45%"),
-            WeatherViewModel.WeatherBlock.PrecipitationAmount(
-                WeatherViewModel.PrecipitationData(WeatherViewModel.PrecipitationType.Rain, "1", "2mm", 85.0, "85%"),
-                WeatherViewModel.PrecipitationData(WeatherViewModel.PrecipitationType.Rain, "6", "2mm", 85.0, "85%"),
-                WeatherViewModel.PrecipitationData(WeatherViewModel.PrecipitationType.Rain, "12", "2mm", 85.0, "85%"),
-            ),
-        )
+        selectedTimeFormat = "cccc HH:mm",
+        blocks = listOf(
+            WeatherViewModel.WeatherUIState.TimeSeriesBlock(
+                "2024-01-10T13:00:00Z",
+                listOf(
+                    WeatherViewModel.WeatherBlock.TempWithSymbolIcon("partlycloudy_day", "-14.3"),
+                    WeatherViewModel.WeatherBlock.WindWithStrength(291.0f, "SW", "3.6 m/s"),
+                    WeatherViewModel.WeatherBlock.CloudCoverage(69.0, "69%"),
+                    WeatherViewModel.WeatherBlock.PrecipitationPotential(45.0, "45%"),
+                    WeatherViewModel.WeatherBlock.PrecipitationAmount(
+                        WeatherViewModel.PrecipitationData(WeatherViewModel.PrecipitationType.Rain, "1", "2mm", 85.0, "85%"),
+                        WeatherViewModel.PrecipitationData(WeatherViewModel.PrecipitationType.Rain, "6", "2mm", 85.0, "85%"),
+                        WeatherViewModel.PrecipitationData(WeatherViewModel.PrecipitationType.Rain, "12", "2mm", 85.0, "85%"),
+                    ),
+                )
+        ))
     )
 
     @Test
@@ -67,7 +70,7 @@ class RetrofitTests {
                     state = testWeatherUIState(),
                     onNavigateToMap = {},
                     onToggleScreenType = {},
-                    onUpdateSelectedTime = {},
+                    onUpdateSelectedTime = {_, _ ->},
                     onDismissMessage = {}
                 )
             }
@@ -75,7 +78,7 @@ class RetrofitTests {
         enabled = true
         composeTestRule.mainClock.advanceTimeBy(10_000)
 
-        composeTestRule.onNodeWithText("Tuesday 09:00").assertExists("Cannot find selected day")
+        composeTestRule.onNodeWithText("Wednesday 13:00").assertExists("Cannot find selected day")
         composeTestRule.onNodeWithText("-14.3").assertExists("Cannot find Temp with symbol.").printToLog("Test")
         composeTestRule.onNodeWithTag(WeatherViewModel.WeatherBlock.Type.TempWithSymbol.type, useUnmergedTree = true)
             .let { node ->

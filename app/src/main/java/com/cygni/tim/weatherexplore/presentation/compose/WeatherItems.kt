@@ -1,5 +1,6 @@
 package com.cygni.tim.weatherexplore.presentation.compose
 
+import android.util.Log
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -27,6 +28,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -49,6 +51,7 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.cygni.tim.weatherexplore.R
 import com.cygni.tim.weatherexplore.data.models.Point
+import com.cygni.tim.weatherexplore.presentation.NavigationActivity
 import com.cygni.tim.weatherexplore.presentation.icons.WeatherIcons
 import com.cygni.tim.weatherexplore.presentation.viewmodel.WeatherViewModel
 
@@ -379,10 +382,12 @@ fun PrecipitationAmount(
 @Composable
 fun FloatingVerticalSlider(
     modifier: Modifier = Modifier,
-    slider: WeatherViewModel.SliderData,
-    onUpdateSelectedTime: (Float) -> Unit = {}
+    position: Int,
+    range: ClosedFloatingPointRange<Float>,
+    onUpdateSelectedTime: (position: Float, finished: Boolean) -> Unit = {_, _ -> }
 ) {
-    var sliderPosition by remember { mutableFloatStateOf(slider.currentStep.toFloat()) }
+    var sliderPosition by remember { mutableFloatStateOf(position.toFloat()) }
+    val sliderRange by remember { mutableStateOf(range) }
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -390,13 +395,13 @@ fun FloatingVerticalSlider(
     ) {
         Slider(
             value = sliderPosition,
-            valueRange = slider.getRange(),
+            valueRange = sliderRange,
             onValueChange = {
                 sliderPosition = it
-                onUpdateSelectedTime(sliderPosition)
+                onUpdateSelectedTime(sliderPosition, false)
             },
             onValueChangeFinished = {
-                onUpdateSelectedTime(sliderPosition)
+                onUpdateSelectedTime(sliderPosition, true)
             },
             colors = SliderDefaults.colors(
                 activeTrackColor = MaterialTheme.colorScheme.tertiary,
@@ -467,10 +472,8 @@ fun ElevatedBlock(
 @Composable
 fun FloatingVerticalSliderPreview() {
     FloatingVerticalSlider(
-        slider = WeatherViewModel.SliderData(
-            25,
-            15
-        )
+        position = 12,
+        range = 0f..24f
     )
 }
 

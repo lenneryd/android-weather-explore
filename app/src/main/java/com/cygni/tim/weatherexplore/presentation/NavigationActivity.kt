@@ -33,7 +33,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
@@ -229,7 +228,7 @@ fun NavigationNavHost(padding: PaddingValues, navController: NavHostController, 
             WeatherScreenNav(
                 displayType = WeatherViewModel.DisplayType.entries.firstOrNull { enum ->
                     enum.value == backstack.get(Arguments.Type)
-                } ?: WeatherViewModel.DisplayType.Blocks,
+                },
                 navigateToMap = { navController.navigate(Route.WeatherMap.resolved()) },
                 onNavigateToGoogleMaps = { onNavigateToGoogleMaps(it) }
             )
@@ -262,15 +261,16 @@ fun WeatherScreenNav(
     navigateToMap: (Point) -> Unit,
     onNavigateToGoogleMaps: (Point) -> Unit,
 ) {
-    val vm = hiltViewModel<WeatherViewModel>()
-    vm.onSwitchView(displayType ?: WeatherViewModel.DisplayType.Blocks)
+    val vm = hiltViewModel<WeatherViewModel, WeatherViewModel.WeatherViewModelFactory> { factory ->
+        factory.create(displayType)
+    }
     val uiState by vm.uiState.collectAsState(WeatherViewModel.WeatherUIState.PendingUIState)
     WeatherScreen(
         state = uiState,
         onNavigateToMap = { navigateToMap(it) },
         onNavigateToGoogleMaps = { onNavigateToGoogleMaps(it) },
         onToggleScreenType = { vm.toggleView() },
-        onUpdateSelectedTime = { vm.onUpdateSelectedTime(it) },
+        onUpdateSelectedTime = { position, finished -> vm.onUpdateSelectedTime(position, finished) },
         onClearMessage = { vm.clearMessage(it) }
     )
 }
