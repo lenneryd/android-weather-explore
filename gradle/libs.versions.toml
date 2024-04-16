@@ -1,7 +1,7 @@
 [versions]
 accompanistFlowlayout = "0.32.0"
 activityKtx = "1.8.2"
-androidGradlePlugin = "8.2.2"
+androidGradlePlugin = "8.3.2"
 constraintlayoutCompose = "1.0.1"
 coilCompose = "2.6.0"
 espressoCore = "3.5.1"
