@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.hilt.android)
     kotlin("plugin.serialization")
+    alias(libs.plugins.compose.compiler)
     alias(libs.plugins.navigation.safe.args)
     alias(libs.plugins.ksp)
     alias(libs.plugins.detekt)
@@ -128,10 +129,6 @@ android {
         targetCompatibility = JavaVersion.VERSION_1_8
     }
 
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.4"
-    }
-
     @Suppress("UnstableApiUsage")
     testOptions {
         unitTests {
@@ -203,7 +200,6 @@ dependencies {
     implementation(libs.coil.base)
     implementation(libs.coil.compose)
     implementation(libs.accompanist.flowlayout)
-    ksp(libs.ksp)
 
     implementation(libs.google.android.documentscanner)
     implementation(libs.google.android.textrecognition)

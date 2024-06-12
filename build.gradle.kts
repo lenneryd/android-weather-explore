@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.hilt.android) apply false
     kotlin("jvm").version(libs.versions.kotlinAndroid).apply(false)
     kotlin("plugin.serialization").version(libs.versions.kotlinAndroid).apply(false)
+    alias(libs.plugins.compose.compiler).apply(false)
     alias(libs.plugins.navigation.safe.args) apply false
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.detekt) apply false
