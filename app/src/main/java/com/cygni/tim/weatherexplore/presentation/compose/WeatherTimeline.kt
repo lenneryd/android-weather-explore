@@ -37,6 +37,12 @@ import com.cygni.tim.weatherexplore.R
 import com.cygni.tim.weatherexplore.presentation.icons.WeatherIcons
 import com.cygni.tim.weatherexplore.presentation.viewmodel.WeatherViewModel
 
+/**
+ * Composable function that displays the weather timeline screen.
+ * It uses a Scaffold layout to provide a bottom bar and content area.
+ *
+ * @param state The UI state containing weather timeline information.
+ */
 @Composable
 fun WeatherTimelineScreen(state: WeatherViewModel.WeatherUIState.WeatherTimelineUI) {
     Scaffold(
@@ -50,6 +56,13 @@ fun WeatherTimelineScreen(state: WeatherViewModel.WeatherUIState.WeatherTimeline
     }
 }
 
+/**
+ * Composable function that displays a list of weather timeline items.
+ * It uses a LazyColumn to efficiently display a potentially large list of items.
+ *
+ * @param state The UI state containing weather timeline information.
+ * @param modifier Modifier to be applied to the LazyColumn.
+ */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun WeatherTimelineComposable(state: WeatherViewModel.WeatherUIState.WeatherTimelineUI, modifier: Modifier) {
@@ -78,6 +91,12 @@ fun WeatherTimelineComposable(state: WeatherViewModel.WeatherUIState.WeatherTime
     }
 }
 
+/**
+ * Composable function that displays a weather timeline divider item.
+ * It represents a day divider in the weather timeline.
+ *
+ * @param state The UI state for the weather day divider item.
+ */
 @Composable
 fun WeatherTimelineDividerItem(state: WeatherViewModel.WeatherTimelineItem.WeatherDayDivider) {
     Row(
@@ -92,6 +111,12 @@ fun WeatherTimelineDividerItem(state: WeatherViewModel.WeatherTimelineItem.Weath
     }
 }
 
+/**
+ * Composable function that displays a weather timeline hour item.
+ * It represents a single hour's weather information in the timeline.
+ *
+ * @param state The UI state for the weather hourly timeline item.
+ */
 @Composable
 fun WeatherTimelineHourItem(state: WeatherViewModel.WeatherTimelineItem.WeatherHourlyTimelineItem) {
     val icon = state.weatherIcon?.let { WeatherIcons.resolve(LocalContext.current, it) }
@@ -214,6 +239,10 @@ fun WeatherTimelineHourItem(state: WeatherViewModel.WeatherTimelineItem.WeatherH
     }
 }
 
+/**
+ * Preview function for WeatherTimelineComposable.
+ * It provides a sample UI state and displays the weather timeline screen.
+ */
 @Preview
 @Composable
 fun WeatherTimelineComposablePreview() {

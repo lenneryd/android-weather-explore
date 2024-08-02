@@ -35,12 +35,22 @@ import java.time.format.DateTimeFormatter
 import java.util.UUID
 
 @HiltViewModel(assistedFactory = WeatherViewModel.WeatherViewModelFactory::class)
+/**
+ * ViewModel responsible for preparing and managing the weather data for the UI.
+ * It handles the communication of the application with the data layer and the UI.
+ * @param displayType The initial display type for the UI.
+ * @param useCase The use case for fetching weather data.
+ * @param locationUseCase The use case for fetching location data.
+ */
 class WeatherViewModel @AssistedInject constructor(
     @Assisted displayType: DisplayType?,
     private val useCase: WeatherUseCase,
     private val locationUseCase: LocationUseCase
 ) : ViewModel() {
 
+    /**
+     * Factory for creating [WeatherViewModel] instances with assisted injection.
+     */
     @AssistedFactory
     interface WeatherViewModelFactory {
         fun create(displayType: DisplayType?): WeatherViewModel
@@ -56,6 +66,9 @@ class WeatherViewModel @AssistedInject constructor(
 
     private val messages = MutableStateFlow(listOf<Message>())
 
+    /**
+     * Enum class representing the display types for the UI.
+     */
     enum class DisplayType(val value: String) {
         Blocks("blocks"), Timeline("timeline");
 
@@ -85,6 +98,10 @@ class WeatherViewModel @AssistedInject constructor(
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
+    /**
+     * The UI state representing the weather information.
+     * It is a combination of weather data and messages to be displayed.
+     */
     val uiState: Flow<WeatherUIState> = _displayType.flatMapLatest { type ->
 
         when (type) {
@@ -114,41 +131,47 @@ class WeatherViewModel @AssistedInject constructor(
         }
     }
 
+    /**
+     * Maps the [WeatherModel] to the UI state for the weather blocks display.
+     * @param messages The list of messages to be displayed in the UI.
+     * @return The UI state representing the weather blocks.
+     */
     private fun WeatherModel.mapToUI(messages: List<Message> = listOf()): WeatherUIState {
         val now = LocalDateTime.now()
-        val filtered = this.timeseries.filterOutdated(now)
-
-        if (filtered.isEmpty()) {
-            return WeatherUIState.FailureUIState("No up to date weather available.")
-        }
-
-        val blocks = filtered.map { series ->
-            WeatherUIState.TimeSeriesBlock(
-                series.time,
-                listOfNotNull(
-                    series.toTempWithSymbolOrNull(this.units),
-                    series.toWindWithStrengthOrNull(this.units),
-                    series.toCloudCoverOrNull(),
-                    series.toPrecipitationPotentialOrNull(),
-                    series.toPrecipitationAmountOrNull(units),
-                    WeatherBlock.MapLink.GoToGoogleMaps(point),
-                    WeatherBlock.MapLink.GoToMap(point),
+        return this.timeseries.filterOutdated(now).let { filtered ->
+            if (filtered.isEmpty()) {
+                WeatherUIState.FailureUIState("No up to date weather available.")
+            } else {
+                WeatherUIState.WeatherUI(
+                    location = point,
+                    updatedAtString = getUpdatedAtString(updatedAt),
+                    selectedTimeFormat = "cccc HH:mm",
+                    snackbarMessages = messages,
+                    blocks = filtered.map { series ->
+                        WeatherUIState.TimeSeriesBlock(
+                            series.time,
+                            listOfNotNull(
+                                series.toTempWithSymbolOrNull(this.units),
+                                series.toWindWithStrengthOrNull(this.units),
+                                series.toCloudCoverOrNull(),
+                                series.toPrecipitationPotentialOrNull(),
+                                series.toPrecipitationAmountOrNull(units),
+                                WeatherBlock.MapLink.GoToGoogleMaps(point),
+                                WeatherBlock.MapLink.GoToMap(point),
+                            )
+                        )
+                    }
                 )
-            )
+            }
         }
-
-        return WeatherUIState.WeatherUI(
-            location = point,
-            updatedAtString = getUpdatedAtString(updatedAt),
-            selectedTimeFormat = "cccc HH:mm",
-            snackbarMessages = messages,
-            blocks = blocks
-        )
     }
 
     private fun WeatherModel.mapToTimeline() = WeatherUIState.WeatherTimelineUI(
         updatedAtString = getUpdatedAtString(updatedAt),
         list = timeseries.filterOutdated(LocalDateTime.now()).let { list ->
+            // Construct the timeline UI by iterating over the filtered list of time series.
+            // For each time series, check if a new day has started compared to the last item.
+            // If so, insert a day divider. Then, add the hourly weather information followed by an hour divider.
             list.fold(mutableListOf()) { acc: MutableList<WeatherTimelineItem>, current ->
                 val lastDay =
                     acc.lastOrNull { it is WeatherTimelineItem.WeatherHourlyTimelineItem }
@@ -181,6 +204,8 @@ class WeatherViewModel @AssistedInject constructor(
     private fun getUpdatedAtString(updatedAt: String) = "Updated at: ${
         ZonedDateTime.parse(updatedAt).toLocalDateTime().format(DateTimeFormatter.ofPattern("HH:mm"))
     } (${
+        // Calculate the duration since the last update and format it into a human-readable string.
+        // This helps users understand how recent the weather information is.
         Duration.between(ZonedDateTime.parse(updatedAt).toLocalDateTime(), LocalDateTime.now()).let { duration ->
             val hours = duration.toHours()
             when {
@@ -190,10 +215,18 @@ class WeatherViewModel @AssistedInject constructor(
         }
     } ago)"
 
+    /**
+     * Adds a message to the list of messages to be displayed in the UI.
+     * @param message The message to be added.
+     */
     fun addMessage(message: Message) {
         messages.value = messages.value.toMutableList().apply { this.add(message) }
     }
 
+    /**
+     * Clears a message from the list of messages to be displayed in the UI.
+     * @param message The message to be removed.
+     */
     fun clearMessage(message: Message) {
         messages.value = messages.value.toMutableList().apply { this.remove(message) }
     }
@@ -314,6 +347,9 @@ class WeatherViewModel @AssistedInject constructor(
         _displayType.value = if (DisplayType.Blocks == displayType.value) DisplayType.Timeline else DisplayType.Blocks
     }
 
+    /**
+     * Sealed class representing the UI state for the weather information.
+     */
     sealed class WeatherUIState {
         data class WeatherUI(
             val location: Point,
@@ -337,6 +373,9 @@ class WeatherViewModel @AssistedInject constructor(
         data object PendingUIState : WeatherUIState()
     }
 
+    /**
+     * Sealed class representing items in the weather timeline.
+     */
     sealed class WeatherTimelineItem(val key: String) {
 
         data class WeatherDayDivider(val text: String) : WeatherTimelineItem(key = UUID.randomUUID().toString())
@@ -354,12 +393,18 @@ class WeatherViewModel @AssistedInject constructor(
     }
 
 
+    /**
+     * Sealed class representing the type of precipitation.
+     */
     sealed class PrecipitationType(@DrawableRes val symbol: Int) {
         data object Rain : PrecipitationType(R.drawable.rain)
         data object Sleet : PrecipitationType(R.drawable.sleet)
         data object Snow : PrecipitationType(R.drawable.snow)
     }
 
+    /**
+     * Data class representing the data for precipitation.
+     */
     data class PrecipitationData(
         val type: PrecipitationType,
         val hours: String,
@@ -368,6 +413,9 @@ class WeatherViewModel @AssistedInject constructor(
         val probabilityText: String?
     )
 
+    /**
+     * Data class representing the data for the slider UI component.
+     */
     data class SliderData(
         val steps: Int,
         val currentStep: Int,
@@ -375,6 +423,9 @@ class WeatherViewModel @AssistedInject constructor(
         fun getRange() = 0f..(steps - 1).toFloat()
     }
 
+    /**
+     * Sealed class representing different types of weather blocks in the UI.
+     */
     sealed class WeatherBlock(val tag: Type) {
         enum class Type(val type: String) {
             TempWithSymbol("tempWithSymbol"),
@@ -406,9 +457,15 @@ class WeatherViewModel @AssistedInject constructor(
         }
     }
 
+    /**
+     * Sealed class representing messages to be displayed in the UI.
+     */
     sealed class Message(val text: String) {
         data object FailedToNavigateToMapMessage : Message(text = "Failed to show Map location")
     }
 
+    /**
+     * Exception class for handling failures in getting the location.
+     */
     class FailedToGetLocationException : Exception("Failed to get location")
 }
