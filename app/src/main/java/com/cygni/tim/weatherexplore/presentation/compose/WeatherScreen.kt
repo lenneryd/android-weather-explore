@@ -72,6 +72,7 @@ fun WeatherScreen(
     onNavigateToGoogleMaps: (Point) -> Unit,
     onToggleScreenType: () -> Unit,
     onUpdateSelectedTime: (position: Float, finished: Boolean) -> Unit,
+    onShowDetails: () -> Unit,
     onClearMessage: (WeatherViewModel.Message) -> Unit,
 ) {
     WeatherScreenComposable(
@@ -80,6 +81,7 @@ fun WeatherScreen(
         onNavigateToGoogleMaps = { onNavigateToGoogleMaps(it) },
         onUpdateSelectedTime = { position, finished -> onUpdateSelectedTime(position, finished) },
         onToggleScreenType = { onToggleScreenType() },
+        onShowDetails = { onShowDetails() },
         onDismissMessage = { onClearMessage(it) }
     )
 }
@@ -91,6 +93,7 @@ fun WeatherScreenComposable(
     onNavigateToGoogleMaps: (Point) -> Unit = {},
     onUpdateSelectedTime: (position: Float, finished: Boolean) -> Unit = {_, _ ->},
     onToggleScreenType: () -> Unit = {},
+    onShowDetails: () -> Unit = {},
     onDismissMessage: (WeatherViewModel.Message) -> Unit = {}
 ) {
 
@@ -108,12 +111,15 @@ fun WeatherScreenComposable(
                 onNavigateToGoogleMaps = onNavigateToGoogleMaps,
                 onUpdateSelectedTime = onUpdateSelectedTime,
                 onTimelineClicked = onToggleScreenType,
+                onShowDetails = onShowDetails,
                 dismissMessage = onDismissMessage,
             )
 
             is WeatherViewModel.WeatherUIState.WeatherTimelineUI -> WeatherTimelineScreen(
                 state
             )
+
+            is WeatherViewModel.WeatherUIState.WeatherDetailsUI -> WeatherDetailScreen(state = state)
 
             is WeatherViewModel.WeatherUIState.FailureUIState -> FailureComposable(state.message)
             WeatherViewModel.WeatherUIState.PendingUIState -> PendingComposable()
@@ -128,6 +134,7 @@ fun WeatherUIComposable(
     onNavigateToGoogleMaps: (Point) -> Unit,
     onUpdateSelectedTime: (position: Float, finished: Boolean) -> Unit,
     onTimelineClicked: () -> Unit,
+    onShowDetails: () -> Unit,
     dismissMessage: (WeatherViewModel.Message) -> Unit
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
@@ -199,7 +206,8 @@ fun WeatherUIComposable(
                     })
                 }
         ) {
-            CurrentTimeRow(state = state, position = sliderPosition)
+            val (pattern, time) = state.blocks[sliderPosition].let { state.selectedTimeFormat to it.time }
+            CurrentTimeRow(pattern, time)
 
             CurrentWeatherBlock(
                 blocks = state.blocks[sliderPosition].blocks,
@@ -209,15 +217,14 @@ fun WeatherUIComposable(
                 onTimelineClick = { onTimelineClicked() },
                 onLocationClick = { onNavigateToMap(it) },
                 onGoogleMapsClick = { onNavigateToGoogleMaps(it) },
+                onCurrentTempClick = { onShowDetails() }
             )
         }
     }
 }
 
 @Composable
-fun CurrentTimeRow(state: WeatherViewModel.WeatherUIState.WeatherUI, position: Int) {
-    val current = state.blocks[position]
-
+fun CurrentTimeRow(timeFormat: String, time: String) {
     Row(
         horizontalArrangement = Arrangement.Center,
         modifier = Modifier
@@ -227,7 +234,7 @@ fun CurrentTimeRow(state: WeatherViewModel.WeatherUIState.WeatherUI, position: I
             .padding(top = 8.dp, bottom = 8.dp)
     ) {
         Text(
-            text = DateTimeFormatter.ofPattern(state.selectedTimeFormat).format(ZonedDateTime.parse(current.time).toLocalDateTime()),
+            text = DateTimeFormatter.ofPattern(timeFormat).format(ZonedDateTime.parse(time).toLocalDateTime()),
             fontSize = 16.sp,
             color = MaterialTheme.colorScheme.primary,
             textAlign = TextAlign.Center
@@ -243,6 +250,7 @@ fun CurrentWeatherBlock(
     onLocationClick: (Point) -> Unit,
     onGoogleMapsClick: (Point) -> Unit,
     onTimelineClick: () -> Unit,
+    onCurrentTempClick: () -> Unit,
 ) {
     val skipAnimations = LocalPreviewState.current.skipAnimations
     var numItems by remember { mutableIntStateOf(if (skipAnimations) blocks.size else 0) }
@@ -268,7 +276,7 @@ fun CurrentWeatherBlock(
                 AnimatedVisibility(visible = i < numItems, enter = fadeIn(), exit = fadeOut()) {
                     when (val item = blocks[i]) {
                         is WeatherViewModel.WeatherBlock.TempWithSymbolIcon -> {
-                            TempWithWeatherIcon(state = item)
+                            TempWithWeatherIcon(state = item, onClick = { onCurrentTempClick() })
                         }
 
                         is WeatherViewModel.WeatherBlock.WindWithStrength -> {

@@ -271,6 +271,7 @@ fun WeatherScreenNav(
         onNavigateToGoogleMaps = { onNavigateToGoogleMaps(it) },
         onToggleScreenType = { vm.toggleView() },
         onUpdateSelectedTime = { position, finished -> vm.onUpdateSelectedTime(position, finished) },
+        onShowDetails = { vm.showDetails() },
         onClearMessage = { vm.clearMessage(it) }
     )
 }
