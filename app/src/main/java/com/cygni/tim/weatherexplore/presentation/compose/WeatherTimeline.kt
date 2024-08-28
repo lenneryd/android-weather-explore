@@ -35,41 +35,45 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cygni.tim.weatherexplore.R
 import com.cygni.tim.weatherexplore.presentation.icons.WeatherIcons
-import com.cygni.tim.weatherexplore.presentation.viewmodel.WeatherViewModel
+import com.cygni.tim.weatherexplore.presentation.viewmodel.WeatherTimelineViewModel
 
 @Composable
-fun WeatherTimelineScreen(state: WeatherViewModel.WeatherUIState.WeatherTimelineUI) {
-    Scaffold(
-        bottomBar = { WeatherBottomAppBar(state.updatedAtString) }
-    ) { padding ->
-        WeatherTimelineComposable(
-            state = state, modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-        )
+fun WeatherTimelineScreen(state: WeatherTimelineViewModel.WeatherTimeline) {
+    when (state) {
+        is WeatherTimelineViewModel.WeatherTimeline.WeatherTimelineUI -> Scaffold(
+            bottomBar = { WeatherBottomAppBar(state.updatedAtString) }
+        ) { padding ->
+            WeatherTimelineComposable(
+                state = state, modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+            )
+        }
+
+        WeatherTimelineViewModel.WeatherTimeline.LoadingWeatherTimeline -> PendingComposable()
     }
 }
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun WeatherTimelineComposable(state: WeatherViewModel.WeatherUIState.WeatherTimelineUI, modifier: Modifier) {
+fun WeatherTimelineComposable(state: WeatherTimelineViewModel.WeatherTimeline.WeatherTimelineUI, modifier: Modifier) {
     LazyColumn(modifier) {
         items(items = state.list, key = {item -> item.key}) { item ->
             when (item) {
-                is WeatherViewModel.WeatherTimelineItem.WeatherDayDivider -> {
-                    Row(modifier = Modifier.animateItemPlacement()) {
+                is WeatherTimelineViewModel.WeatherTimelineItem.WeatherDayDivider -> {
+                    Row(modifier = Modifier.animateItem()) {
                         WeatherTimelineDividerItem(state = item)
                     }
                 }
 
-                is WeatherViewModel.WeatherTimelineItem.HourDivider -> {
-                    Row(modifier = Modifier.animateItemPlacement()) {
+                is WeatherTimelineViewModel.WeatherTimelineItem.HourDivider -> {
+                    Row(modifier = Modifier.animateItem()) {
                         Divider(color = MaterialTheme.colorScheme.primary)
                     }
                 }
 
-                is WeatherViewModel.WeatherTimelineItem.WeatherHourlyTimelineItem -> {
-                    Row(modifier = Modifier.animateItemPlacement()) {
+                is WeatherTimelineViewModel.WeatherTimelineItem.WeatherHourlyTimelineItem -> {
+                    Row(modifier = Modifier.animateItem()) {
                         WeatherTimelineHourItem(state = item)
                     }
                 }
@@ -79,7 +83,7 @@ fun WeatherTimelineComposable(state: WeatherViewModel.WeatherUIState.WeatherTime
 }
 
 @Composable
-fun WeatherTimelineDividerItem(state: WeatherViewModel.WeatherTimelineItem.WeatherDayDivider) {
+fun WeatherTimelineDividerItem(state: WeatherTimelineViewModel.WeatherTimelineItem.WeatherDayDivider) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -93,7 +97,7 @@ fun WeatherTimelineDividerItem(state: WeatherViewModel.WeatherTimelineItem.Weath
 }
 
 @Composable
-fun WeatherTimelineHourItem(state: WeatherViewModel.WeatherTimelineItem.WeatherHourlyTimelineItem) {
+fun WeatherTimelineHourItem(state: WeatherTimelineViewModel.WeatherTimelineItem.WeatherHourlyTimelineItem) {
     val icon = state.weatherIcon?.let { WeatherIcons.resolve(LocalContext.current, it) }
 
     Column() {
@@ -218,11 +222,11 @@ fun WeatherTimelineHourItem(state: WeatherViewModel.WeatherTimelineItem.WeatherH
 @Composable
 fun WeatherTimelineComposablePreview() {
     WeatherTimelineScreen(
-        state = WeatherViewModel.WeatherUIState.WeatherTimelineUI(
+        state = WeatherTimelineViewModel.WeatherTimeline.WeatherTimelineUI(
             updatedAtString = "Updated at 09:41 (14 minutes ago)",
             list = listOf(
-                WeatherViewModel.WeatherTimelineItem.WeatherDayDivider("Thursday"),
-                WeatherViewModel.WeatherTimelineItem.WeatherHourlyTimelineItem(
+                WeatherTimelineViewModel.WeatherTimelineItem.WeatherDayDivider("Thursday"),
+                WeatherTimelineViewModel.WeatherTimelineItem.WeatherHourlyTimelineItem(
                     time = "11",
                     hourString = "11",
                     weatherIcon = "partlycloudy_day",
@@ -232,7 +236,7 @@ fun WeatherTimelineComposablePreview() {
                     windStrength = "8 (14)",
                     precipitation = "0"
                 ),
-                WeatherViewModel.WeatherTimelineItem.WeatherHourlyTimelineItem(
+                WeatherTimelineViewModel.WeatherTimelineItem.WeatherHourlyTimelineItem(
                     time = "12",
                     hourString = "12",
                     weatherIcon = "fair_day",
@@ -242,8 +246,8 @@ fun WeatherTimelineComposablePreview() {
                     windStrength = "3 (6)",
                     precipitation = "0"
                 ),
-                WeatherViewModel.WeatherTimelineItem.WeatherDayDivider("Thursday"),
-                WeatherViewModel.WeatherTimelineItem.WeatherHourlyTimelineItem(
+                WeatherTimelineViewModel.WeatherTimelineItem.WeatherDayDivider("Thursday"),
+                WeatherTimelineViewModel.WeatherTimelineItem.WeatherHourlyTimelineItem(
                     time = "11",
                     hourString = "11",
                     weatherIcon = "partlycloudy_day",
@@ -253,7 +257,7 @@ fun WeatherTimelineComposablePreview() {
                     windStrength = "8 (14)",
                     precipitation = "0"
                 ),
-                WeatherViewModel.WeatherTimelineItem.WeatherHourlyTimelineItem(
+                WeatherTimelineViewModel.WeatherTimelineItem.WeatherHourlyTimelineItem(
                     time = "12",
                     hourString = "12",
                     weatherIcon = "fair_day",
@@ -263,7 +267,7 @@ fun WeatherTimelineComposablePreview() {
                     windStrength = "3 (6)",
                     precipitation = "0"
                 ),
-                WeatherViewModel.WeatherTimelineItem.WeatherHourlyTimelineItem(
+                WeatherTimelineViewModel.WeatherTimelineItem.WeatherHourlyTimelineItem(
                     time = "13",
                     hourString = "13",
                     weatherIcon = "heavyrainshowers_day",

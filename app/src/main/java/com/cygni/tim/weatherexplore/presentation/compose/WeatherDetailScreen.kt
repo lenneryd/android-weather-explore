@@ -1,12 +1,14 @@
 package com.cygni.tim.weatherexplore.presentation.compose
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -19,6 +21,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalContext
@@ -30,21 +36,33 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import com.cygni.tim.weatherexplore.presentation.LocalAnimatedVisibilityScope
+import com.cygni.tim.weatherexplore.presentation.LocalSharedElementTransitionScope
 import com.cygni.tim.weatherexplore.presentation.icons.WeatherIcons
+import com.cygni.tim.weatherexplore.presentation.viewmodel.WeatherDetailsViewModel
 import com.cygni.tim.weatherexplore.presentation.viewmodel.WeatherViewModel
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun WeatherDetailScreen(
-    state: WeatherViewModel.WeatherUIState.WeatherDetailsUI,
+    state: WeatherDetailsViewModel.WeatherDetails,
 ) {
+    when (state) {
+        is WeatherDetailsViewModel.WeatherDetails.WeatherDetailsUI -> WeatherDetailsComposable(state = state)
+        is WeatherDetailsViewModel.WeatherDetails.LoadingWeatherDetails -> WeatherDetailsComposable(state = state.dummyData)
+    }
+}
+
+@OptIn(ExperimentalSharedTransitionApi::class)
+@Composable
+fun WeatherDetailsComposable(state: WeatherDetailsViewModel.WeatherDetails.WeatherDetailsUI) {
     Scaffold(
         bottomBar = {
             WeatherBottomAppBar(state.updatedAtString)
         }
     ) { padding ->
-
         ConstraintLayout(
             modifier = Modifier
                 .padding(padding)
@@ -106,8 +124,18 @@ fun WeatherDetailScreen(
                 weatherData?.resId?.let { res ->
                     Image(
                         painter = painterResource(id = res),
-                        contentDescription = "Map Link to location",
+                        contentDescription = "Weather Icon",
                         modifier = Modifier
+                            .apply {
+                                onNonNull(
+                                    LocalSharedElementTransitionScope.current,
+                                    LocalAnimatedVisibilityScope.current
+                                ) { shared, animated ->
+                                    with(shared) {
+                                        sharedElement(rememberSharedContentState(key = KEY_ICON_IMAGE), animated)
+                                    }
+                                }
+                            }
                             .size(topGradientHeight)
                             .background(
                                 brush = Brush.sweepGradient(
@@ -191,17 +219,18 @@ fun WeatherDetailScreen(
 }
 
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Preview
 @Composable
 fun WeatherDetailScreenPreview() {
     WeatherDetailScreen(
-        WeatherViewModel.WeatherUIState.WeatherDetailsUI(
+        WeatherDetailsViewModel.WeatherDetails.WeatherDetailsUI(
             updatedAtString = "Updated at 09:41 (14 minutes ago)",
             icon = "partlycloudy_day",
             temperature = "-14.3",
             selectedTimeFormat = "cccc HH:mm",
             time = "2024-01-10T13:00:00Z",
-        )
+        ),
     )
 }
 

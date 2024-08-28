@@ -1,7 +1,11 @@
 package com.cygni.tim.weatherexplore.presentation.compose
 
-import android.util.Log
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -26,6 +30,7 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -51,10 +56,12 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.cygni.tim.weatherexplore.R
 import com.cygni.tim.weatherexplore.data.models.Point
-import com.cygni.tim.weatherexplore.presentation.NavigationActivity
+import com.cygni.tim.weatherexplore.presentation.LocalAnimatedVisibilityScope
+import com.cygni.tim.weatherexplore.presentation.LocalSharedElementTransitionScope
 import com.cygni.tim.weatherexplore.presentation.icons.WeatherIcons
 import com.cygni.tim.weatherexplore.presentation.viewmodel.WeatherViewModel
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun TempWithWeatherIcon(
     state: WeatherViewModel.WeatherBlock.TempWithSymbolIcon,
@@ -69,6 +76,13 @@ fun TempWithWeatherIcon(
                         contentDescription = "Map Link to location",
                         modifier = Modifier
                             .wrapContentSize()
+                            .apply {
+                                onNonNull(LocalSharedElementTransitionScope.current, LocalAnimatedVisibilityScope.current) { shared, animation ->
+                                    with(shared) {
+                                        sharedElement(rememberSharedContentState(key = KEY_ICON_IMAGE), animation)
+                                    }
+                                }
+                            }
                     )
                 }
             }
@@ -384,7 +398,7 @@ fun FloatingVerticalSlider(
     modifier: Modifier = Modifier,
     position: Int,
     range: ClosedFloatingPointRange<Float>,
-    onUpdateSelectedTime: (position: Float, finished: Boolean) -> Unit = {_, _ -> }
+    onUpdateSelectedTime: (position: Float, finished: Boolean) -> Unit = { _, _ -> }
 ) {
     var sliderPosition by remember { mutableFloatStateOf(position.toFloat()) }
     val sliderRange by remember { mutableStateOf(range) }
@@ -477,10 +491,17 @@ fun FloatingVerticalSliderPreview() {
     )
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Preview
 @Composable
 fun TempWithWeatherIconPreview() {
-    TempWithWeatherIcon(state = (WeatherViewModel.WeatherBlock.TempWithSymbolIcon("partlycloudy_day", "-14.3")))
+    SharedTransitionLayout {
+        AnimatedVisibility(visible = true) {
+            TempWithWeatherIcon(
+                state = (WeatherViewModel.WeatherBlock.TempWithSymbolIcon("partlycloudy_day", "-14.3")),
+            )
+        }
+    }
 }
 
 @Preview
@@ -539,4 +560,10 @@ fun GoToMapPreview() {
         ),
         "Google Maps"
     ) {}
+}
+
+inline fun <S: Any, T: Any>  onNonNull(first: S?, second: T?, action: (S, T) -> Unit) {
+    if(first != null && second != null) {
+        action(first, second)
+    }
 }

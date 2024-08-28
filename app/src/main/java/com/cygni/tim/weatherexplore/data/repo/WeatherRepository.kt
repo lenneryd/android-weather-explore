@@ -13,16 +13,33 @@ import com.cygni.tim.weatherexplore.data.models.TimeSeriesModel
 import com.cygni.tim.weatherexplore.data.models.TimeSeriesSummary
 import com.cygni.tim.weatherexplore.data.models.Units
 import com.cygni.tim.weatherexplore.data.models.WeatherModel
+import com.cygni.tim.weatherexplore.data.storage.WeatherStorage
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flatMapMerge
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.take
 import java.text.DecimalFormat
 import javax.inject.Inject
 
-class WeatherRepository @Inject constructor(private val api: WeatherApi) {
-    fun getWeather(point: Point): Flow<Result<WeatherModel>> = flow {
-        emit(api.getWeather(point.truncLatitude(), point.truncLongitude()).toResult { entity ->
-            entity.toModel(point)
-        })
+@OptIn(ExperimentalCoroutinesApi::class)
+class WeatherRepository @Inject constructor(private val api: WeatherApi, private val storage: WeatherStorage) {
+    fun getWeather(point: Point): Flow<Result<WeatherModel>> = storage.get().take(1).map { cached ->
+        if (cached == null) {
+            val result = api.getWeather(point.truncLatitude(), point.truncLongitude()).toResult { entity ->
+                entity.toModel(point)
+            }
+
+            if (result.isSuccess) {
+                storage.put(result.getOrThrow())
+            }
+            result
+        } else {
+            Result.success(cached)
+        }
     }
 }
 

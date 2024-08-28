@@ -12,6 +12,10 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.PaddingValues
@@ -28,8 +32,12 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.ProvidableCompositionLocal
+import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,7 +52,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
 import com.cygni.tim.weatherexplore.data.models.Point
 import com.cygni.tim.weatherexplore.domain.usecase.LocationUseCase
 import com.cygni.tim.weatherexplore.presentation.colors.AppYuTheme
@@ -53,16 +60,18 @@ import com.cygni.tim.weatherexplore.presentation.compose.DocumentScanScreen
 import com.cygni.tim.weatherexplore.presentation.compose.MapScreen
 import com.cygni.tim.weatherexplore.presentation.compose.MapWeatherScreen
 import com.cygni.tim.weatherexplore.presentation.compose.NavigationScreen
-import com.cygni.tim.weatherexplore.presentation.compose.WeatherScreen
-import com.cygni.tim.weatherexplore.presentation.navigation.Arguments
+import com.cygni.tim.weatherexplore.presentation.compose.WeatherDetailScreen
+import com.cygni.tim.weatherexplore.presentation.compose.WeatherScreenComposable
+import com.cygni.tim.weatherexplore.presentation.compose.WeatherTimelineScreen
 import com.cygni.tim.weatherexplore.presentation.navigation.Route
 import com.cygni.tim.weatherexplore.presentation.navigation.asRoute
-import com.cygni.tim.weatherexplore.presentation.navigation.get
 import com.cygni.tim.weatherexplore.presentation.navigation.resolved
 import com.cygni.tim.weatherexplore.presentation.navigation.routeDefinition
 import com.cygni.tim.weatherexplore.presentation.viewmodel.DocumentScanViewModel
 import com.cygni.tim.weatherexplore.presentation.viewmodel.MapScreenViewModel
 import com.cygni.tim.weatherexplore.presentation.viewmodel.MapWeatherScreenViewModel
+import com.cygni.tim.weatherexplore.presentation.viewmodel.WeatherDetailsViewModel
+import com.cygni.tim.weatherexplore.presentation.viewmodel.WeatherTimelineViewModel
 import com.cygni.tim.weatherexplore.presentation.viewmodel.WeatherViewModel
 import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanning
@@ -202,50 +211,85 @@ fun NavigationTopBar(navController: NavHostController, onCloseApp: () -> Unit) {
     )
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun NavigationNavHost(padding: PaddingValues, navController: NavHostController, onNavigateToGoogleMaps: (Point) -> Unit) {
-    NavHost(
-        navController = navController,
-        startDestination = Route.Navigation.routeDefinition(),
-        modifier = Modifier.padding(padding)
-    ) {
-        composable(Route.Navigation.value) { _ ->
-            NavigationScreen(
-                onClock = { navController.navigate(Route.Clock.resolved()) },
-                onWeather = { navController.navigate(Route.Weather.resolved(it.value)) },
-                onMap = { navController.navigate(Route.Map.resolved()) },
-                onScanning = { navController.navigate(Route.DocumentScan.resolved()) }
-            )
-        }
-        composable(
-            Route.Weather.routeDefinition(),
-            arguments = listOf(
-                navArgument(Arguments.Type.value) {
-                    defaultValue = WeatherViewModel.DisplayType.Blocks.value
+    SharedTransitionLayout {
+        CompositionLocalProvider(LocalSharedElementTransitionScope provides this@SharedTransitionLayout) {
+            NavHost(
+                navController = navController,
+                startDestination = Route.Navigation.routeDefinition(),
+                modifier = Modifier.padding(padding)
+            ) {
+                composable(Route.Navigation.value) { _ ->
+                    CompositionLocalProvider(LocalAnimatedVisibilityScope provides this@composable) {
+                        NavigationScreen(
+                            onClock = { navController.navigate(Route.Clock.resolved()) },
+                            onWeatherBlocks = { navController.navigate(Route.WeatherBlocks.resolved()) },
+                            onWeatherTimeline = { navController.navigate(Route.WeatherTimeline.resolved()) },
+                            onMap = { navController.navigate(Route.Map.resolved()) },
+                            onScanning = { navController.navigate(Route.DocumentScan.resolved()) }
+                        )
+                    }
                 }
-            )
-        ) { backstack ->
-            WeatherScreenNav(
-                displayType = WeatherViewModel.DisplayType.entries.firstOrNull { enum ->
-                    enum.value == backstack.get(Arguments.Type)
-                },
-                navigateToMap = { navController.navigate(Route.WeatherMap.resolved()) },
-                onNavigateToGoogleMaps = { onNavigateToGoogleMaps(it) }
-            )
-        }
-        composable(Route.Clock.value) {
-            ClockScreenNav()
-        }
-        composable(Route.Map.value) {
-            MapScreenNav()
-        }
+                composable(Route.WeatherBlocks.value) {
+                    val vm = hiltViewModel<WeatherViewModel>()
+                    val uiState = vm.uiState.collectAsState(initial = WeatherViewModel.WeatherUIState.LoadingWeather)
 
-        composable(Route.WeatherMap.value) {
-            MapWeatherScreenNav()
-        }
+                    CompositionLocalProvider(LocalAnimatedVisibilityScope provides this@composable) {
+                        WeatherBlocksScreenNav(
+                            uiState,
+                            navigateToMap = { navController.navigate(Route.WeatherMap.resolved()) },
+                            onNavigateToGoogleMaps = { onNavigateToGoogleMaps(it) },
+                            onUpdateSelectedTime = { position, finished -> vm.onUpdateSelectedTime(position, finished) },
+                            onNavigateToTimeline = { navController.navigate(Route.WeatherTimeline.resolved()) },
+                            onNavigateToDetails = { navController.navigate(Route.WeatherDetails.resolved()) }
 
-        composable(Route.DocumentScan.value) {
-            DocumentScanNav()
+                        )
+                    }
+                }
+
+                composable(Route.WeatherTimeline.value) {
+                    val vm = hiltViewModel<WeatherTimelineViewModel>()
+                    val uiState = vm.uiState.collectAsState(initial = WeatherTimelineViewModel.WeatherTimeline.LoadingWeatherTimeline)
+
+                    CompositionLocalProvider(LocalAnimatedVisibilityScope provides this@composable) {
+                        WeatherTimelineNav(uiState)
+                    }
+                }
+
+                composable(Route.WeatherDetails.value) {
+                    val vm = hiltViewModel<WeatherDetailsViewModel>()
+                    val uiState = vm.uiState.collectAsState(initial = WeatherDetailsViewModel.WeatherDetails.LoadingWeatherDetails())
+
+                    CompositionLocalProvider(LocalAnimatedVisibilityScope provides this@composable) {
+                        WeatherDetailsNav(uiState)
+                    }
+                }
+
+                composable(Route.Clock.value) {
+                    CompositionLocalProvider(LocalAnimatedVisibilityScope provides this@composable) {
+                        ClockScreenNav()
+                    }
+                }
+                composable(Route.Map.value) {
+                    CompositionLocalProvider(LocalAnimatedVisibilityScope provides this@composable) {
+                        MapScreenNav()
+                    }
+                }
+
+                composable(Route.WeatherMap.value) {
+                    CompositionLocalProvider(LocalAnimatedVisibilityScope provides this@composable) {
+                        MapWeatherScreenNav()
+                    }
+                }
+
+                composable(Route.DocumentScan.value) {
+                    CompositionLocalProvider(LocalAnimatedVisibilityScope provides this@composable) {
+                        DocumentScanNav()
+                    }
+                }
+            }
         }
     }
 }
@@ -256,24 +300,34 @@ fun ClockScreenNav() {
 }
 
 @Composable
-fun WeatherScreenNav(
-    displayType: WeatherViewModel.DisplayType?,
+fun WeatherBlocksScreenNav(
+    uiState: State<WeatherViewModel.WeatherUIState>,
     navigateToMap: (Point) -> Unit,
     onNavigateToGoogleMaps: (Point) -> Unit,
+    onUpdateSelectedTime: (position: Float, finished: Boolean) -> Unit,
+    onNavigateToTimeline: () -> Unit,
+    onNavigateToDetails: () -> Unit
 ) {
-    val vm = hiltViewModel<WeatherViewModel, WeatherViewModel.WeatherViewModelFactory> { factory ->
-        factory.create(displayType)
-    }
-    val uiState by vm.uiState.collectAsState(WeatherViewModel.WeatherUIState.PendingUIState)
-    WeatherScreen(
-        state = uiState,
+    WeatherScreenComposable(
+        state = uiState.value,
         onNavigateToMap = { navigateToMap(it) },
-        onNavigateToGoogleMaps = { onNavigateToGoogleMaps(it) },
-        onToggleScreenType = { vm.toggleView() },
-        onUpdateSelectedTime = { position, finished -> vm.onUpdateSelectedTime(position, finished) },
-        onShowDetails = { vm.showDetails() },
-        onClearMessage = { vm.clearMessage(it) }
+        onNavigateToGoogleMaps = onNavigateToGoogleMaps,
+        onUpdateSelectedTime = { position, finished -> onUpdateSelectedTime(position, finished) },
+        onNavigateToTimeline = { onNavigateToTimeline() },
+        onShowDetails = { onNavigateToDetails() },
     )
+}
+
+@Composable
+fun WeatherTimelineNav(
+    uiState: State<WeatherTimelineViewModel.WeatherTimeline>
+) {
+    WeatherTimelineScreen(uiState.value)
+}
+
+@Composable
+fun WeatherDetailsNav(uiState: State<WeatherDetailsViewModel.WeatherDetails>) {
+    WeatherDetailScreen(state = uiState.value)
 }
 
 @Composable
@@ -367,3 +421,8 @@ fun DocumentScanNav() {
         vm.onRetryClicked()
     }
 }
+
+val LocalAnimatedVisibilityScope: ProvidableCompositionLocal<AnimatedVisibilityScope?> = compositionLocalOf { null }
+
+@OptIn(ExperimentalSharedTransitionApi::class)
+val LocalSharedElementTransitionScope: ProvidableCompositionLocal<SharedTransitionScope?> = compositionLocalOf { null }

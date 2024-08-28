@@ -44,7 +44,7 @@ class RetrofitTests {
         updatedAtString = "Updated at 09:41 (14 minutes ago)",
         selectedTimeFormat = "cccc HH:mm",
         blocks = listOf(
-            WeatherViewModel.WeatherUIState.TimeSeriesBlock(
+            WeatherViewModel.TimeSeriesBlock(
                 "2024-01-10T13:00:00Z",
                 listOf(
                     WeatherViewModel.WeatherBlock.TempWithSymbolIcon("partlycloudy_day", "-14.3"),
@@ -69,7 +69,7 @@ class RetrofitTests {
                 WeatherScreenComposable(
                     state = testWeatherUIState(),
                     onNavigateToMap = {},
-                    onToggleScreenType = {},
+                    onNavigateToTimeline = {},
                     onUpdateSelectedTime = {_, _ ->},
                     onDismissMessage = {}
                 )

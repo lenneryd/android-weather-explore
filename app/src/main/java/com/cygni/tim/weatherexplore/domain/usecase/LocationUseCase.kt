@@ -18,9 +18,14 @@ class LocationUseCase @Inject constructor() {
             longitude = 17.8172507
         }
     )
+    private var isFirstCall: Boolean = true
 
     fun getLocation(): Flow<Result<Location>> = flow {
-        delay(500)
+        if(!isFirstCall) {
+            delay(500)
+            isFirstCall = false
+        }
+
         emit(
             Result.success(location.value)
         )

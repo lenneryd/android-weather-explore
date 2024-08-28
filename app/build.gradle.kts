@@ -88,13 +88,13 @@ tasks.withType<DetektCreateBaselineTask>().configureEach {
 
 android {
     namespace = "com.cygni.tim.weatherexplore"
-    compileSdk = 34
-    buildToolsVersion = "34.0.0"
+    compileSdk = 35
+    buildToolsVersion = "35.0.0"
 
     defaultConfig {
         applicationId = "com.cygni.tim.weatherexplore"
         minSdk = 29
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -210,7 +210,6 @@ dependencies {
 
     // Kotlin
     implementation(libs.androidx.navigation.fragment.ktx)
-    implementation(libs.androidx.navigation.navigation.ui.ktx)
 
     // Feature module Support
     implementation(libs.androidx.navigation.dynamic.features.fragment)
@@ -229,8 +228,10 @@ dependencies {
     implementation(libs.androidx.compose.material)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.compose.foundation.layout)
+    implementation(libs.androidx.compose.foundation.core)
     implementation(libs.androidx.compose.animation)
-    implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.compose.ui.tooling)
+    implementation(libs.androidx.compose.ui.ui)
 
     implementation(libs.maps.google.android.maps)
     implementation(libs.maps.google.android.compose)

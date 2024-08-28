@@ -16,12 +16,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.cygni.tim.weatherexplore.R
-import com.cygni.tim.weatherexplore.presentation.viewmodel.WeatherViewModel
 
 @Composable
 fun NavigationScreen(
     onClock: () -> Unit = {},
-    onWeather: (WeatherViewModel.DisplayType) -> Unit = {},
+    onWeatherBlocks: () -> Unit = {},
+    onWeatherTimeline: () -> Unit = {},
     onMap: () -> Unit = {},
     onScanning: () -> Unit = {},
 ) {
@@ -54,14 +54,14 @@ fun NavigationScreen(
                 )
             }
 
-            Button(onClick = { onWeather(WeatherViewModel.DisplayType.Blocks) }, modifier = Modifier.padding(top = 8.dp)) {
+            Button(onClick = { onWeatherBlocks() }, modifier = Modifier.padding(top = 8.dp)) {
                 Text(
                     text = "Navigate to Weather Blocks",
                     modifier = Modifier.padding(top = 8.dp)
                 )
             }
 
-            Button(onClick = { onWeather(WeatherViewModel.DisplayType.Timeline) }, modifier = Modifier.padding(top = 8.dp)) {
+            Button(onClick = { onWeatherTimeline() }, modifier = Modifier.padding(top = 8.dp)) {
                 Text(
                     text = "Navigate to Weather Timeline",
                     modifier = Modifier.padding(top = 8.dp)

@@ -2,7 +2,7 @@
 accompanistFlowlayout = "0.32.0"
 activityKtx = "1.8.2"
 androidGradlePlugin = "8.4.1"
-constraintlayoutCompose = "1.0.1"
+constraintlayoutCompose = "1.1.0-alpha14"
 coilCompose = "2.6.0"
 espressoCore = "3.5.1"
 fragmentKtx = "1.6.2"
@@ -24,8 +24,7 @@ lifecycleViewmodelKtx = "2.7.0"
 mapsComposeWidgets = "4.3.3"
 mapsComposeUtils = "4.3.3"
 material3 = "1.2.0"
-navigationUiKtx = "2.7.7"
-navigationFragmentKtx = "2.7.7"
+navigationUiKtx = "2.8.0-rc01"
 okhttp = "4.9.0"
 retrofit = "2.9.0"
 retrofit2KotlinxSerializationConverter = "0.8.0"
@@ -35,7 +34,10 @@ ksp = "2.0.0-1.0.21"
 ktxCore = "1.12.0"
 appcompat = "1.6.1"
 material = "1.11.0"
-androidxComposeBom = "2024.02.00"
+androidxComposeBom = "2024.08.00"
+composeAnimation = "1.7.0-rc01"
+composeUI = "1.7.0-rc01"
+composeFoundation = "1.7.0-rc01"
 robolectric = "4.11.1"
 googleMaps = "18.2.0"
 googleMapsUtils = "3.8.2"
@@ -68,11 +70,10 @@ maps-compose-utils = { module = "com.google.maps.android:maps-compose-utils", ve
 robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
 androidx-material3 = { module = "androidx.compose.material3:material3", version.ref = "material3" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationUiKtx" }
-androidx-navigation-dynamic-features-fragment = { module = "androidx.navigation:navigation-dynamic-features-fragment", version.ref = "navigationFragmentKtx" }
+androidx-navigation-dynamic-features-fragment = { module = "androidx.navigation:navigation-dynamic-features-fragment", version.ref = "navigationUiKtx" }
 androidx-navigation-testing = { module = "androidx.navigation:navigation-testing", version.ref = "navigationUiKtx" }
 androidx-navigation-ui-ktx = { module = "androidx.navigation:navigation-ui-ktx", version.ref = "navigationUiKtx" }
-androidx-navigation-fragment-ktx = { module = "androidx.navigation:navigation-fragment-ktx", version.ref = "navigationFragmentKtx" }
-androidx-navigation-navigation-ui-ktx = { module = "androidx.navigation:navigation-ui-ktx", version.ref = "navigationFragmentKtx" }
+androidx-navigation-fragment-ktx = { module = "androidx.navigation:navigation-fragment-ktx", version.ref = "navigationUiKtx" }
 coil-base = { module = "io.coil-kt:coil", version.ref = "coilCompose"}
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
 androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
@@ -91,8 +92,10 @@ retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit
 retrofit2-kotlinx-serialization-converter = { module = "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter", version.ref = "retrofit2KotlinxSerializationConverter" }
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "androidxComposeBom" }
 androidx-compose-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout" }
-androidx-compose-animation = { group = "androidx.compose.animation", name = "animation" }
-androidx-compose-ui = { group = "androidx.compose.ui", name = "ui-tooling" }
+androidx-compose-foundation-core = { group = "androidx.compose.foundation", name = "foundation", version.ref = "composeFoundation"}
+androidx-compose-animation = { group = "androidx.compose.animation", name = "animation", version.ref = "composeAnimation"}
+androidx-compose-ui-ui = { group = "androidx.compose.ui", name = "ui", version.ref = "composeUI"}
+androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 maps-google-android-maps = { group = "com.google.android.gms", name = "play-services-maps", version.ref = "googleMaps" }
 maps-google-android-compose = { group = "com.google.maps.android", name = "maps-compose", version.ref = "googleMapsCompose" }
 androidx-compose-material = { group = "androidx.compose.material", name = "material" }

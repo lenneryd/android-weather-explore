@@ -17,12 +17,14 @@ sealed class Route(
     data object Navigation : Route(value = "navigation", "Navigation")
     data object Clock : Route(value = "clock", "Clock")
     data object Map : Route(value = "map", "Pick Weather Location")
-    data object Weather : Route("weather", "Weather at location", optional = listOf(Arguments.Type))
+    data object WeatherBlocks : Route("blocksWeather", "Weather at location")
+    data object WeatherTimeline : Route("timelineWeather", "Weather Timeline")
+    data object WeatherDetails : Route("detailsWeather", "Weather Details")
     data object WeatherMap : Route("mapWeather", "Weather")
 
     data object DocumentScan : Route("documentScan", "Document Scan")
     companion object {
-        val entries = listOf(Navigation, Clock, Map, Weather, WeatherMap)
+        val entries = listOf(Navigation, Clock, Map, WeatherBlocks, WeatherMap)
     }
 }
 
@@ -40,7 +42,7 @@ fun Route.routeDefinition(): String = Uri.decode(routeDefinitionBuilder().toStri
 
 fun Route.resolved(): String = routeDefinition()
 
-fun Route.Weather.resolved(type: String? = null): String = Uri.decode(routeDefinitionBuilder().toString()).let { def ->
+fun Route.WeatherBlocks.resolved(type: String? = null): String = Uri.decode(routeDefinitionBuilder().toString()).let { def ->
     if (type != null) def.replace("{${Arguments.Type.value}}", type) else def
 }
 

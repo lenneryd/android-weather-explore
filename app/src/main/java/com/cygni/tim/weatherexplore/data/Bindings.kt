@@ -3,6 +3,7 @@ package com.cygni.tim.weatherexplore.data
 import android.content.Context
 import com.cygni.tim.weatherexplore.R
 import com.cygni.tim.weatherexplore.data.api.retrofit.WeatherApi
+import com.cygni.tim.weatherexplore.data.storage.WeatherStorage
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
 import dagger.Provides
@@ -67,4 +68,13 @@ object WeatherApiModule {
     @Provides
     @Singleton
     fun provideWeatherApi(retrofit: Retrofit): WeatherApi = retrofit.create(WeatherApi::class.java)
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+object WeatherStorageModule {
+
+    @Provides
+    @Singleton
+    fun provideWeatherStorage(): WeatherStorage = WeatherStorage()
 }
