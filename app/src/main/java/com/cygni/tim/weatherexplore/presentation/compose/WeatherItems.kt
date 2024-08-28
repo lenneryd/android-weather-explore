@@ -67,6 +67,9 @@ fun TempWithWeatherIcon(
     state: WeatherViewModel.WeatherBlock.TempWithSymbolIcon,
     onClick: () -> Unit = {}
 ) {
+    val shared = LocalSharedElementTransitionScope.current
+    val animation = LocalAnimatedVisibilityScope.current
+
     LocalGridSize.current.let { grid ->
         ElevatedBlock(onClick = onClick, grid.height, grid.width, testTag = state.tag, iconContent = {
             AnimatedContent(targetState = state.weatherIcon, label = "Weather Icon") { icon ->
@@ -74,15 +77,13 @@ fun TempWithWeatherIcon(
                     Image(
                         painter = painterResource(id = res),
                         contentDescription = "Map Link to location",
-                        modifier = Modifier
-                            .wrapContentSize()
-                            .apply {
-                                onNonNull(LocalSharedElementTransitionScope.current, LocalAnimatedVisibilityScope.current) { shared, animation ->
-                                    with(shared) {
-                                        sharedElement(rememberSharedContentState(key = KEY_ICON_IMAGE), animation)
-                                    }
-                                }
+                        modifier = if (shared != null && animation != null) {
+                            with(shared) {
+                                return@with Modifier.sharedElement(rememberSharedContentState(key = KEY_ICON_IMAGE), animation)
                             }
+                        } else {
+                            Modifier
+                        }
                     )
                 }
             }
@@ -562,8 +563,3 @@ fun GoToMapPreview() {
     ) {}
 }
 
-inline fun <S: Any, T: Any>  onNonNull(first: S?, second: T?, action: (S, T) -> Unit) {
-    if(first != null && second != null) {
-        action(first, second)
-    }
-}

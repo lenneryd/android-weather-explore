@@ -1,8 +1,7 @@
 package com.cygni.tim.weatherexplore.presentation.compose
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -21,10 +20,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalContext
@@ -40,7 +35,6 @@ import com.cygni.tim.weatherexplore.presentation.LocalAnimatedVisibilityScope
 import com.cygni.tim.weatherexplore.presentation.LocalSharedElementTransitionScope
 import com.cygni.tim.weatherexplore.presentation.icons.WeatherIcons
 import com.cygni.tim.weatherexplore.presentation.viewmodel.WeatherDetailsViewModel
-import com.cygni.tim.weatherexplore.presentation.viewmodel.WeatherViewModel
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
@@ -115,6 +109,9 @@ fun WeatherDetailsComposable(state: WeatherDetailsViewModel.WeatherDetails.Weath
                 )
             }
 
+            val shared = LocalSharedElementTransitionScope.current
+            val animation = LocalAnimatedVisibilityScope.current
+
             Box(modifier = Modifier.constrainAs(weatherCircle) {
                 top.linkTo(topHalfGuide)
                 start.linkTo(parent.start)
@@ -125,17 +122,18 @@ fun WeatherDetailsComposable(state: WeatherDetailsViewModel.WeatherDetails.Weath
                     Image(
                         painter = painterResource(id = res),
                         contentDescription = "Weather Icon",
-                        modifier = Modifier
-                            .apply {
-                                onNonNull(
-                                    LocalSharedElementTransitionScope.current,
-                                    LocalAnimatedVisibilityScope.current
-                                ) { shared, animated ->
-                                    with(shared) {
-                                        sharedElement(rememberSharedContentState(key = KEY_ICON_IMAGE), animated)
-                                    }
-                                }
+                        modifier = if (shared != null && animation != null) {
+                            with(shared) {
+                                return@with Modifier.sharedElement(rememberSharedContentState(key = KEY_ICON_IMAGE), animation, boundsTransform = { initialRect, targetRect ->
+                                    spring(
+                                        dampingRatio = 0.6f,
+                                        stiffness = 200f
+                                    )
+                                })
                             }
+                        } else {
+                            Modifier
+                        }
                             .size(topGradientHeight)
                             .background(
                                 brush = Brush.sweepGradient(
